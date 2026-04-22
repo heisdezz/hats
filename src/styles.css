@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap");
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: "caramellatte";
+  /*exclude: [ "link"];*/
+}
+
+@theme {
+  --font-logo: "Caveat Brush", cursive;
+}
+@utility container {
+  @apply px-4;
+}
+
+@utility link {
+  @apply hover:underline;
+}
+
+@utility fade {
+  @apply ring-current/30 border-current/30;
+}
+@utility page-wrap {
+  @apply container py-8 mx-auto min-h-140;
+}
