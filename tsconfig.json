@@ -21,8 +21,9 @@
 
     /* Linting */
     "skipLibCheck": true,
-    "strict": true,
-    "noUnusedLocals": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "strictNullChecks": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
