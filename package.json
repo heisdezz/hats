@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@tabler/icons-react": "^3.41.1",
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-devtools": "latest",

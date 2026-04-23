@@ -9,7 +9,6 @@ const config = defineConfig({
   plugins: [
     devtools(),
     tailwindcss(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
 
     tanstackStart({
       rsc: {
@@ -17,6 +16,8 @@ const config = defineConfig({
       },
     }),
     // rsc(),
+    // nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    //
     viteReact(),
   ],
 });
