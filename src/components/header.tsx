@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { ClientOnly, Link } from "@tanstack/react-router";
 import AuthHeader from "./AuthHeader";
 import SearchBar from "./SearchBar";
 import StoreButtons from "./StoreButtons";
@@ -35,8 +35,9 @@ export const Header = () => {
       <div className="bg-secondary/80 text-secondary-content grid place-items-center text-sm h-10 w-full text-center text">
         FREE SHIPPING on all Lagos orders above ₦150,000 🚚
       </div>
-      <AuthHeader />
-
+      <ClientOnly fallback={<div className="h-10 bg-base-200"></div>}>
+        <AuthHeader />
+      </ClientOnly>
       <nav className="container mx-auto flex items-center gap-4 h-22">
         <Link to="/" className=" text-2xl  font-logo leading-tight">
           Destinys Concept

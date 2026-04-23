@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FinalRouteImport } from './routes/final'
 import { Route as AboutRouteImport } from './routes/about'
@@ -30,6 +31,11 @@ const TestRoute = TestRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/final': typeof FinalRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/catalog/': typeof CatalogIndexRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/final': typeof FinalRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/catalog': typeof CatalogIndexRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/final': typeof FinalRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/catalog/': typeof CatalogIndexRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/final'
     | '/login'
+    | '/logout'
     | '/register'
     | '/test'
     | '/catalog/'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/final'
     | '/login'
+    | '/logout'
     | '/register'
     | '/test'
     | '/catalog'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/final'
     | '/login'
+    | '/logout'
     | '/register'
     | '/test'
     | '/catalog/'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   FinalRoute: typeof FinalRoute
   LoginRoute: typeof LoginRoute
+  LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
   TestRoute: typeof TestRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   FinalRoute: FinalRoute,
   LoginRoute: LoginRoute,
+  LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
   TestRoute: TestRoute,
   CatalogIndexRoute: CatalogIndexRoute,

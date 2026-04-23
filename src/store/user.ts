@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 interface PROFILE {
   profile: ProfileRecord | null;
   setProfile: (data: ProfileRecord) => void;
+  clearProfile: () => void;
 }
 
 export const useProfile = create<PROFILE>()(
@@ -12,6 +13,7 @@ export const useProfile = create<PROFILE>()(
     (set) => ({
       profile: null,
       setProfile: (data: ProfileRecord) => set({ profile: data }),
+      clearProfile: () => set({ profile: null }),
     }),
     { name: "profile" },
   ),
