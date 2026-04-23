@@ -5,6 +5,8 @@ import { z } from "zod";
 import { pb } from "#/client/pb";
 import { useState } from "react";
 import { useProfile } from "#/store/user";
+import { useDeliverySettings } from "#/store/delivery";
+import type { DeliverySettingsRecord, ProfileRecord } from "pocketbase-types";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
@@ -21,6 +23,9 @@ function RouteComponent() {
   const nav = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
   const set_profile = useProfile((state) => state.setProfile);
+  const update_delivery = useDeliverySettings(
+    (state) => state.updateDeliverySettings,
+  );
   const {
     register,
     handleSubmit,
@@ -34,9 +39,16 @@ function RouteComponent() {
         .collection("users")
         .authWithPassword(data.email, data.password);
       const user_id = user.record.id;
-      const profile = await pb.send("profile/me", {
+      const profile: ProfileRecord = await pb.send("profile/me", {
         method: "GET",
       });
+      const delivery: DeliverySettingsRecord = await pb.send(
+        "delivery/me/" + profile.id,
+        {
+          method: "GET",
+        },
+      );
+      update_delivery(delivery);
       set_profile(profile);
       //@ts-ignore
       nav({ to: "/catalog/" });

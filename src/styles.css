@@ -8,6 +8,7 @@
 
 @theme {
   --font-logo: "Caveat Brush", cursive;
+  --font-sans: "Noto Sans";
 }
 @utility container {
   @apply px-4;

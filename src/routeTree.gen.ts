@@ -16,8 +16,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as FinalRouteImport } from './routes/final'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as JewelryIndexRouteImport } from './routes/jewelry/index'
 import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
+import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
 import { Route as CatalogJewelryIndexRouteImport } from './routes/catalog/jewelry/index'
 import { Route as CatalogHatsIndexRouteImport } from './routes/catalog/hats/index'
 import { Route as CatalogProductsJeweleryIdRouteImport } from './routes/catalog/products/jewelery/$id'
@@ -58,6 +60,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JewelryIndexRoute = JewelryIndexRouteImport.update({
   id: '/jewelry/',
   path: '/jewelry/',
@@ -66,6 +73,11 @@ const JewelryIndexRoute = JewelryIndexRouteImport.update({
 const CatalogIndexRoute = CatalogIndexRouteImport.update({
   id: '/catalog/',
   path: '/catalog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
+  id: '/profile/orders',
+  path: '/profile/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogJewelryIndexRoute = CatalogJewelryIndexRouteImport.update({
@@ -98,8 +110,10 @@ export interface FileRoutesByFullPath {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/catalog/': typeof CatalogIndexRoute
   '/jewelry/': typeof JewelryIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/catalog/hats/': typeof CatalogHatsIndexRoute
   '/catalog/jewelry/': typeof CatalogJewelryIndexRoute
   '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
@@ -113,8 +127,10 @@ export interface FileRoutesByTo {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/catalog': typeof CatalogIndexRoute
   '/jewelry': typeof JewelryIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/catalog/hats': typeof CatalogHatsIndexRoute
   '/catalog/jewelry': typeof CatalogJewelryIndexRoute
   '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
@@ -129,8 +145,10 @@ export interface FileRoutesById {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/catalog/': typeof CatalogIndexRoute
   '/jewelry/': typeof JewelryIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/catalog/hats/': typeof CatalogHatsIndexRoute
   '/catalog/jewelry/': typeof CatalogJewelryIndexRoute
   '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
@@ -146,8 +164,10 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/test'
+    | '/profile/orders'
     | '/catalog/'
     | '/jewelry/'
+    | '/profile/'
     | '/catalog/hats/'
     | '/catalog/jewelry/'
     | '/catalog/products/hats/$id'
@@ -161,8 +181,10 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/test'
+    | '/profile/orders'
     | '/catalog'
     | '/jewelry'
+    | '/profile'
     | '/catalog/hats'
     | '/catalog/jewelry'
     | '/catalog/products/hats/$id'
@@ -176,8 +198,10 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/test'
+    | '/profile/orders'
     | '/catalog/'
     | '/jewelry/'
+    | '/profile/'
     | '/catalog/hats/'
     | '/catalog/jewelry/'
     | '/catalog/products/hats/$id'
@@ -192,8 +216,10 @@ export interface RootRouteChildren {
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
   TestRoute: typeof TestRoute
+  ProfileOrdersRoute: typeof ProfileOrdersRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
   JewelryIndexRoute: typeof JewelryIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   CatalogHatsIndexRoute: typeof CatalogHatsIndexRoute
   CatalogJewelryIndexRoute: typeof CatalogJewelryIndexRoute
   CatalogProductsHatsIdRoute: typeof CatalogProductsHatsIdRoute
@@ -251,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/jewelry/': {
       id: '/jewelry/'
       path: '/jewelry'
@@ -263,6 +296,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/catalog/'
       preLoaderRoute: typeof CatalogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/orders': {
+      id: '/profile/orders'
+      path: '/profile/orders'
+      fullPath: '/profile/orders'
+      preLoaderRoute: typeof ProfileOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog/jewelry/': {
@@ -304,8 +344,10 @@ const rootRouteChildren: RootRouteChildren = {
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
   TestRoute: TestRoute,
+  ProfileOrdersRoute: ProfileOrdersRoute,
   CatalogIndexRoute: CatalogIndexRoute,
   JewelryIndexRoute: JewelryIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   CatalogHatsIndexRoute: CatalogHatsIndexRoute,
   CatalogJewelryIndexRoute: CatalogJewelryIndexRoute,
   CatalogProductsHatsIdRoute: CatalogProductsHatsIdRoute,
