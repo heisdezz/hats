@@ -15,6 +15,7 @@ import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FinalRouteImport } from './routes/final'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ProfileRouteRouteImport } from './routes/profile/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as JewelryIndexRouteImport } from './routes/jewelry/index'
@@ -55,15 +56,20 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRouteRoute = ProfileRouteRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
-  id: '/profile/',
-  path: '/profile/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileRouteRoute,
 } as any)
 const JewelryIndexRoute = JewelryIndexRouteImport.update({
   id: '/jewelry/',
@@ -76,9 +82,9 @@ const CatalogIndexRoute = CatalogIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
-  id: '/profile/orders',
-  path: '/profile/orders',
-  getParentRoute: () => rootRouteImport,
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => ProfileRouteRoute,
 } as any)
 const CatalogJewelryIndexRoute = CatalogJewelryIndexRouteImport.update({
   id: '/catalog/jewelry/',
@@ -104,6 +110,7 @@ const CatalogProductsHatsIdRoute = CatalogProductsHatsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/final': typeof FinalRoute
   '/login': typeof LoginRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/final': typeof FinalRoute
   '/login': typeof LoginRoute
@@ -158,6 +166,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/profile'
     | '/about'
     | '/final'
     | '/login'
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/profile'
     | '/about'
     | '/final'
     | '/login'
@@ -210,16 +220,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProfileRouteRoute: typeof ProfileRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   FinalRoute: typeof FinalRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
   TestRoute: typeof TestRoute
-  ProfileOrdersRoute: typeof ProfileOrdersRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
   JewelryIndexRoute: typeof JewelryIndexRoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
   CatalogHatsIndexRoute: typeof CatalogHatsIndexRoute
   CatalogJewelryIndexRoute: typeof CatalogJewelryIndexRoute
   CatalogProductsHatsIdRoute: typeof CatalogProductsHatsIdRoute
@@ -270,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -279,10 +295,10 @@ declare module '@tanstack/react-router' {
     }
     '/profile/': {
       id: '/profile/'
-      path: '/profile'
+      path: '/'
       fullPath: '/profile/'
       preLoaderRoute: typeof ProfileIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ProfileRouteRoute
     }
     '/jewelry/': {
       id: '/jewelry/'
@@ -300,10 +316,10 @@ declare module '@tanstack/react-router' {
     }
     '/profile/orders': {
       id: '/profile/orders'
-      path: '/profile/orders'
+      path: '/orders'
       fullPath: '/profile/orders'
       preLoaderRoute: typeof ProfileOrdersRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ProfileRouteRoute
     }
     '/catalog/jewelry/': {
       id: '/catalog/jewelry/'
@@ -336,18 +352,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ProfileRouteRouteChildren {
+  ProfileOrdersRoute: typeof ProfileOrdersRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+}
+
+const ProfileRouteRouteChildren: ProfileRouteRouteChildren = {
+  ProfileOrdersRoute: ProfileOrdersRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+}
+
+const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
+  ProfileRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProfileRouteRoute: ProfileRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   FinalRoute: FinalRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
   TestRoute: TestRoute,
-  ProfileOrdersRoute: ProfileOrdersRoute,
   CatalogIndexRoute: CatalogIndexRoute,
   JewelryIndexRoute: JewelryIndexRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
   CatalogHatsIndexRoute: CatalogHatsIndexRoute,
   CatalogJewelryIndexRoute: CatalogJewelryIndexRoute,
   CatalogProductsHatsIdRoute: CatalogProductsHatsIdRoute,

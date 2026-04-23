@@ -16,18 +16,24 @@ type Props = { onSuccess: () => void };
 export default function DeliveryForm({ onSuccess }: Props) {
   const updateDelivery = useDeliverySettings((s) => s.updateDeliverySettings);
 
-  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } =
-    useForm<FormValues>({
-      defaultValues: {
-        full_address: "",
-        city: "",
-        state: "",
-        location: { lat: 0, lon: 0 },
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<FormValues>({
+    defaultValues: {
+      full_address: "",
+      city: "",
+      state: "",
+      location: { lat: 0, lon: 0 },
+    },
+  });
 
-  const handlePlaceSelected = (place: google.maps.places.PlaceResult) => {
+  const handlePlaceSelected = (place: any) => {
     const components = place.address_components ?? [];
+
     const get = (type: string) =>
       components.find((c: any) => c.types.includes(type))?.long_name ?? "";
 
@@ -45,7 +51,6 @@ export default function DeliveryForm({ onSuccess }: Props) {
       method: "POST",
       body: data,
     });
-
     toast.promise(promise, {
       loading: "Saving delivery settings…",
       success: () => {

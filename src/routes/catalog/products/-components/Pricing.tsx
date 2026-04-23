@@ -9,6 +9,7 @@ import {
 import { useForm } from "react-hook-form";
 import RenderDescription from "#/routes/-components/RenderDescription";
 import type { PRODUCT_RESULT } from "../../-components/products";
+import MainInfo from "./MainInfo";
 
 type FormValues = { circumference: string };
 
@@ -26,6 +27,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <ShortInfo product={product} />
       {product.price != null && (
         <div className="flex items-baseline gap-1">
           <span className="text-base text-base-content/50 font-medium">₦</span>
@@ -55,18 +57,20 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
           {errors.circumference ? (
             <p className="text-error text-xs">{errors.circumference.message}</p>
           ) : (
-            <p className="text-xs text-base-content/40">Typical range: 54–62 cm</p>
+            <p className="text-xs text-base-content/40">
+              Typical range: 54–62 cm
+            </p>
           )}
         </div>
 
         <div className="flex gap-2 pt-1">
-          <button type="submit" className="btn btn-primary flex-1 gap-2">
+          <button type="submit" className="btn btn-primary btn-xl flex-1 gap-2">
             <ShoppingCart className="size-4" />
             Add to Cart
           </button>
           <button
             type="button"
-            className="btn btn-outline btn-square text-base-content/60 hover:text-error hover:border-error"
+            className="btn btn-secondary btn-soft ring fade btn-xl btn-square text-base-content/60 hover:text-error hover:border-error"
           >
             <Heart className="size-5" />
           </button>
@@ -74,7 +78,10 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
       </form>
 
       <div className="flex flex-col gap-3">
-        <details className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden" open>
+        <details
+          className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden"
+          open
+        >
           <summary className="flex justify-between items-center cursor-pointer px-4 py-3.5 font-semibold text-sm list-none hover:bg-base-200/50 transition-colors">
             Description & Fit
             <ChevronDown className="size-4 text-base-content/50 transition-transform group-open:rotate-180" />
@@ -88,7 +95,10 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
           </div>
         </details>
 
-        <details className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden" open>
+        <details
+          className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden"
+          open
+        >
           <summary className="flex justify-between items-center cursor-pointer px-4 py-3.5 font-semibold text-sm list-none hover:bg-base-200/50 transition-colors">
             Shipping
             <ChevronDown className="size-4 text-base-content/50 transition-transform group-open:rotate-180" />
@@ -101,7 +111,10 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
                 { icon: Truck, label: "Delivery", value: "3–4 Working Days" },
                 { icon: Truck, label: "Est. Arrival", value: "10–12 Oct 2024" },
               ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-start gap-2.5 bg-base-200/60 rounded-xl p-3">
+                <div
+                  key={label}
+                  className="flex items-start gap-2.5 bg-base-200/60 rounded-xl p-3"
+                >
                   <Icon className="size-4 text-base-content/40 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-base-content/50 text-xs">{label}</p>
@@ -116,3 +129,28 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
     </div>
   );
 }
+
+const ShortInfo = ({ product }: { product: PRODUCT_RESULT }) => {
+  const category = product.expand?.category?.name;
+  const section = product.expand?.category?.expand?.parent?.name;
+  const description = product.description ?? "";
+  return (
+    <>
+      <div className="flex flex-col gap-4 ">
+        {(section || category) && (
+          <div className="flex items-center border-b fade pb-2 gap-2 text-sm text-base-content/80">
+            {section && <span>{section}</span>}
+            {section && category && <span>/</span>}
+            {category && <span>{category}</span>}
+          </div>
+        )}
+
+        <h1 className="text-2xl font-bold leading-snug">
+          {product.title ?? "Untitled"}
+        </h1>
+
+        <RenderDescription text={description}></RenderDescription>
+      </div>
+    </>
+  );
+};

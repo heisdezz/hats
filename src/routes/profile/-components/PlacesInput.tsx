@@ -1,7 +1,7 @@
-import { usePlacesWidget } from "react-google-autocomplete";
+import google, { usePlacesWidget } from "react-google-autocomplete";
 
 type Props = {
-  onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
+  onPlaceSelected: (place: any) => void;
   placeholder?: string;
   className?: string;
 };

@@ -4,6 +4,7 @@ import Aside from "../-components/Aside";
 import MainInfo from "../-components/MainInfo";
 import { ssr_pb } from "#/client/pb";
 import Pricing from "../-components/Pricing";
+import DeliverySettings from "#/components/DeliverySettings";
 
 export const Route = createFileRoute("/catalog/products/hats/$id")({
   component: RouteComponent,
@@ -24,6 +25,7 @@ function RouteComponent() {
       <Aside>
         {/*//@ts-ignore*/}
         <Pricing product={data} />
+        <DeliverySettings />
       </Aside>
     </Skeleton>
   );
