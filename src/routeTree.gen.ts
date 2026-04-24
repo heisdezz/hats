@@ -22,6 +22,7 @@ import { Route as StoreIndexRouteImport } from './routes/store/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
+import { Route as AdminDashboardRouteRouteImport } from './routes/admin/dashboard/route'
 import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
 import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
@@ -95,6 +96,11 @@ const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => ProfileRouteRoute,
 } as any)
+const AdminDashboardRouteRoute = AdminDashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const StoreJewelryIndexRoute = StoreJewelryIndexRouteImport.update({
   id: '/jewelry/',
   path: '/jewelry/',
@@ -106,9 +112,9 @@ const StoreCatalogIndexRoute = StoreCatalogIndexRouteImport.update({
   getParentRoute: () => StoreRouteRoute,
 } as any)
 const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => AdminRouteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminDashboardRouteRoute,
 } as any)
 const StoreCatalogJewelryIndexRoute =
   StoreCatalogJewelryIndexRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/admin/dashboard': typeof AdminDashboardRouteRouteWithChildren
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -186,6 +193,7 @@ export interface FileRoutesById {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/admin/dashboard': typeof AdminDashboardRouteRouteWithChildren
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -210,6 +218,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/test'
+    | '/admin/dashboard'
     | '/profile/orders'
     | '/admin/'
     | '/profile/'
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/test'
+    | '/admin/dashboard'
     | '/profile/orders'
     | '/admin/'
     | '/profile/'
@@ -369,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileOrdersRouteImport
       parentRoute: typeof ProfileRouteRoute
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/store/jewelry/': {
       id: '/store/jewelry/'
       path: '/jewelry'
@@ -385,10 +402,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/dashboard/': {
       id: '/admin/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/admin/dashboard/'
       preLoaderRoute: typeof AdminDashboardIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
+      parentRoute: typeof AdminDashboardRouteRoute
     }
     '/store/catalog/jewelry/': {
       id: '/store/catalog/jewelry/'
@@ -421,14 +438,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteRouteChildren {
-  AdminIndexRoute: typeof AdminIndexRoute
+interface AdminDashboardRouteRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
 }
 
-const AdminRouteRouteChildren: AdminRouteRouteChildren = {
-  AdminIndexRoute: AdminIndexRoute,
+const AdminDashboardRouteRouteChildren: AdminDashboardRouteRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+}
+
+const AdminDashboardRouteRouteWithChildren =
+  AdminDashboardRouteRoute._addFileChildren(AdminDashboardRouteRouteChildren)
+
+interface AdminRouteRouteChildren {
+  AdminDashboardRouteRoute: typeof AdminDashboardRouteRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminDashboardRouteRoute: AdminDashboardRouteRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

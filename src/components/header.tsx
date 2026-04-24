@@ -39,7 +39,7 @@ export const Header = () => {
         <AuthHeader />
       </ClientOnly>
       <nav className="container mx-auto flex items-center gap-4 h-22">
-        <Link to="/" className=" text-2xl  font-logo leading-tight">
+        <Link to="/store" className=" text-2xl  font-logo leading-tight">
           Destinys Concept
         </Link>
         <div className="max-w-2xl flex-1 mx-auto">

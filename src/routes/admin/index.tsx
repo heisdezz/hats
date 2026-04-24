@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { pb } from "#/client/pb";
 import { ShieldCheck } from "lucide-react";
-
+import { toast } from "sonner";
 export const Route = createFileRoute("/admin/")({
   component: RouteComponent,
 });
@@ -30,9 +30,17 @@ function RouteComponent() {
   const onSubmit = async (data: FormValues) => {
     setServerError(null);
     try {
-      await pb.collection("admins").authWithPassword(data.email, data.password);
+      toast.promise(
+        pb.collection("admins").authWithPassword(data.email, data.password),
+        {
+          loading: "Authenticating...",
+          success: "Logged in successfully",
+          error: "Invalid credentials.",
+        },
+      );
+
       // @ts-ignore
-      nav({ to: "/admin/" });
+      nav({ to: "/admin/dashboard" });
     } catch {
       setServerError("Invalid credentials.");
     }
@@ -103,8 +111,8 @@ function RouteComponent() {
             </button>
           </form>
 
-          <p className="text-xs text-center text-base-content/30">
-            <Link to="/catalog/" className="link">
+          <p className="text-sm text-center text-base-content/80">
+            <Link to="/store/catalog" className="link">
               Back to store
             </Link>
           </p>
