@@ -16,8 +16,10 @@ export const Collections = {
 	Category: "category",
 	DeliverySettings: "deliverySettings",
 	Logisitcs: "logisitcs",
+	OrderData: "orderData",
 	Orders: "orders",
 	Products: "products",
+	ProductsData: "productsData",
 	Profile: "profile",
 	Reviews: "reviews",
 	Section: "section",
@@ -156,6 +158,15 @@ export type LogisitcsRecord = {
 	updated: IsoAutoDateString
 }
 
+export type OrderDataRecord = {
+	delivered?: number
+	id: string
+	inTransit?: number
+	pending?: number
+	processing?: number
+	totalOrders?: number
+}
+
 export type OrdersRecord = {
 	Price?: number
 	created: IsoAutoDateString
@@ -165,6 +176,7 @@ export type OrdersRecord = {
 	id: string
 	product?: RecordIdString
 	profile?: RecordIdString
+	status?: string
 	updated: IsoAutoDateString
 	user?: RecordIdString
 }
@@ -181,6 +193,13 @@ export type ProductsRecord = {
 	tags?: RecordIdString[]
 	title?: string
 	updated: IsoAutoDateString
+}
+
+export type ProductsDataRecord = {
+	hats?: number
+	id: string
+	jewelry?: number
+	totalProducts?: number
 }
 
 export type ProfileRecord = {
@@ -245,8 +264,10 @@ export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemF
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
 export type LogisitcsResponse<Texpand = unknown> = Required<LogisitcsRecord> & BaseSystemFields<Texpand>
+export type OrderDataResponse<Texpand = unknown> = Required<OrderDataRecord> & BaseSystemFields<Texpand>
 export type OrdersResponse<Texpand = unknown> = Required<OrdersRecord> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
+export type ProductsDataResponse<Texpand = unknown> = Required<ProductsDataRecord> & BaseSystemFields<Texpand>
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
 export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> & BaseSystemFields<Texpand>
 export type SectionResponse<Texpand = unknown> = Required<SectionRecord> & BaseSystemFields<Texpand>
@@ -266,8 +287,10 @@ export type CollectionRecords = {
 	category: CategoryRecord
 	deliverySettings: DeliverySettingsRecord
 	logisitcs: LogisitcsRecord
+	orderData: OrderDataRecord
 	orders: OrdersRecord
 	products: ProductsRecord
+	productsData: ProductsDataRecord
 	profile: ProfileRecord
 	reviews: ReviewsRecord
 	section: SectionRecord
@@ -286,8 +309,10 @@ export type CollectionResponses = {
 	category: CategoryResponse
 	deliverySettings: DeliverySettingsResponse
 	logisitcs: LogisitcsResponse
+	orderData: OrderDataResponse
 	orders: OrdersResponse
 	products: ProductsResponse
+	productsData: ProductsDataResponse
 	profile: ProfileResponse
 	reviews: ReviewsResponse
 	section: SectionResponse

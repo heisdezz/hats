@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import AdminHeader from "./-components/AdminHeader";
 
 export const Route = createFileRoute("/admin/dashboard")({
@@ -8,11 +8,12 @@ export const Route = createFileRoute("/admin/dashboard")({
 function RouteComponent() {
   return (
     <>
-      <div className="drawer lg:drawer-open">
+      <div className="drawer lg:drawer-open ">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
           {/* Page content here */}
           <AdminHeader />
+          <Outlet />
           <label htmlFor="my-drawer-3" className="btn drawer-button lg:hidden">
             Open drawer
           </label>
