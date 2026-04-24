@@ -1,24 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Hero from "./-components/Hero";
-import Features from "./-components/Features";
-import JewelryGrid from "./-components/JewleryGrid";
-import HatsGrid from "./-components/HatsGrid";
-import CustomMade from "./-components/CustomMade";
-import Feedbacks from "./-components/FeedBacks";
-import WriteUp from "./-components/WriteUp";
+import { redirect } from "@tanstack/react-router";
+//@ts-ignore
+export const Route = createFileRoute("/")({
+  component: RouteComponent,
+  loader: () => redirect({ to: "/store" }),
+});
 
-export const Route = createFileRoute("/")({ component: Home });
-
-function Home() {
-  return (
-    <div className="space-y-24">
-      <Hero />
-      <Features />
-      <JewelryGrid />
-      <HatsGrid />
-      <CustomMade />
-      <Feedbacks />
-      <WriteUp />
-    </div>
-  );
+function RouteComponent() {
+  return <div>Hello "/"!</div>;
 }

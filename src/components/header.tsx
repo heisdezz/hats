@@ -6,26 +6,26 @@ const navLinks = [
   {
     name: "Home",
     link: {
-      path: "/",
+      path: "/store",
     },
   },
 
   {
     name: "Catalog",
     link: {
-      path: "/catalog",
+      path: "/store/catalog",
     },
   },
   {
     name: "Hats",
     link: {
-      path: "/catalog/hats",
+      path: "/store/catalog/hats",
     },
   },
   {
     name: "Jewelry",
     link: {
-      path: "/catalog/jewelry",
+      path: "/store/catalog/jewelry",
     },
   },
 ] as { name: string; link: Partial<{ path: string }> }[];

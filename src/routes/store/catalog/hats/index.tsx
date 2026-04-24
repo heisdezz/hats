@@ -3,7 +3,7 @@ import { get_hats } from "../-components/products";
 import GridContainer from "#/components/GridContainer";
 import ProductCard from "#/components/ProductCard";
 
-export const Route = createFileRoute("/catalog/hats/")({
+export const Route = createFileRoute("/store/catalog/hats/")({
   component: RouteComponent,
   loader: get_hats,
 });

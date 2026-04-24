@@ -6,7 +6,7 @@ import { ssr_pb } from "#/client/pb";
 import Pricing from "../-components/Pricing";
 import DeliverySettings from "#/components/DeliverySettings";
 
-export const Route = createFileRoute("/catalog/products/hats/$id")({
+export const Route = createFileRoute("/store/catalog/products/hats/$id")({
   component: RouteComponent,
   loader: async ({ params }) => {
     const pb = ssr_pb();

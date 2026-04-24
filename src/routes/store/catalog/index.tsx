@@ -7,7 +7,7 @@ const searchSchema = z.object({
   query: z.string().optional(),
 });
 
-export const Route = createFileRoute("/catalog/")({
+export const Route = createFileRoute("/store/catalog/")({
   component: RouteComponent,
   validateSearch: searchSchema,
   loader: async () => await get_products(),

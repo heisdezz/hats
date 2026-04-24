@@ -4,7 +4,7 @@ interface SEARCH {
   category?: string;
   page?: number;
 }
-export const Route = createFileRoute("/catalog/jewelry/")({
+export const Route = createFileRoute("/store/catalog/jewelry/")({
   component: RouteComponent,
   validateSearch: (search: SEARCH) => {
     return search;

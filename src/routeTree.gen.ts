@@ -13,18 +13,22 @@ import { Route as TestRouteImport } from './routes/test'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as FinalRouteImport } from './routes/final'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as StoreRouteRouteImport } from './routes/store/route'
 import { Route as ProfileRouteRouteImport } from './routes/profile/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StoreIndexRouteImport } from './routes/store/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
-import { Route as JewelryIndexRouteImport } from './routes/jewelry/index'
-import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
-import { Route as CatalogJewelryIndexRouteImport } from './routes/catalog/jewelry/index'
-import { Route as CatalogHatsIndexRouteImport } from './routes/catalog/hats/index'
-import { Route as CatalogProductsJeweleryIdRouteImport } from './routes/catalog/products/jewelery/$id'
-import { Route as CatalogProductsHatsIdRouteImport } from './routes/catalog/products/hats/$id'
+import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
+import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
+import { Route as StoreCatalogHatsIndexRouteImport } from './routes/store/catalog/hats/index'
+import { Route as StoreCatalogProductsJeweleryIdRouteImport } from './routes/store/catalog/products/jewelery/$id'
+import { Route as StoreCatalogProductsHatsIdRouteImport } from './routes/store/catalog/products/hats/$id'
 
 const TestRoute = TestRouteImport.update({
   id: '/test',
@@ -46,14 +50,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FinalRoute = FinalRouteImport.update({
-  id: '/final',
-  path: '/final',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoreRouteRoute = StoreRouteRouteImport.update({
+  id: '/store',
+  path: '/store',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRouteRoute = ProfileRouteRouteImport.update({
@@ -61,178 +65,215 @@ const ProfileRouteRoute = ProfileRouteRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const StoreIndexRoute = StoreIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StoreRouteRoute,
 } as any)
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ProfileRouteRoute,
 } as any)
-const JewelryIndexRoute = JewelryIndexRouteImport.update({
-  id: '/jewelry/',
-  path: '/jewelry/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CatalogIndexRoute = CatalogIndexRouteImport.update({
-  id: '/catalog/',
-  path: '/catalog/',
-  getParentRoute: () => rootRouteImport,
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
   getParentRoute: () => ProfileRouteRoute,
 } as any)
-const CatalogJewelryIndexRoute = CatalogJewelryIndexRouteImport.update({
-  id: '/catalog/jewelry/',
-  path: '/catalog/jewelry/',
-  getParentRoute: () => rootRouteImport,
+const StoreJewelryIndexRoute = StoreJewelryIndexRouteImport.update({
+  id: '/jewelry/',
+  path: '/jewelry/',
+  getParentRoute: () => StoreRouteRoute,
 } as any)
-const CatalogHatsIndexRoute = CatalogHatsIndexRouteImport.update({
+const StoreCatalogIndexRoute = StoreCatalogIndexRouteImport.update({
+  id: '/catalog/',
+  path: '/catalog/',
+  getParentRoute: () => StoreRouteRoute,
+} as any)
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const StoreCatalogJewelryIndexRoute =
+  StoreCatalogJewelryIndexRouteImport.update({
+    id: '/catalog/jewelry/',
+    path: '/catalog/jewelry/',
+    getParentRoute: () => StoreRouteRoute,
+  } as any)
+const StoreCatalogHatsIndexRoute = StoreCatalogHatsIndexRouteImport.update({
   id: '/catalog/hats/',
   path: '/catalog/hats/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => StoreRouteRoute,
 } as any)
-const CatalogProductsJeweleryIdRoute =
-  CatalogProductsJeweleryIdRouteImport.update({
+const StoreCatalogProductsJeweleryIdRoute =
+  StoreCatalogProductsJeweleryIdRouteImport.update({
     id: '/catalog/products/jewelery/$id',
     path: '/catalog/products/jewelery/$id',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => StoreRouteRoute,
   } as any)
-const CatalogProductsHatsIdRoute = CatalogProductsHatsIdRouteImport.update({
-  id: '/catalog/products/hats/$id',
-  path: '/catalog/products/hats/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const StoreCatalogProductsHatsIdRoute =
+  StoreCatalogProductsHatsIdRouteImport.update({
+    id: '/catalog/products/hats/$id',
+    path: '/catalog/products/hats/$id',
+    getParentRoute: () => StoreRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/profile': typeof ProfileRouteRouteWithChildren
+  '/store': typeof StoreRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/final': typeof FinalRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/profile/orders': typeof ProfileOrdersRoute
-  '/catalog/': typeof CatalogIndexRoute
-  '/jewelry/': typeof JewelryIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
-  '/catalog/hats/': typeof CatalogHatsIndexRoute
-  '/catalog/jewelry/': typeof CatalogJewelryIndexRoute
-  '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
-  '/catalog/products/jewelery/$id': typeof CatalogProductsJeweleryIdRoute
+  '/store/': typeof StoreIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/store/catalog/': typeof StoreCatalogIndexRoute
+  '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
+  '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
+  '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
+  '/store/catalog/products/jewelery/$id': typeof StoreCatalogProductsJeweleryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/final': typeof FinalRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/profile/orders': typeof ProfileOrdersRoute
-  '/catalog': typeof CatalogIndexRoute
-  '/jewelry': typeof JewelryIndexRoute
+  '/admin': typeof AdminIndexRoute
   '/profile': typeof ProfileIndexRoute
-  '/catalog/hats': typeof CatalogHatsIndexRoute
-  '/catalog/jewelry': typeof CatalogJewelryIndexRoute
-  '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
-  '/catalog/products/jewelery/$id': typeof CatalogProductsJeweleryIdRoute
+  '/store': typeof StoreIndexRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/store/catalog': typeof StoreCatalogIndexRoute
+  '/store/jewelry': typeof StoreJewelryIndexRoute
+  '/store/catalog/hats': typeof StoreCatalogHatsIndexRoute
+  '/store/catalog/jewelry': typeof StoreCatalogJewelryIndexRoute
+  '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
+  '/store/catalog/products/jewelery/$id': typeof StoreCatalogProductsJeweleryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/profile': typeof ProfileRouteRouteWithChildren
+  '/store': typeof StoreRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/final': typeof FinalRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/profile/orders': typeof ProfileOrdersRoute
-  '/catalog/': typeof CatalogIndexRoute
-  '/jewelry/': typeof JewelryIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
-  '/catalog/hats/': typeof CatalogHatsIndexRoute
-  '/catalog/jewelry/': typeof CatalogJewelryIndexRoute
-  '/catalog/products/hats/$id': typeof CatalogProductsHatsIdRoute
-  '/catalog/products/jewelery/$id': typeof CatalogProductsJeweleryIdRoute
+  '/store/': typeof StoreIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/store/catalog/': typeof StoreCatalogIndexRoute
+  '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
+  '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
+  '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
+  '/store/catalog/products/jewelery/$id': typeof StoreCatalogProductsJeweleryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/profile'
+    | '/store'
     | '/about'
-    | '/final'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
     | '/profile/orders'
-    | '/catalog/'
-    | '/jewelry/'
+    | '/admin/'
     | '/profile/'
-    | '/catalog/hats/'
-    | '/catalog/jewelry/'
-    | '/catalog/products/hats/$id'
-    | '/catalog/products/jewelery/$id'
+    | '/store/'
+    | '/admin/dashboard/'
+    | '/store/catalog/'
+    | '/store/jewelry/'
+    | '/store/catalog/hats/'
+    | '/store/catalog/jewelry/'
+    | '/store/catalog/products/hats/$id'
+    | '/store/catalog/products/jewelery/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/final'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
     | '/profile/orders'
-    | '/catalog'
-    | '/jewelry'
+    | '/admin'
     | '/profile'
-    | '/catalog/hats'
-    | '/catalog/jewelry'
-    | '/catalog/products/hats/$id'
-    | '/catalog/products/jewelery/$id'
+    | '/store'
+    | '/admin/dashboard'
+    | '/store/catalog'
+    | '/store/jewelry'
+    | '/store/catalog/hats'
+    | '/store/catalog/jewelry'
+    | '/store/catalog/products/hats/$id'
+    | '/store/catalog/products/jewelery/$id'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/profile'
+    | '/store'
     | '/about'
-    | '/final'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
     | '/profile/orders'
-    | '/catalog/'
-    | '/jewelry/'
+    | '/admin/'
     | '/profile/'
-    | '/catalog/hats/'
-    | '/catalog/jewelry/'
-    | '/catalog/products/hats/$id'
-    | '/catalog/products/jewelery/$id'
+    | '/store/'
+    | '/admin/dashboard/'
+    | '/store/catalog/'
+    | '/store/jewelry/'
+    | '/store/catalog/hats/'
+    | '/store/catalog/jewelry/'
+    | '/store/catalog/products/hats/$id'
+    | '/store/catalog/products/jewelery/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ProfileRouteRoute: typeof ProfileRouteRouteWithChildren
+  StoreRouteRoute: typeof StoreRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  FinalRoute: typeof FinalRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
   TestRoute: typeof TestRoute
-  CatalogIndexRoute: typeof CatalogIndexRoute
-  JewelryIndexRoute: typeof JewelryIndexRoute
-  CatalogHatsIndexRoute: typeof CatalogHatsIndexRoute
-  CatalogJewelryIndexRoute: typeof CatalogJewelryIndexRoute
-  CatalogProductsHatsIdRoute: typeof CatalogProductsHatsIdRoute
-  CatalogProductsJeweleryIdRoute: typeof CatalogProductsJeweleryIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -265,18 +306,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/final': {
-      id: '/final'
-      path: '/final'
-      fullPath: '/final'
-      preLoaderRoute: typeof FinalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/store': {
+      id: '/store'
+      path: '/store'
+      fullPath: '/store'
+      preLoaderRoute: typeof StoreRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -286,12 +327,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/store/': {
+      id: '/store/'
+      path: '/'
+      fullPath: '/store/'
+      preLoaderRoute: typeof StoreIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
     }
     '/profile/': {
       id: '/profile/'
@@ -300,19 +355,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof ProfileRouteRoute
     }
-    '/jewelry/': {
-      id: '/jewelry/'
-      path: '/jewelry'
-      fullPath: '/jewelry/'
-      preLoaderRoute: typeof JewelryIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalog/': {
-      id: '/catalog/'
-      path: '/catalog'
-      fullPath: '/catalog/'
-      preLoaderRoute: typeof CatalogIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/profile/orders': {
       id: '/profile/orders'
@@ -321,36 +369,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileOrdersRouteImport
       parentRoute: typeof ProfileRouteRoute
     }
-    '/catalog/jewelry/': {
-      id: '/catalog/jewelry/'
+    '/store/jewelry/': {
+      id: '/store/jewelry/'
+      path: '/jewelry'
+      fullPath: '/store/jewelry/'
+      preLoaderRoute: typeof StoreJewelryIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
+    }
+    '/store/catalog/': {
+      id: '/store/catalog/'
+      path: '/catalog'
+      fullPath: '/store/catalog/'
+      preLoaderRoute: typeof StoreCatalogIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
+    }
+    '/admin/dashboard/': {
+      id: '/admin/dashboard/'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard/'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/store/catalog/jewelry/': {
+      id: '/store/catalog/jewelry/'
       path: '/catalog/jewelry'
-      fullPath: '/catalog/jewelry/'
-      preLoaderRoute: typeof CatalogJewelryIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/store/catalog/jewelry/'
+      preLoaderRoute: typeof StoreCatalogJewelryIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
     }
-    '/catalog/hats/': {
-      id: '/catalog/hats/'
+    '/store/catalog/hats/': {
+      id: '/store/catalog/hats/'
       path: '/catalog/hats'
-      fullPath: '/catalog/hats/'
-      preLoaderRoute: typeof CatalogHatsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/store/catalog/hats/'
+      preLoaderRoute: typeof StoreCatalogHatsIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
     }
-    '/catalog/products/jewelery/$id': {
-      id: '/catalog/products/jewelery/$id'
+    '/store/catalog/products/jewelery/$id': {
+      id: '/store/catalog/products/jewelery/$id'
       path: '/catalog/products/jewelery/$id'
-      fullPath: '/catalog/products/jewelery/$id'
-      preLoaderRoute: typeof CatalogProductsJeweleryIdRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/store/catalog/products/jewelery/$id'
+      preLoaderRoute: typeof StoreCatalogProductsJeweleryIdRouteImport
+      parentRoute: typeof StoreRouteRoute
     }
-    '/catalog/products/hats/$id': {
-      id: '/catalog/products/hats/$id'
+    '/store/catalog/products/hats/$id': {
+      id: '/store/catalog/products/hats/$id'
       path: '/catalog/products/hats/$id'
-      fullPath: '/catalog/products/hats/$id'
-      preLoaderRoute: typeof CatalogProductsHatsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/store/catalog/products/hats/$id'
+      preLoaderRoute: typeof StoreCatalogProductsHatsIdRouteImport
+      parentRoute: typeof StoreRouteRoute
     }
   }
 }
+
+interface AdminRouteRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
 
 interface ProfileRouteRouteChildren {
   ProfileOrdersRoute: typeof ProfileOrdersRoute
@@ -366,21 +449,40 @@ const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
   ProfileRouteRouteChildren,
 )
 
+interface StoreRouteRouteChildren {
+  StoreIndexRoute: typeof StoreIndexRoute
+  StoreCatalogIndexRoute: typeof StoreCatalogIndexRoute
+  StoreJewelryIndexRoute: typeof StoreJewelryIndexRoute
+  StoreCatalogHatsIndexRoute: typeof StoreCatalogHatsIndexRoute
+  StoreCatalogJewelryIndexRoute: typeof StoreCatalogJewelryIndexRoute
+  StoreCatalogProductsHatsIdRoute: typeof StoreCatalogProductsHatsIdRoute
+  StoreCatalogProductsJeweleryIdRoute: typeof StoreCatalogProductsJeweleryIdRoute
+}
+
+const StoreRouteRouteChildren: StoreRouteRouteChildren = {
+  StoreIndexRoute: StoreIndexRoute,
+  StoreCatalogIndexRoute: StoreCatalogIndexRoute,
+  StoreJewelryIndexRoute: StoreJewelryIndexRoute,
+  StoreCatalogHatsIndexRoute: StoreCatalogHatsIndexRoute,
+  StoreCatalogJewelryIndexRoute: StoreCatalogJewelryIndexRoute,
+  StoreCatalogProductsHatsIdRoute: StoreCatalogProductsHatsIdRoute,
+  StoreCatalogProductsJeweleryIdRoute: StoreCatalogProductsJeweleryIdRoute,
+}
+
+const StoreRouteRouteWithChildren = StoreRouteRoute._addFileChildren(
+  StoreRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   ProfileRouteRoute: ProfileRouteRouteWithChildren,
+  StoreRouteRoute: StoreRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  FinalRoute: FinalRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
   TestRoute: TestRoute,
-  CatalogIndexRoute: CatalogIndexRoute,
-  JewelryIndexRoute: JewelryIndexRoute,
-  CatalogHatsIndexRoute: CatalogHatsIndexRoute,
-  CatalogJewelryIndexRoute: CatalogJewelryIndexRoute,
-  CatalogProductsHatsIdRoute: CatalogProductsHatsIdRoute,
-  CatalogProductsJeweleryIdRoute: CatalogProductsJeweleryIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

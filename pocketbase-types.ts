@@ -11,12 +11,15 @@ export const Collections = {
 	Mfas: "_mfas",
 	Otps: "_otps",
 	Superusers: "_superusers",
+	Admins: "admins",
 	Cart: "cart",
 	Category: "category",
 	DeliverySettings: "deliverySettings",
+	Logisitcs: "logisitcs",
 	Orders: "orders",
 	Products: "products",
 	Profile: "profile",
+	Reviews: "reviews",
 	Section: "section",
 	Tags: "tags",
 	Users: "users",
@@ -106,6 +109,17 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
+export type AdminsRecord = {
+	created: IsoAutoDateString
+	email: string
+	emailVisibility?: boolean
+	id: string
+	password: string
+	tokenKey: string
+	updated: IsoAutoDateString
+	verified?: boolean
+}
+
 export type CartRecord = {
 	created: IsoAutoDateString
 	id: string
@@ -125,7 +139,7 @@ export type CategoryRecord = {
 export type DeliverySettingsRecord = {
 	city?: string
 	created: IsoAutoDateString
-	fullAdress?: string
+	fullAddress?: string
 	id: string
 	location?: GeoPoint
 	profile?: RecordIdString
@@ -133,11 +147,24 @@ export type DeliverySettingsRecord = {
 	updated: IsoAutoDateString
 }
 
-export type OrdersRecord = {
+export type LogisitcsRecord = {
+	company?: string
 	created: IsoAutoDateString
 	id: string
-	price?: number
+	key?: string
+	order?: RecordIdString
+	updated: IsoAutoDateString
+}
+
+export type OrdersRecord = {
+	Price?: number
+	created: IsoAutoDateString
+	deliveryFee?: number
+	deliveryLocation?: GeoPoint
+	fullAdress?: string
+	id: string
 	product?: RecordIdString
+	profile?: RecordIdString
 	updated: IsoAutoDateString
 	user?: RecordIdString
 }
@@ -170,6 +197,16 @@ export type ProfileRecord = {
 	username?: string
 }
 
+export type ReviewsRecord = {
+	created: IsoAutoDateString
+	id: string
+	product?: RecordIdString
+	profile?: RecordIdString
+	review_message?: string
+	review_stars?: number
+	updated: IsoAutoDateString
+}
+
 export type SectionRecord = {
 	created: IsoAutoDateString
 	id: string
@@ -190,10 +227,10 @@ export type UsersRecord = {
 	email: string
 	emailVisibility?: boolean
 	id: string
-	name?: string
 	password: string
 	tokenKey: string
 	updated: IsoAutoDateString
+	username?: string
 	verified?: boolean
 }
 
@@ -203,12 +240,15 @@ export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRec
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
+export type AdminsResponse<Texpand = unknown> = Required<AdminsRecord> & AuthSystemFields<Texpand>
 export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemFields<Texpand>
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
+export type LogisitcsResponse<Texpand = unknown> = Required<LogisitcsRecord> & BaseSystemFields<Texpand>
 export type OrdersResponse<Texpand = unknown> = Required<OrdersRecord> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
+export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> & BaseSystemFields<Texpand>
 export type SectionResponse<Texpand = unknown> = Required<SectionRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
@@ -221,12 +261,15 @@ export type CollectionRecords = {
 	_mfas: MfasRecord
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
+	admins: AdminsRecord
 	cart: CartRecord
 	category: CategoryRecord
 	deliverySettings: DeliverySettingsRecord
+	logisitcs: LogisitcsRecord
 	orders: OrdersRecord
 	products: ProductsRecord
 	profile: ProfileRecord
+	reviews: ReviewsRecord
 	section: SectionRecord
 	tags: TagsRecord
 	users: UsersRecord
@@ -238,12 +281,15 @@ export type CollectionResponses = {
 	_mfas: MfasResponse
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
+	admins: AdminsResponse
 	cart: CartResponse
 	category: CategoryResponse
 	deliverySettings: DeliverySettingsResponse
+	logisitcs: LogisitcsResponse
 	orders: OrdersResponse
 	products: ProductsResponse
 	profile: ProfileResponse
+	reviews: ReviewsResponse
 	section: SectionResponse
 	tags: TagsResponse
 	users: UsersResponse
