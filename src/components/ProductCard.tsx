@@ -21,7 +21,7 @@ export default function ProductCard({
   const section_name = product.expand?.category?.expand?.parent?.name;
   const id = product.id;
 
-  const route = `/catalog/products/${section_name}/${id}`;
+  const route = `/store/catalog/products/${section_name}/${id}`;
   return (
     <div className="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
       <figure className="aspect-square bg-base-200 relative">

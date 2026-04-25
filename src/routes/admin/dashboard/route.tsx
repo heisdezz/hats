@@ -36,9 +36,12 @@ function RouteComponent() {
         </label>
       </div>
       <div className="drawer-side">
-        <div className="px-6 h-20 border-b border-base-300 bg-base-200 w-full flex items-center text-2xl font-semibold font-logo shrink-0">
+        <Link
+          to="/store"
+          className="px-6 h-20 border-b border-base-300 bg-base-200 w-full flex items-center text-2xl font-semibold font-logo shrink-0"
+        >
           Destinys Concept
-        </div>
+        </Link>
         <label
           htmlFor="my-drawer-3"
           aria-label="close sidebar"

@@ -7,9 +7,9 @@ import {
   Truck,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import RenderDescription from "#/routes/-components/RenderDescription";
 import type { PRODUCT_RESULT } from "../../-components/products";
 import MainInfo from "./MainInfo";
+import RenderDescription from "#/routes/store/-components/RenderDescription";
 
 type FormValues = { circumference: string };
 
