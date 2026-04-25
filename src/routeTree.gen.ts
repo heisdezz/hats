@@ -26,8 +26,11 @@ import { Route as AdminDashboardRouteRouteImport } from './routes/admin/dashboar
 import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
 import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as AdminDashboardOrdersRouteImport } from './routes/admin/dashboard/orders'
 import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
 import { Route as StoreCatalogHatsIndexRouteImport } from './routes/store/catalog/hats/index'
+import { Route as AdminDashboardProductsIndexRouteImport } from './routes/admin/dashboard/products/index'
+import { Route as AdminDashboardProductsNewRouteImport } from './routes/admin/dashboard/products/new'
 import { Route as StoreCatalogProductsJeweleryIdRouteImport } from './routes/store/catalog/products/jewelery/$id'
 import { Route as StoreCatalogProductsHatsIdRouteImport } from './routes/store/catalog/products/hats/$id'
 
@@ -116,6 +119,11 @@ const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminDashboardRouteRoute,
 } as any)
+const AdminDashboardOrdersRoute = AdminDashboardOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminDashboardRouteRoute,
+} as any)
 const StoreCatalogJewelryIndexRoute =
   StoreCatalogJewelryIndexRouteImport.update({
     id: '/catalog/jewelry/',
@@ -127,6 +135,18 @@ const StoreCatalogHatsIndexRoute = StoreCatalogHatsIndexRouteImport.update({
   path: '/catalog/hats/',
   getParentRoute: () => StoreRouteRoute,
 } as any)
+const AdminDashboardProductsIndexRoute =
+  AdminDashboardProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => AdminDashboardRouteRoute,
+  } as any)
+const AdminDashboardProductsNewRoute =
+  AdminDashboardProductsNewRouteImport.update({
+    id: '/products/new',
+    path: '/products/new',
+    getParentRoute: () => AdminDashboardRouteRoute,
+  } as any)
 const StoreCatalogProductsJeweleryIdRoute =
   StoreCatalogProductsJeweleryIdRouteImport.update({
     id: '/catalog/products/jewelery/$id',
@@ -155,9 +175,12 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
+  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
+  '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
   '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
@@ -174,9 +197,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/store': typeof StoreIndexRoute
+  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/store/catalog': typeof StoreCatalogIndexRoute
   '/store/jewelry': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
+  '/admin/dashboard/products': typeof AdminDashboardProductsIndexRoute
   '/store/catalog/hats': typeof StoreCatalogHatsIndexRoute
   '/store/catalog/jewelry': typeof StoreCatalogJewelryIndexRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
@@ -198,9 +224,12 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
+  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
+  '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
   '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
@@ -223,9 +252,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/profile/'
     | '/store/'
+    | '/admin/dashboard/orders'
     | '/admin/dashboard/'
     | '/store/catalog/'
     | '/store/jewelry/'
+    | '/admin/dashboard/products/new'
+    | '/admin/dashboard/products/'
     | '/store/catalog/hats/'
     | '/store/catalog/jewelry/'
     | '/store/catalog/products/hats/$id'
@@ -242,9 +274,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/profile'
     | '/store'
+    | '/admin/dashboard/orders'
     | '/admin/dashboard'
     | '/store/catalog'
     | '/store/jewelry'
+    | '/admin/dashboard/products/new'
+    | '/admin/dashboard/products'
     | '/store/catalog/hats'
     | '/store/catalog/jewelry'
     | '/store/catalog/products/hats/$id'
@@ -265,9 +300,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/profile/'
     | '/store/'
+    | '/admin/dashboard/orders'
     | '/admin/dashboard/'
     | '/store/catalog/'
     | '/store/jewelry/'
+    | '/admin/dashboard/products/new'
+    | '/admin/dashboard/products/'
     | '/store/catalog/hats/'
     | '/store/catalog/jewelry/'
     | '/store/catalog/products/hats/$id'
@@ -407,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardIndexRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
+    '/admin/dashboard/orders': {
+      id: '/admin/dashboard/orders'
+      path: '/orders'
+      fullPath: '/admin/dashboard/orders'
+      preLoaderRoute: typeof AdminDashboardOrdersRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
     '/store/catalog/jewelry/': {
       id: '/store/catalog/jewelry/'
       path: '/catalog/jewelry'
@@ -420,6 +465,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/store/catalog/hats/'
       preLoaderRoute: typeof StoreCatalogHatsIndexRouteImport
       parentRoute: typeof StoreRouteRoute
+    }
+    '/admin/dashboard/products/': {
+      id: '/admin/dashboard/products/'
+      path: '/products'
+      fullPath: '/admin/dashboard/products/'
+      preLoaderRoute: typeof AdminDashboardProductsIndexRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
+    '/admin/dashboard/products/new': {
+      id: '/admin/dashboard/products/new'
+      path: '/products/new'
+      fullPath: '/admin/dashboard/products/new'
+      preLoaderRoute: typeof AdminDashboardProductsNewRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
     }
     '/store/catalog/products/jewelery/$id': {
       id: '/store/catalog/products/jewelery/$id'
@@ -439,11 +498,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminDashboardRouteRouteChildren {
+  AdminDashboardOrdersRoute: typeof AdminDashboardOrdersRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  AdminDashboardProductsNewRoute: typeof AdminDashboardProductsNewRoute
+  AdminDashboardProductsIndexRoute: typeof AdminDashboardProductsIndexRoute
 }
 
 const AdminDashboardRouteRouteChildren: AdminDashboardRouteRouteChildren = {
+  AdminDashboardOrdersRoute: AdminDashboardOrdersRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  AdminDashboardProductsNewRoute: AdminDashboardProductsNewRoute,
+  AdminDashboardProductsIndexRoute: AdminDashboardProductsIndexRoute,
 }
 
 const AdminDashboardRouteRouteWithChildren =

@@ -24,3 +24,6 @@
 @utility page-wrap {
   @apply container py-8 mx-auto min-h-140;
 }
+@utility dash-wrap {
+  @apply container py-4 mx-auto;
+}

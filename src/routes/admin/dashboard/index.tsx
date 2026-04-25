@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin/dashboard/")({
 
 function RouteComponent() {
   return (
-    <div className="page-wrap">
+    <div className="dash-wrap">
       <WelcomeHeader />
       <ProductStats />
     </div>
