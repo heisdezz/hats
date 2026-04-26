@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -20,6 +21,7 @@ const dash_routes: { name: string; path: string; icon: LucideIcon }[] = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Products", path: "/admin/dashboard/products", icon: Package },
   { name: "Orders", path: "/admin/dashboard/orders", icon: ShoppingCart },
+  { name: "Users", path: "/admin/dashboard/users", icon: Users },
 ];
 
 function RouteComponent() {

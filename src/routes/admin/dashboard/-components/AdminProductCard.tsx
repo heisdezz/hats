@@ -5,6 +5,7 @@ import type {
   SectionResponse,
 } from "pocketbase-types";
 import { Pencil } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export default function AdminProductCard({
   product,
@@ -38,9 +39,12 @@ export default function AdminProductCard({
           </div>
         )}
 
-        <button className="btn btn-sm btn-circle absolute top-2 right-2 bg-base-100/80 backdrop-blur-sm border-0 shadow opacity-0 group-hover:opacity-100 transition-opacity">
+        <Link
+          to={`/admin/dashboard/products/edit/${product.id}`}
+          className="btn  btn-circle absolute top-2 right-2 bg-base-100/80 backdrop-blur-sm border-0 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+        >
           <Pencil size={13} />
-        </button>
+        </Link>
 
         {section && (
           <span className="badge badge-neutral badge-sm absolute bottom-2 left-2 opacity-90">

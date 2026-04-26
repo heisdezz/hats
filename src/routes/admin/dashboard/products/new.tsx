@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useForm, FormProvider } from "react-hook-form";
+import { createFileRoute, useNavigate, ClientOnly } from "@tanstack/react-router";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { pb } from "#/client/pb";
@@ -7,8 +7,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
 import SimpleInput from "#/components/inputs/SimpleInput";
-import SimpleTextArea from "#/components/inputs/SimpleTextArea";
 import LocalSelect from "#/components/inputs/LocalSelect";
+import MDEditor from "@uiw/react-md-editor";
 import UpdateImages from "#/components/inputs/UpdateImages";
 import TagsInput, { type Tag } from "./-components/TagsInput";
 import type { CategoryResponse } from "pocketbase-types";
@@ -116,13 +116,25 @@ function RouteComponent() {
 
               <TagsInput value={tags} onChange={setTags} />
 
-              <SimpleTextArea
-                label="Description"
-                placeholder="Describe the product..."
-                rows={4}
-                {...register("description")}
-                name="description"
-              />
+              <div className="space-y-2" data-color-mode="light">
+                <div className="fieldset-label font-semibold">
+                  <span className="text-sm">Description</span>
+                </div>
+                <Controller
+                  name="description"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <ClientOnly fallback={<div className="h-56 skeleton rounded-lg" />}>
+                      <MDEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        height={220}
+                        preview="edit"
+                      />
+                    </ClientOnly>
+                  )}
+                />
+              </div>
 
               <div className="space-y-2">
                 <div className="fieldset-label font-semibold">
