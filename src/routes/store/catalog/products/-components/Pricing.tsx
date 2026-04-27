@@ -6,31 +6,82 @@ import {
   Tag,
   Truck,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import ColorPicker from "#/components/inputs/ColorPicker";
 import type { PRODUCT_RESULT } from "../../-components/products";
-import MainInfo from "./MainInfo";
 import RenderDescription from "#/routes/store/-components/RenderDescription";
 import { useProfile } from "#/store/user";
+import { useCartStore } from "#/store/cart";
 import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { pb } from "#/client/pb";
 
-type FormValues = { circumference: string };
+type FormValues = {
+  circumference: string;
+  mainColor: string;
+  secondaryColor: string;
+};
 
 export default function Pricing(props: { product: PRODUCT_RESULT }) {
   const user = useProfile((state) => state.profile);
   const product = props.product;
+  const { addItem, inCart } = useCartStore();
+  const section = product.expand?.category?.expand?.parent?.name?.toUpperCase();
+  const alreadyInCart = inCart(product.id);
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<FormValues>();
-
+  } = useForm<FormValues>({
+    defaultValues: {
+      mainColor: product.mainColor || "#000000",
+      secondaryColor: product.secondaryColor || "#ffffff",
+    },
+  });
+  const query = useQuery<{ data: boolean }>({
+    queryKey: ["in-cart", props.product.id],
+    queryFn: () =>
+      pb.send("/cart/" + props.product.id, {
+        method: "GET",
+        params: { productId: props.product.id },
+      }),
+  });
+  const add_to_cart = useMutation({
+    mutationFn: (payload: any) => {
+      const form_data = new FormData();
+      for (const key in payload) {
+        form_data.append(key, payload[key]);
+      }
+      return pb.collection("cart").create(form_data);
+    },
+    onSuccess: () => {
+      query.refetch();
+    },
+  });
   const onSubmit = (data: FormValues) => {
-    console.log("Add to cart", { product: product.id, ...data });
+    console.log(data);
+    const payload = {
+      type: "HATS",
+      mainColor: data.mainColor,
+      secondaryColor: data.secondaryColor,
+      headSize: data.circumference,
+      product: props.product.id,
+    };
+    // return console.log(payload, props.product);
+    toast.promise(add_to_cart.mutateAsync(payload), {
+      loading: "Adding to cart...",
+      success: "Added to cart!",
+      error: "Failed to add to cart.",
+    });
   };
 
   return (
     <div className="flex flex-col gap-6">
       <ShortInfo product={product} />
+
       {product.price != null && (
         <div className="flex items-baseline gap-1">
           <span className="text-base text-base-content/50 font-medium">₦</span>
@@ -66,23 +117,44 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
           )}
         </div>
 
+        <div className="grid grid-cols-2 gap-3">
+          <Controller
+            name="mainColor"
+            control={control}
+            render={({ field }) => (
+              <ColorPicker
+                label="Main Color"
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <Controller
+            name="secondaryColor"
+            control={control}
+            render={({ field }) => (
+              <ColorPicker
+                label="Secondary Color"
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+        </div>
+
         <div className="flex gap-2 pt-1">
+          <AddToCartButton productId={props.product.id} />
           <button
             type="submit"
             className="btn btn-primary btn-xl flex-1 gap-2"
-            disabled={!user}
+            disabled={!user || query.isLoading || query.data?.data}
           >
             <ShoppingCart className="size-4" />
-            Add to Cart
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary btn-soft ring fade btn-xl btn-square text-base-content/60 hover:text-error hover:border-error"
-          >
-            <Heart className="size-5" />
+            {query.data?.data ? "In Cart" : "Add to Cart"}
           </button>
         </div>
       </form>
+
       {!user && (
         <section className="alert flex alert-info alert-soft ring fade">
           <span className="flex-1">
@@ -96,6 +168,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
           </Link>
         </section>
       )}
+
       <div className="flex flex-col gap-3">
         <details
           className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden"
@@ -154,22 +227,24 @@ const ShortInfo = ({ product }: { product: PRODUCT_RESULT }) => {
   const section = product.expand?.category?.expand?.parent?.name;
   const description = product.description ?? "";
   return (
-    <>
-      <div className="flex flex-col gap-4 ">
-        {(section || category) && (
-          <div className="flex items-center border-b fade pb-2 gap-2 text-sm text-base-content/80">
-            {section && <span>{section}</span>}
-            {section && category && <span>/</span>}
-            {category && <span>{category}</span>}
-          </div>
-        )}
-
-        <h1 className="text-2xl font-bold leading-snug">
-          {product.title ?? "Untitled"}
-        </h1>
-
-        <RenderDescription text={description}></RenderDescription>
-      </div>
-    </>
+    <div className="flex flex-col gap-4">
+      {(section || category) && (
+        <div className="flex items-center border-b fade pb-2 gap-2 text-sm text-base-content/80">
+          {section && <span>{section}</span>}
+          {section && category && <span>/</span>}
+          {category && <span>{category}</span>}
+        </div>
+      )}
+      <h1 className="text-2xl font-bold leading-snug">
+        {product.title ?? "Untitled"}
+      </h1>
+      <RenderDescription text={description} />
+    </div>
   );
+};
+
+const AddToCartButton = (props: { productId: string }) => {
+  const user = useProfile((state) => state.profile);
+
+  return <></>;
 };

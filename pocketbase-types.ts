@@ -123,11 +123,18 @@ export type AdminsRecord = {
 }
 
 export type CartRecord = {
+	amount?: number
 	created: IsoAutoDateString
+	headSize?: number
 	id: string
+	mainColor?: string
+	product?: RecordIdString
 	products?: RecordIdString
+	secondaryColor?: string
+	type?: string
 	updated: IsoAutoDateString
 	user?: RecordIdString
+	wristSize?: number
 }
 
 export type CategoryRecord = {

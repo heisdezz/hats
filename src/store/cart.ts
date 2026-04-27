@@ -7,6 +7,8 @@ interface CartItem {
   type: "HATS" | "JEWELRY";
   mainColor: string;
   secondaryColor: string;
+  wristSize: number;
+  headSize: number;
 }
 
 type CartMap = Record<string, CartItem>;
