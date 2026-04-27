@@ -10,10 +10,13 @@ import { useForm } from "react-hook-form";
 import type { PRODUCT_RESULT } from "../../-components/products";
 import MainInfo from "./MainInfo";
 import RenderDescription from "#/routes/store/-components/RenderDescription";
+import { useProfile } from "#/store/user";
+import { Link } from "@tanstack/react-router";
 
 type FormValues = { circumference: string };
 
 export default function Pricing(props: { product: PRODUCT_RESULT }) {
+  const user = useProfile((state) => state.profile);
   const product = props.product;
   const {
     register,
@@ -64,7 +67,11 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
         </div>
 
         <div className="flex gap-2 pt-1">
-          <button type="submit" className="btn btn-primary btn-xl flex-1 gap-2">
+          <button
+            type="submit"
+            className="btn btn-primary btn-xl flex-1 gap-2"
+            disabled={!user}
+          >
             <ShoppingCart className="size-4" />
             Add to Cart
           </button>
@@ -76,7 +83,19 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
           </button>
         </div>
       </form>
-
+      {!user && (
+        <section className="alert flex alert-info alert-soft ring fade">
+          <span className="flex-1">
+            You need to be logged in to add to cart
+          </span>
+          <Link
+            className="btn btn-sm btn-soft ring fade btn-accent"
+            to="/login"
+          >
+            Login
+          </Link>
+        </section>
+      )}
       <div className="flex flex-col gap-3">
         <details
           className="group bg-base-100 border border-base-200 rounded-2xl overflow-hidden"

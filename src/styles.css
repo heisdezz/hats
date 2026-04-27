@@ -2,7 +2,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui/index.js" {
-  themes: "caramellatte";
+  themes: all;
   /*exclude: [ "link"];*/
 }
 

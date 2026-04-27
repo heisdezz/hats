@@ -4,6 +4,9 @@ import { persist } from "zustand/middleware";
 interface CartItem {
   id: string;
   amount: number;
+  type: "HATS" | "JEWELRY";
+  mainColor: string;
+  secondaryColor: string;
 }
 
 type CartMap = Record<string, CartItem>;
@@ -17,7 +20,7 @@ interface CartState {
   clearCart: () => void;
 }
 
-export const cartStore = create<CartState>()(
+export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cartItems: {},

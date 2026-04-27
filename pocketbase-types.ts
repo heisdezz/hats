@@ -187,9 +187,11 @@ export type ProductsRecord = {
 	description?: HTMLString
 	id: string
 	images?: FileNameString[]
+	mainColor?: string
 	preview?: FileNameString
 	price?: number
-	section?: RecordIdString
+	published?: boolean
+	secondaryColor?: string
 	tags?: RecordIdString[]
 	title?: string
 	updated: IsoAutoDateString

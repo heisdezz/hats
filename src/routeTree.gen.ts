@@ -25,6 +25,7 @@ import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
 import { Route as AdminDashboardRouteRouteImport } from './routes/admin/dashboard/route'
 import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
 import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
+import { Route as StoreCartIndexRouteImport } from './routes/store/cart/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as AdminDashboardOrdersRouteImport } from './routes/admin/dashboard/orders'
 import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
@@ -117,6 +118,11 @@ const StoreCatalogIndexRoute = StoreCatalogIndexRouteImport.update({
   path: '/catalog/',
   getParentRoute: () => StoreRouteRoute,
 } as any)
+const StoreCartIndexRoute = StoreCartIndexRouteImport.update({
+  id: '/cart/',
+  path: '/cart/',
+  getParentRoute: () => StoreRouteRoute,
+} as any)
 const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/store': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/store/cart': typeof StoreCartIndexRoute
   '/store/catalog': typeof StoreCatalogIndexRoute
   '/store/jewelry': typeof StoreJewelryIndexRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/store/'
     | '/admin/dashboard/orders'
     | '/admin/dashboard/'
+    | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
     | '/admin/dashboard/products/new'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/store'
     | '/admin/dashboard/orders'
     | '/admin/dashboard'
+    | '/store/cart'
     | '/store/catalog'
     | '/store/jewelry'
     | '/admin/dashboard/products/new'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/store/'
     | '/admin/dashboard/orders'
     | '/admin/dashboard/'
+    | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
     | '/admin/dashboard/products/new'
@@ -477,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreCatalogIndexRouteImport
       parentRoute: typeof StoreRouteRoute
     }
+    '/store/cart/': {
+      id: '/store/cart/'
+      path: '/cart'
+      fullPath: '/store/cart/'
+      preLoaderRoute: typeof StoreCartIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
+    }
     '/admin/dashboard/': {
       id: '/admin/dashboard/'
       path: '/'
@@ -611,6 +630,7 @@ const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
 
 interface StoreRouteRouteChildren {
   StoreIndexRoute: typeof StoreIndexRoute
+  StoreCartIndexRoute: typeof StoreCartIndexRoute
   StoreCatalogIndexRoute: typeof StoreCatalogIndexRoute
   StoreJewelryIndexRoute: typeof StoreJewelryIndexRoute
   StoreCatalogHatsIndexRoute: typeof StoreCatalogHatsIndexRoute
@@ -621,6 +641,7 @@ interface StoreRouteRouteChildren {
 
 const StoreRouteRouteChildren: StoreRouteRouteChildren = {
   StoreIndexRoute: StoreIndexRoute,
+  StoreCartIndexRoute: StoreCartIndexRoute,
   StoreCatalogIndexRoute: StoreCatalogIndexRoute,
   StoreJewelryIndexRoute: StoreJewelryIndexRoute,
   StoreCatalogHatsIndexRoute: StoreCatalogHatsIndexRoute,

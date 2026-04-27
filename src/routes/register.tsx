@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { pb } from "#/client/pb";
+import { Header } from "#/components/header";
+import { Footer } from "#/components/footer";
 
 export const Route = createFileRoute("/register")({ component: RegisterPage });
 
@@ -98,81 +100,85 @@ function RegisterPage() {
   );
 
   return (
-    <div className="page-wrap grid place-items-center px-4 py-10">
-      <div className="card bg-base-100 shadow-lg w-full max-w-lg ring fade">
-        <div className="card-body gap-5">
-          <div>
-            <h1 className="text-2xl font-bold">Create an account</h1>
-            <p className="text-sm text-base-content/50 mt-1">
-              Fill in your details to get started
+    <>
+      <Header />
+      <div className="page-wrap grid place-items-center px-4 py-10">
+        <div className="card bg-base-100 shadow-lg w-full max-w-lg ring fade">
+          <div className="card-body gap-5">
+            <div>
+              <h1 className="text-2xl font-bold">Create an account</h1>
+              <p className="text-sm text-base-content/50 mt-1">
+                Fill in your details to get started
+              </p>
+            </div>
+
+            <form
+              //@ts-ignore
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                {field("First Name", "firstName", { placeholder: "John" })}
+                {field("Last Name", "lastName", { placeholder: "Doe" })}
+              </div>
+
+              {field("Username", "username", { placeholder: "johndoe" })}
+              {field("Email", "email", {
+                type: "email",
+                placeholder: "you@example.com",
+              })}
+              {field("Phone Number", "phoneNumber", {
+                type: "tel",
+                placeholder: "+234 800 000 0000",
+              })}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium">Sex</label>
+                  <select
+                    {...register("sex")}
+                    className="select select-bordered w-full"
+                  >
+                    <option value="unspecified">Unspecified</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                {field("Age", "age", { type: "number", min: 13, max: 120 })}
+              </div>
+
+              {field("Password", "password", {
+                type: "password",
+                placeholder: "••••••••",
+              })}
+              {field("Confirm Password", "passwordConfirm", {
+                type: "password",
+                placeholder: "••••••••",
+              })}
+
+              <button
+                type="submit"
+                disabled={mutation.isPending}
+                className="btn btn-primary w-full mt-1"
+              >
+                {mutation.isPending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  "Create account"
+                )}
+              </button>
+            </form>
+
+            <p className="text-sm text-center text-base-content/50">
+              Already have an account?{" "}
+              <Link to="/login" className="link link-primary">
+                Sign in
+              </Link>
             </p>
           </div>
-
-          <form
-            //@ts-ignore
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              {field("First Name", "firstName", { placeholder: "John" })}
-              {field("Last Name", "lastName", { placeholder: "Doe" })}
-            </div>
-
-            {field("Username", "username", { placeholder: "johndoe" })}
-            {field("Email", "email", {
-              type: "email",
-              placeholder: "you@example.com",
-            })}
-            {field("Phone Number", "phoneNumber", {
-              type: "tel",
-              placeholder: "+234 800 000 0000",
-            })}
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Sex</label>
-                <select
-                  {...register("sex")}
-                  className="select select-bordered w-full"
-                >
-                  <option value="unspecified">Unspecified</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-              {field("Age", "age", { type: "number", min: 13, max: 120 })}
-            </div>
-
-            {field("Password", "password", {
-              type: "password",
-              placeholder: "••••••••",
-            })}
-            {field("Confirm Password", "passwordConfirm", {
-              type: "password",
-              placeholder: "••••••••",
-            })}
-
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="btn btn-primary w-full mt-1"
-            >
-              {mutation.isPending ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                "Create account"
-              )}
-            </button>
-          </form>
-
-          <p className="text-sm text-center text-base-content/50">
-            Already have an account?{" "}
-            <Link to="/login" className="link link-primary">
-              Sign in
-            </Link>
-          </p>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
