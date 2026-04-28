@@ -32,7 +32,7 @@ function RouteComponent() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(schema), mode: "onBlur" });
 
   const onSubmit = async (data: FormValues) => {
     setServerError(null);
@@ -72,6 +72,7 @@ function RouteComponent() {
               </p>
             </div>
 
+            {/*<input type="text" className="" />*/}
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-4"

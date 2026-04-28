@@ -30,6 +30,7 @@ export const PlacesInput = () => {
 
   return <input ref={ref} style={{ width: "90%" }} defaultValue="Amsterdam" />;
 };
+
 function RouteComponent() {
   const mutation = useMutation({
     mutationFn: async () => {

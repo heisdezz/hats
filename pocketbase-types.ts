@@ -125,15 +125,15 @@ export type AdminsRecord = {
 export type CartRecord = {
 	amount?: number
 	created: IsoAutoDateString
+	extraInfo?: HTMLString
 	headSize?: number
 	id: string
-	mainColor?: string
-	product?: RecordIdString
-	products?: RecordIdString
+	mainColor: string
+	product: RecordIdString
 	secondaryColor?: string
-	type?: string
+	type: string
 	updated: IsoAutoDateString
-	user?: RecordIdString
+	user: RecordIdString
 	wristSize?: number
 }
 

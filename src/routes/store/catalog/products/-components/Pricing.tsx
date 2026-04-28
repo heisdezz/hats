@@ -21,6 +21,7 @@ type FormValues = {
   circumference: string;
   mainColor: string;
   secondaryColor: string;
+  extraInfo: string;
 };
 
 export default function Pricing(props: { product: PRODUCT_RESULT }) {
@@ -68,6 +69,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
       mainColor: data.mainColor,
       secondaryColor: data.secondaryColor,
       headSize: data.circumference,
+      extraInfo: data.extraInfo,
       product: props.product.id,
     };
     // return console.log(payload, props.product);
@@ -139,6 +141,16 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
                 onChange={field.onChange}
               />
             )}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-semibold text-sm">Additional Notes</label>
+          <textarea
+            rows={3}
+            placeholder="Any special requests or extra information…"
+            className="textarea textarea-bordered w-full focus:textarea-primary resize-none text-sm"
+            {...register("extraInfo")}
           />
         </div>
 
