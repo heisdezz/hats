@@ -64,7 +64,11 @@ function RouteComponent() {
           <CartItems items={items} isLoading={query.isLoading} />
         </div>
         <div className="w-72 shrink-0">
-          <CartTotal breakdown={breakdown} isLoading={query.isLoading} />
+          <CartTotal
+            refetch={query.refetch}
+            breakdown={breakdown}
+            isLoading={query.isLoading}
+          />
         </div>
       </section>
     </div>

@@ -6,6 +6,7 @@
       "name": "d_c",
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
+        "@paystack/inline-js": "^2.22.8",
         "@tabler/icons-react": "^3.41.1",
         "@tailwindcss/vite": "^4.2.4",
         "@tanstack/react-devtools": "latest",
@@ -15,6 +16,7 @@
         "@tanstack/react-start": "latest",
         "@tanstack/router-plugin": "^1.167.22",
         "@types/js-cookie": "^3.0.6",
+        "@types/paystack__inline-js": "^1.0.2",
         "@uiw/react-md-editor": "^4.1.0",
         "@vis.gl/react-google-maps": "^1.8.3",
         "cookie": "^1.1.1",
@@ -433,6 +435,8 @@
     "@types/ms": ["@types/ms@2.1.0", "", {}, "sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA=="],
 
     "@types/node": ["@types/node@22.19.17", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-wGdMcf+vPYM6jikpS/qhg6WiqSV/OhG+jeeHT/KlVqxYfD40iYJf9/AE1uQxVWFvU7MipKRkRv8NSHiCGgPr8Q=="],
+
+    "@types/paystack__inline-js": ["@types/paystack__inline-js@1.0.2", "", {}, "sha512-i7osAkFs+M9iOKLfzhpAMkOxgP0HZd+On4e5VOyvbetuzhWPXhCycYrC5j6IHtMfzXT+Av8tNVaRDQLE3N1Jfw=="],
 
     "@types/prismjs": ["@types/prismjs@1.26.6", "", {}, "sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw=="],
 
