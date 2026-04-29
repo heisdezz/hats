@@ -19,9 +19,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 export const PlacesInput = () => {
   const { ref } = usePlacesWidget({
     apiKey: import.meta.env.VITE_TEST_GOOGLE_MAPS_API_KEY as string,
-    onPlaceSelected: (place) => {
-      console.log(place);
-    },
+    onPlaceSelected: (place) => {},
     options: {
       // types: ["(regions)"],
       componentRestrictions: { country: "ng" },

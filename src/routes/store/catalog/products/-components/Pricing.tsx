@@ -63,7 +63,6 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
     },
   });
   const onSubmit = (data: FormValues) => {
-    console.log(data);
     const payload = {
       type: "HATS",
       mainColor: data.mainColor,
@@ -72,7 +71,6 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
       extraInfo: data.extraInfo,
       product: props.product.id,
     };
-    // return console.log(payload, props.product);
     toast.promise(add_to_cart.mutateAsync(payload), {
       loading: "Adding to cart...",
       success: "Added to cart!",

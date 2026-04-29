@@ -19,7 +19,6 @@ export default function UpdateImages({
   );
   useEffect(() => {
     setPrevImages(images);
-    // console.log("images", images);
   }, [images]);
   const [newImages, setNewImages] = useState<FileList | []>([]);
   useEffect(() => {

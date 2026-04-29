@@ -19,24 +19,15 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
   const profile = useProfile((state) => state.profile);
   const checkout_mutation = useMutation({
     mutationFn: async () => {
-      // return await pb.send("/checkout/validate", {
-      //   method: "POST",
-      //   body: {
-      //     key: "data.reference",
-      //     // amount: data,
-      //   },
-      // });
       let resp: {
         data: {
           key: string;
           total: number;
+          access_code: string;
         };
       } = await pb.send("/checkout", { method: "POST", body: {} });
-      paystackInstance.newTransaction({
-        key: paystack_key,
-        email: profile?.email ?? "",
-        amount: resp.data.total,
-        reference: resp.data.key,
+      console.log(resp.data.access_code, "access_code");
+      paystackInstance.resumeTransaction(resp.data.access_code, {
         onSuccess: async (data) => {
           await pb.send("/checkout/validate", {
             method: "POST",
@@ -45,6 +36,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
               // amount: data,
             },
           });
+          toast.success("Checkout successful");
           refetch();
           queryClient.invalidateQueries({ queryKey: ["cart-total"] });
         },
@@ -54,7 +46,6 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
     onSuccess: (resp) => {
       refetch();
       queryClient.invalidateQueries({ queryKey: ["cart-total"] });
-      console.log(resp);
     },
   });
   return (

@@ -2,7 +2,6 @@ import type { ClientResponseError } from "pocketbase";
 
 export const extract_message = (data: ClientResponseError) => {
   const data_keys = Object.keys(data.data);
-  console.log({ ...data }, "data");
 
   if (data_keys.length < 1) {
     //@ts-ignore
