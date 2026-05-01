@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import PaystackPop from "@paystack/inline-js";
 import { useProfile } from "#/store/user";
 import paystack_key from "#/client/paystack";
+import { extract_message } from "#/helpers/api";
 interface Props {
   breakdown: CartBreakdown | undefined;
   isLoading: boolean;
@@ -26,7 +27,12 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
           access_code: string;
         };
       } = await pb.send("/checkout", { method: "POST", body: {} });
-      console.log(resp.data.access_code, "access_code");
+
+      return resp;
+    },
+    onSuccess: (resp) => {
+      const access_code = resp.data.access_code;
+      if (!access_code) throw new Error("Server Error ccured");
       paystackInstance.resumeTransaction(resp.data.access_code, {
         onSuccess: async (data) => {
           await pb.send("/checkout/validate", {
@@ -41,11 +47,9 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
           queryClient.invalidateQueries({ queryKey: ["cart-total"] });
         },
       });
+      // refetch();
+      // queryClient.invalidateQueries({ queryKey: ["cart-total"] });
       return resp;
-    },
-    onSuccess: (resp) => {
-      refetch();
-      queryClient.invalidateQueries({ queryKey: ["cart-total"] });
     },
   });
   return (
@@ -88,7 +92,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
             toast.promise(checkout_mutation.mutateAsync, {
               loading: "loading",
               success: "checkout-info fetched",
-              error: "error occured",
+              error: extract_message,
             });
           }}
         >

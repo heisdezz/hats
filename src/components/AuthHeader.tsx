@@ -9,6 +9,9 @@ export default function AuthHeader() {
           <Link to="/profile" className="link">
             Profile
           </Link>
+          <Link to="/profile/orders" className="link">
+            Orders
+          </Link>
           <Link to="/logout" className="link">
             Logout
           </Link>

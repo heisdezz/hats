@@ -1,8 +1,15 @@
 import type { ClientResponseError } from "pocketbase";
 
-export const extract_message = (data: ClientResponseError) => {
+export const extract_message = (data: ClientResponseError | any) => {
+  const direct_message = data?.response?.message;
+  if (direct_message) {
+    return direct_message;
+  }
+  const api_error = data?.response?.data?.message;
+  if (api_error) {
+    return api_error;
+  }
   const data_keys = Object.keys(data.data);
-
   if (data_keys.length < 1) {
     //@ts-ignore
     return data.cause["message"];
@@ -20,7 +27,6 @@ export const extract_message = (data: ClientResponseError) => {
   if (keys.length > 0) {
     return messages;
   }
-  const api_error = data.response?.data?.message;
   if (!api_error) {
     return data.message;
   }

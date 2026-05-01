@@ -14,6 +14,7 @@ export const Collections = {
 	Admins: "admins",
 	Cart: "cart",
 	Category: "category",
+	CheckoutSessions: "checkout_sessions",
 	DeliverySettings: "deliverySettings",
 	Logisitcs: "logisitcs",
 	OrderData: "orderData",
@@ -145,6 +146,19 @@ export type CategoryRecord = {
 	updated: IsoAutoDateString
 }
 
+export type CheckoutSessionsRecord<Tcart_items = unknown> = {
+	access_code?: string
+	amount_hashed?: string
+	cart_items?: null | Tcart_items
+	created: IsoAutoDateString
+	hash?: string
+	id: string
+	reference?: string
+	status?: string
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
 export type DeliverySettingsRecord = {
 	city?: string
 	created: IsoAutoDateString
@@ -154,6 +168,7 @@ export type DeliverySettingsRecord = {
 	profile?: RecordIdString
 	state?: string
 	updated: IsoAutoDateString
+	user?: RecordIdString
 }
 
 export type LogisitcsRecord = {
@@ -174,13 +189,16 @@ export type OrderDataRecord = {
 	totalOrders?: number
 }
 
-export type OrdersRecord = {
+export type OrdersRecord<TitemDetails = unknown> = {
 	Price?: number
+	amount?: number
 	created: IsoAutoDateString
 	deliveryFee?: number
 	deliveryLocation?: GeoPoint
+	extraInfo?: string
 	fullAdress?: string
 	id: string
+	itemDetails?: null | TitemDetails
 	product?: RecordIdString
 	profile?: RecordIdString
 	status?: string
@@ -271,10 +289,11 @@ export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
 export type AdminsResponse<Texpand = unknown> = Required<AdminsRecord> & AuthSystemFields<Texpand>
 export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemFields<Texpand>
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
+export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
 export type LogisitcsResponse<Texpand = unknown> = Required<LogisitcsRecord> & BaseSystemFields<Texpand>
 export type OrderDataResponse<Texpand = unknown> = Required<OrderDataRecord> & BaseSystemFields<Texpand>
-export type OrdersResponse<Texpand = unknown> = Required<OrdersRecord> & BaseSystemFields<Texpand>
+export type OrdersResponse<TitemDetails = unknown, Texpand = unknown> = Required<OrdersRecord<TitemDetails>> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
 export type ProductsDataResponse<Texpand = unknown> = Required<ProductsDataRecord> & BaseSystemFields<Texpand>
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
@@ -294,6 +313,7 @@ export type CollectionRecords = {
 	admins: AdminsRecord
 	cart: CartRecord
 	category: CategoryRecord
+	checkout_sessions: CheckoutSessionsRecord
 	deliverySettings: DeliverySettingsRecord
 	logisitcs: LogisitcsRecord
 	orderData: OrderDataRecord
@@ -316,6 +336,7 @@ export type CollectionResponses = {
 	admins: AdminsResponse
 	cart: CartResponse
 	category: CategoryResponse
+	checkout_sessions: CheckoutSessionsResponse
 	deliverySettings: DeliverySettingsResponse
 	logisitcs: LogisitcsResponse
 	orderData: OrderDataResponse

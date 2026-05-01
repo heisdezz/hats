@@ -68,6 +68,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
       mainColor: data.mainColor,
       secondaryColor: data.secondaryColor,
       headSize: data.circumference,
+      amount: 1,
       extraInfo: data.extraInfo,
       product: props.product.id,
     };

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import CartItems from "./-components/CartItems";
 import CartTotal from "./-components/CartTotal";
 import { pb } from "#/client/pb";
@@ -64,11 +64,19 @@ function RouteComponent() {
           <CartItems items={items} isLoading={query.isLoading} />
         </div>
         <div className="w-72 shrink-0">
-          <CartTotal
-            refetch={query.refetch}
-            breakdown={breakdown}
-            isLoading={query.isLoading}
-          />
+          <ClientOnly
+            fallback={
+              <div className="fade ring p-4 rounded-xl fade">
+                <h2 className="text-lg font-bold">...loading cart breakdown</h2>
+              </div>
+            }
+          >
+            <CartTotal
+              refetch={query.refetch}
+              breakdown={breakdown}
+              isLoading={query.isLoading}
+            />
+          </ClientOnly>
         </div>
       </section>
     </div>

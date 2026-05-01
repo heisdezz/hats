@@ -11,7 +11,7 @@ import { Header } from "#/components/header";
 import { Footer } from "#/components/footer";
 import { Toaster } from "sonner";
 import Provider from "#/components/providers/Provider";
-// import appCss from "../styles.css?url";
+import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   notFoundComponent: () => (
@@ -33,12 +33,12 @@ export const Route = createRootRoute({
         title: "TanStack Start Starter",
       },
     ],
-    // links: [
-    //   {
-    //     rel: "stylesheet",
-    //     href: appCss,
-    //   },
-    // ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
   }),
   shellComponent: RootDocument,
 });
