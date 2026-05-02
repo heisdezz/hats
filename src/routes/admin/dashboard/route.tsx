@@ -10,6 +10,7 @@ import {
   Package,
   ShoppingCart,
   Users,
+  Tag,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,6 +22,7 @@ const dash_routes: { name: string; path: string; icon: LucideIcon }[] = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Products", path: "/admin/dashboard/products", icon: Package },
   { name: "Orders", path: "/admin/dashboard/orders", icon: ShoppingCart },
+  { name: "Categories", path: "/admin/dashboard/category", icon: Tag },
   { name: "Users", path: "/admin/dashboard/users", icon: Users },
 ];
 
@@ -40,7 +42,7 @@ function RouteComponent() {
       <div className="drawer-side">
         <Link
           to="/store"
-          className="px-6 h-20 border-b border-base-300 bg-base-200 w-full flex items-center text-2xl font-semibold font-logo shrink-0"
+          className="px-6 h-16 border-b border-base-300 bg-base-200 w-full flex items-center text-2xl font-semibold font-logo shrink-0"
         >
           Destinys Concept
         </Link>
