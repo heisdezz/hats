@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 function validate(s: Partial<DeliverySettingsRecord>) {
-  return !!s.fullAdress?.trim();
+  return !!s.fullAddress?.trim();
 }
 
 export const useDeliverySettings = create<{
@@ -18,7 +18,7 @@ export const useDeliverySettings = create<{
     (set) => ({
       delivery_settings: {
         location: { lat: 0, lon: 0 },
-        fullAdress: "",
+        fullAddress: "",
         city: "",
         state: "",
         profile: "",

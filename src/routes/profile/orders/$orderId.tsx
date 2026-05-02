@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
 import ProductDetails from "#/routes/profile/-components/ProductDetails";
+import RelatedOrders from "#/routes/profile/-components/RelatedOrders";
 import type { OrdersResponse, ProductsResponse } from "#/../pocketbase-types";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 const statusColor: Record<string, string> = {
   pending: "badge-warning",
@@ -17,8 +18,28 @@ export const Route = createFileRoute("/profile/orders/$orderId")({
   component: RouteComponent,
 });
 
+function Section({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="card bg-base-200 shadow-none">
+      <div className="card-body p-5 gap-3">
+        <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
+          {label}
+        </p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function RouteComponent() {
   const { orderId } = Route.useParams();
+  const nav = useNavigate();
   const query = useQuery({
     queryKey: ["order", orderId],
     queryFn: () =>
@@ -30,10 +51,10 @@ function RouteComponent() {
   });
 
   return (
-    <div className="page-wrap">
+    <div className="page-wrap flex flex-col gap-5">
       <Link
         to="/profile/orders"
-        className="inline-flex items-center gap-1.5 text-sm text-base-content/60 hover:text-base-content mb-4"
+        className="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content w-fit"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -53,141 +74,155 @@ function RouteComponent() {
           const status = order.status ?? "pending";
           const badgeClass = statusColor[status] ?? "badge-neutral";
           const product = order.expand?.product;
-          const subtotal = (order.Price ?? 0) - (order.deliveryFee ?? 0);
+          const subtotal = (order.price ?? 0) - (order.deliveryFee ?? 0);
           const order_item_details = (order as any).itemDetails as
             | Checkout_CartItem[]
             | undefined;
+
           return (
             <div className="flex flex-col gap-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h2 className="text-lg font-semibold">Order details</h2>
-                  <p className="text-xs font-mono text-base-content/40 mt-0.5">
-                    #{order.id}
-                  </p>
+              {/* Page header */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold">Order details</h2>
+                    <p className="text-xs font-mono text-base-content/40 mt-1">
+                      #{order.id}
+                    </p>
+                  </div>
+                  <span className={`badge badge-lg ${badgeClass} capitalize shrink-0`}>
+                    {status}
+                  </span>
                 </div>
-                <span className={`badge ${badgeClass} capitalize`}>
-                  {status}
-                </span>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-base-content/40">
+                  <span>
+                    Placed{" "}
+                    {new Date(order.created).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {order.reference && (
+                    <span className="flex items-center gap-1.5">
+                      <span>Ref:</span>
+                      <button
+                        onClick={() =>
+                          nav({
+                            to: "/profile/orders/",
+                            search: { reference: order.reference, page: 1 },
+                          })
+                        }
+                        className="font-mono px-2 py-0.5 rounded-full bg-base-200 hover:bg-primary hover:text-primary-content transition-colors text-base-content/60"
+                        title="Search orders by this reference"
+                      >
+                        {order.reference}
+                      </button>
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div className="text-xs text-base-content/40">
-                Placed on{" "}
-                {new Date(order.created).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </div>
-
+              {/* Product (expanded) */}
               {product && <ProductDetails product={product} />}
 
+              {/* Items from checkout */}
               {order_item_details && order_item_details.length > 0 && (
-                <div className="card bg-base-200 shadow-none">
-                  <div className="card-body p-4 gap-3">
-                    <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-                      Items ({order_item_details.length})
-                    </p>
-                    <div className="flex flex-col gap-3">
-                      {order_item_details.map((item, i) => {
-                        const pd = item.product_details;
-                        const imgFile = pd.preview || pd.images?.[0];
-                        const imgUrl = imgFile
-                          ? pb.files.getURL(pd, imgFile)
-                          : null;
-                        return (
-                          <div key={i} className="flex items-center gap-3">
-                            {imgUrl ? (
-                              <img
-                                src={imgUrl}
-                                alt={pd.title}
-                                className="size-12 rounded-lg object-cover shrink-0 bg-base-300"
-                              />
-                            ) : (
-                              <div className="size-12 rounded-lg bg-base-300 shrink-0" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {pd.title}
-                              </p>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                {pd.mainColor && (
-                                  <span
-                                    className="size-3 rounded-full border border-base-content/20 inline-block"
-                                    style={{ backgroundColor: pd.mainColor }}
-                                  />
-                                )}
-                                {pd.secondaryColor && (
-                                  <span
-                                    className="size-3 rounded-full border border-base-content/20 inline-block"
-                                    style={{
-                                      backgroundColor: pd.secondaryColor,
-                                    }}
-                                  />
-                                )}
-                                <span className="text-xs text-base-content/40">
-                                  x{item.amount}
-                                </span>
-                              </div>
+                <Section label={`Items (${order_item_details.length})`}>
+                  <div className="flex flex-col gap-4">
+                    {order_item_details.map((item, i) => {
+                      const pd = item.product_details;
+                      const imgFile = pd.preview || pd.images?.[0];
+                      const imgUrl = imgFile
+                        ? pb.files.getURL(pd, imgFile)
+                        : null;
+                      return (
+                        <div key={i} className="flex items-center gap-3">
+                          {imgUrl ? (
+                            <img
+                              src={imgUrl}
+                              alt={pd.title}
+                              className="size-14 rounded-xl object-cover shrink-0 bg-base-300"
+                            />
+                          ) : (
+                            <div className="size-14 rounded-xl bg-base-300 shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold truncate">
+                              {pd.title}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              {pd.mainColor && (
+                                <span
+                                  className="size-3.5 rounded-full border border-base-content/20"
+                                  style={{ backgroundColor: pd.mainColor }}
+                                />
+                              )}
+                              {pd.secondaryColor && (
+                                <span
+                                  className="size-3.5 rounded-full border border-base-content/20"
+                                  style={{ backgroundColor: pd.secondaryColor }}
+                                />
+                              )}
+                              <span className="text-xs text-base-content/40">
+                                x{item.amount}
+                              </span>
                             </div>
-                            <span className="text-sm font-semibold shrink-0">
-                              ₦{(item.price * item.amount).toLocaleString()}
-                            </span>
                           </div>
-                        );
-                      })}
-                    </div>
+                          <span className="text-sm font-semibold shrink-0">
+                            ₦{(item.price * item.amount).toLocaleString()}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+                </Section>
               )}
 
-              <div className="card bg-base-200 shadow-none">
-                <div className="card-body p-4 gap-3">
-                  <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-                    Summary
-                  </p>
-                  <div className="flex flex-col gap-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-base-content/60">Subtotal</span>
-                      <span>₦{subtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-base-content/60">Delivery</span>
-                      <span>₦{(order.deliveryFee ?? 0).toLocaleString()}</span>
-                    </div>
-                    <div className="divider my-0" />
-                    <div className="flex justify-between font-semibold">
-                      <span>Total</span>
-                      <span className="text-primary">
-                        ₦{(order.Price ?? 0).toLocaleString()}
-                      </span>
-                    </div>
+              {/* Summary */}
+              <Section label="Summary">
+                <div className="flex flex-col gap-2.5 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-base-content/60">Subtotal</span>
+                    <span>₦{subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-base-content/60">Delivery fee</span>
+                    <span>₦{(order.deliveryFee ?? 0).toLocaleString()}</span>
+                  </div>
+                  <div className="divider my-0" />
+                  <div className="flex justify-between font-semibold text-base">
+                    <span>Total</span>
+                    <span className="text-primary">
+                      ₦{(order.price ?? 0).toLocaleString()}
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Section>
 
+              {/* Delivery address */}
               {order.fullAdress && (
-                <div className="card bg-base-200 shadow-none">
-                  <div className="card-body p-4 gap-2">
-                    <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-                      Delivery address
-                    </p>
-                    <p className="text-sm">{order.fullAdress}</p>
-                  </div>
-                </div>
+                <Section label="Delivery address">
+                  <p className="text-sm leading-relaxed">{order.fullAdress}</p>
+                </Section>
               )}
 
+              {/* Extra info */}
               {order.extraInfo && (
-                <div className="card bg-base-200 shadow-none">
-                  <div className="card-body p-4 gap-2">
-                    <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-                      Extra info
-                    </p>
-                    <p className="text-sm text-base-content/70">
-                      {order.extraInfo}
-                    </p>
-                  </div>
-                </div>
+                <Section label="Extra info">
+                  <p className="text-sm text-base-content/70 leading-relaxed">
+                    {order.extraInfo}
+                  </p>
+                </Section>
+              )}
+
+              {/* Related orders */}
+              {order.reference && (
+                <RelatedOrders
+                  reference={order.reference}
+                  currentId={order.id}
+                />
               )}
             </div>
           );

@@ -24,6 +24,7 @@ export const Collections = {
 	Profile: "profile",
 	Reviews: "reviews",
 	Section: "section",
+	ShopLocation: "shop_location",
 	Tags: "tags",
 	Users: "users",
 } as const
@@ -129,7 +130,7 @@ export type CartRecord = {
 	extraInfo?: HTMLString
 	headSize?: number
 	id: string
-	mainColor: string
+	mainColor?: string
 	product: RecordIdString
 	secondaryColor?: string
 	type: string
@@ -141,6 +142,7 @@ export type CartRecord = {
 export type CategoryRecord = {
 	created: IsoAutoDateString
 	id: string
+	isAvailable?: boolean
 	name?: string
 	parent?: RecordIdString
 	updated: IsoAutoDateString
@@ -148,9 +150,9 @@ export type CategoryRecord = {
 
 export type CheckoutSessionsRecord<Tcart_items = unknown> = {
 	access_code?: string
-	amount_hashed?: string
 	cart_items?: null | Tcart_items
 	created: IsoAutoDateString
+	deliveryFee?: number
 	hash?: string
 	id: string
 	reference?: string
@@ -190,20 +192,22 @@ export type OrderDataRecord = {
 }
 
 export type OrdersRecord<TitemDetails = unknown> = {
-	Price?: number
 	amount?: number
 	created: IsoAutoDateString
 	deliveryFee?: number
 	deliveryLocation?: GeoPoint
 	extraInfo?: string
-	fullAdress?: string
+	fullAddress?: string
+	headSize?: number
 	id: string
 	itemDetails?: null | TitemDetails
+	price?: number
 	product?: RecordIdString
-	profile?: RecordIdString
+	reference?: string
 	status?: string
 	updated: IsoAutoDateString
 	user?: RecordIdString
+	wristSize?: number
 }
 
 export type ProductsRecord = {
@@ -260,6 +264,16 @@ export type SectionRecord = {
 	updated: IsoAutoDateString
 }
 
+export type ShopLocationRecord = {
+	city?: string
+	created: IsoAutoDateString
+	fullAddress?: string
+	id: string
+	location?: GeoPoint
+	state?: string
+	updated: IsoAutoDateString
+}
+
 export type TagsRecord = {
 	created: IsoAutoDateString
 	id: string
@@ -299,6 +313,7 @@ export type ProductsDataResponse<Texpand = unknown> = Required<ProductsDataRecor
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
 export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> & BaseSystemFields<Texpand>
 export type SectionResponse<Texpand = unknown> = Required<SectionRecord> & BaseSystemFields<Texpand>
+export type ShopLocationResponse<Texpand = unknown> = Required<ShopLocationRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
@@ -323,6 +338,7 @@ export type CollectionRecords = {
 	profile: ProfileRecord
 	reviews: ReviewsRecord
 	section: SectionRecord
+	shop_location: ShopLocationRecord
 	tags: TagsRecord
 	users: UsersRecord
 }
@@ -346,6 +362,7 @@ export type CollectionResponses = {
 	profile: ProfileResponse
 	reviews: ReviewsResponse
 	section: SectionResponse
+	shop_location: ShopLocationResponse
 	tags: TagsResponse
 	users: UsersResponse
 }

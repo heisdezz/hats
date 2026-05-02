@@ -1,5 +1,6 @@
 import { MapPin, Building2, Map } from "lucide-react";
 import { useDeliverySettings } from "#/store/delivery";
+import { Link } from "@tanstack/react-router";
 
 export default function DeliverySettings() {
   const { delivery_settings: d, isValid } = useDeliverySettings((s) => s);
@@ -15,7 +16,7 @@ export default function DeliverySettings() {
               <MapPin className="size-4 text-primary shrink-0 mt-0.5" />
               <div>
                 <p className="text-base-content/50 text-xs">Address</p>
-                <p className="font-medium">{d.fullAdress}</p>
+                <p className="font-medium">{d.fullAddress}</p>
               </div>
             </div>
 
@@ -39,9 +40,9 @@ export default function DeliverySettings() {
               </div>
             )}
 
-            <button className="btn btn-outline btn-sm mt-1">
-              Update delivery settings
-            </button>
+            <Link to="/profile" className="btn btn-outline btn-sm mt-1">
+              Update delivery setting
+            </Link>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 py-4 text-center">
@@ -49,9 +50,9 @@ export default function DeliverySettings() {
             <p className="text-sm text-base-content/50">
               No delivery address set
             </p>
-            <button className="btn btn-primary ">
+            <Link to="/profile" className="btn btn-primary ">
               Update delivery settings
-            </button>
+            </Link>
           </div>
         )}
       </div>

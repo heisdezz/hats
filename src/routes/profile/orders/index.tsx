@@ -3,28 +3,50 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import PageLoader from "#/components/layouts/PageLoader";
 import OrderCard from "#/routes/profile/-components/OrderCard";
+import OrderSearch from "#/routes/profile/-components/OrderSearch";
+import Pagination from "#/components/Pagination";
 import type { OrdersResponse } from "#/../pocketbase-types";
 import GridContainer from "#/components/GridContainer";
 
 export const Route = createFileRoute("/profile/orders/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    reference:
+      typeof search.reference === "string" ? search.reference : undefined,
+    page: Number(search.page) || 1,
+  }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { reference, page } = Route.useSearch();
+
   const query = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders", reference, page],
     queryFn: () =>
-      pb.collection("orders").getList<OrdersResponse>(1, 10, {
+      pb.collection("orders").getList<OrdersResponse>(page, 10, {
         sort: "-created",
+        filter: reference ? `reference = "${reference}"` : undefined,
       }),
   });
 
   return (
-    <div className="page-wrap">
-      <h2 className="text-lg font-semibold">My Orders</h2>
+    <div className="page-wrap flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">My Orders</h2>
+      </div>
+
+      <OrderSearch defaultValue={reference ?? ""} />
+
+      {reference && (
+        <p className="text-xs text-base-content/40">
+          Showing results for reference{" "}
+          <span className="font-mono text-base-content/60">{reference}</span>
+        </p>
+      )}
+
       <PageLoader query={query}>
         {(data) => (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {data.items.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-12 text-base-content/40">
                 <svg
@@ -39,15 +61,21 @@ function RouteComponent() {
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
-                <p className="text-sm">No orders yet</p>
+                <p className="text-sm">
+                  {reference
+                    ? "No orders match that reference."
+                    : "No orders yet."}
+                </p>
               </div>
             ) : (
-              <GridContainer>
+              <GridContainer size="lg">
                 {data.items.map((order) => (
                   <OrderCard key={order.id} order={order} />
                 ))}
               </GridContainer>
             )}
+
+            <Pagination page={page} totalPages={data.totalPages} />
           </div>
         )}
       </PageLoader>

@@ -26,7 +26,10 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
           total: number;
           access_code: string;
         };
-      } = await pb.send("/checkout", { method: "POST", body: {} });
+      } = await pb.send("/checkout", {
+        method: "POST",
+        body: { deliveryFee: breakdown?.deliveryFee ?? 0 },
+      });
 
       return resp;
     },
@@ -39,7 +42,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
             method: "POST",
             body: {
               reference: data.reference,
-              // amount: data,
+              deliveryFee: breakdown?.deliveryFee ?? 0,
             },
           });
           toast.success("Checkout successful");

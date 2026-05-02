@@ -3,6 +3,7 @@ import CartItems from "./-components/CartItems";
 import CartTotal from "./-components/CartTotal";
 import { pb } from "#/client/pb";
 import { useQuery } from "@tanstack/react-query";
+import DeliverySettings from "#/components/DeliverySettings.tsx";
 
 export type CartProductDetails = {
   id: string;
@@ -63,7 +64,7 @@ function RouteComponent() {
         <div className="flex-1">
           <CartItems items={items} isLoading={query.isLoading} />
         </div>
-        <div className="w-72 shrink-0">
+        <div className="w-72 shrink-0 space-y-4">
           <ClientOnly
             fallback={
               <div className="fade ring p-4 rounded-xl fade">
@@ -77,6 +78,7 @@ function RouteComponent() {
               isLoading={query.isLoading}
             />
           </ClientOnly>
+          <DeliverySettings />
         </div>
       </section>
     </div>

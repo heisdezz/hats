@@ -12,7 +12,7 @@ export default function AuthHeader() {
           <Link to="/profile/orders" className="link">
             Orders
           </Link>
-          <Link to="/logout" className="link">
+          <Link to="/logout" className="link" preload={false}>
             Logout
           </Link>
         </div>

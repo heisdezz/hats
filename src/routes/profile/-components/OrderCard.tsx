@@ -1,5 +1,5 @@
 import type { OrdersResponse } from "#/../pocketbase-types";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { pb } from "#/client/pb";
 
 const statusColor: Record<string, string> = {
@@ -10,6 +10,7 @@ const statusColor: Record<string, string> = {
 };
 
 export default function OrderCard({ order }: { order: OrdersResponse }) {
+  const nav = useNavigate();
   const status = order.status ?? "pending";
   const badgeClass = statusColor[status] ?? "badge-neutral";
   const item = (order as any).itemDetails as Checkout_CartItem | undefined;
@@ -21,14 +22,14 @@ export default function OrderCard({ order }: { order: OrdersResponse }) {
     <Link
       to="/profile/orders/$orderId"
       params={{ orderId: order.id }}
-      className="card bg-base-100 border border-base-200 shadow-sm active:scale-[0.99] transition-transform"
+      className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md active:scale-[0.99] transition-all"
     >
-      <div className="card-body gap-3 p-4">
+      <div className="card-body gap-0 p-5">
         {/* Header */}
-        <div className="flex items-center justify-between gap-2">
-          <div>
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex flex-col gap-1">
             <p className="text-xs font-mono text-base-content/40">
-              #{order.id.slice(0, 8)}
+              #{order.id.slice(0, 10)}
             </p>
             <p className="text-xs text-base-content/40">
               {new Date(order.created).toLocaleDateString(undefined, {
@@ -38,25 +39,25 @@ export default function OrderCard({ order }: { order: OrdersResponse }) {
               })}
             </p>
           </div>
-          <span className={`badge badge-sm ${badgeClass} capitalize`}>
+          <span className={`badge ${badgeClass} capitalize shrink-0`}>
             {status}
           </span>
         </div>
 
         {/* Item row */}
         {item && pd && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 mb-4">
             {imgUrl ? (
               <img
                 src={imgUrl}
                 alt={pd.title}
-                className="size-12 rounded-lg object-cover shrink-0"
+                className="size-14 rounded-xl object-cover shrink-0 bg-base-200"
               />
             ) : (
-              <div className="size-12 rounded-lg bg-base-300 shrink-0 flex items-center justify-center text-base-content/30">
+              <div className="size-14 rounded-xl bg-base-200 shrink-0 flex items-center justify-center text-base-content/20">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="size-5"
+                  className="size-6"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -67,22 +68,24 @@ export default function OrderCard({ order }: { order: OrdersResponse }) {
                 </svg>
               </div>
             )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{pd.title}</p>
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <p className="text-sm font-semibold truncate leading-tight">
+                {pd.title}
+              </p>
               <p className="text-xs text-base-content/40">
                 x{item.amount} &middot; ₦{item.price.toLocaleString()} each
               </p>
               {(pd.mainColor || pd.secondaryColor) && (
-                <div className="flex items-center gap-1 mt-1">
+                <div className="flex items-center gap-1.5 mt-0.5">
                   {pd.mainColor && (
                     <span
-                      className="size-3 rounded-full border border-base-content/20 inline-block"
+                      className="size-3.5 rounded-full border border-base-content/20"
                       style={{ backgroundColor: pd.mainColor }}
                     />
                   )}
                   {pd.secondaryColor && (
                     <span
-                      className="size-3 rounded-full border border-base-content/20 inline-block"
+                      className="size-3.5 rounded-full border border-base-content/20"
                       style={{ backgroundColor: pd.secondaryColor }}
                     />
                   )}
@@ -92,27 +95,49 @@ export default function OrderCard({ order }: { order: OrdersResponse }) {
           </div>
         )}
 
-        <div className="divider my-0" />
+        <div className="divider my-0 mb-4" />
 
-        {/* Footer */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-base-content/40 text-xs">Delivery</span>
-              <span className="font-medium">
+        {/* Reference */}
+        {order.reference && (
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <span className="text-xs text-base-content/40">Reference</span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                nav({
+                  to: "/profile/orders/",
+                  search: { reference: order.reference, page: 1 },
+                });
+              }}
+              className="font-mono text-xs px-2.5 py-1 rounded-full bg-base-200 hover:bg-primary hover:text-primary-content transition-colors truncate max-w-[60%]"
+              title={`Search: ${order.reference}`}
+            >
+              {order.reference}
+            </button>
+          </div>
+        )}
+
+        {/* Pricing + chevron */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <div>
+              <p className="text-xs text-base-content/40 mb-0.5">Delivery</p>
+              <p className="text-sm font-medium">
                 ₦{(order.deliveryFee ?? 0).toLocaleString()}
-              </span>
+              </p>
             </div>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-base-content/40 text-xs">Total</span>
-              <span className="font-semibold text-primary">
-                ₦{(order.Price ?? 0).toLocaleString()}
-              </span>
+            <div>
+              <p className="text-xs text-base-content/40 mb-0.5">Total</p>
+              <p className="text-sm font-semibold text-primary">
+                ₦{(order.price ?? 0).toLocaleString()}
+              </p>
             </div>
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="size-4 text-base-content/30"
+            className="size-4 text-base-content/30 shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
