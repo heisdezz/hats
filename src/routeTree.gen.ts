@@ -28,6 +28,8 @@ import { Route as StoreCartIndexRouteImport } from './routes/store/cart/index'
 import { Route as ProfileOrdersIndexRouteImport } from './routes/profile/orders/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as ProfileOrdersOrderIdRouteImport } from './routes/profile/orders/$orderId'
+import { Route as AdminDashboardUsersRouteImport } from './routes/admin/dashboard/users'
+import { Route as AdminDashboardSectionsRouteImport } from './routes/admin/dashboard/sections'
 import { Route as AdminDashboardOrdersRouteImport } from './routes/admin/dashboard/orders'
 import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
 import { Route as StoreCatalogHatsIndexRouteImport } from './routes/store/catalog/hats/index'
@@ -135,6 +137,16 @@ const ProfileOrdersOrderIdRoute = ProfileOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => ProfileRouteRoute,
 } as any)
+const AdminDashboardUsersRoute = AdminDashboardUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminDashboardRouteRoute,
+} as any)
+const AdminDashboardSectionsRoute = AdminDashboardSectionsRouteImport.update({
+  id: '/sections',
+  path: '/sections',
+  getParentRoute: () => AdminDashboardRouteRoute,
+} as any)
 const AdminDashboardOrdersRoute = AdminDashboardOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -153,9 +165,9 @@ const StoreCatalogHatsIndexRoute = StoreCatalogHatsIndexRouteImport.update({
 } as any)
 const AdminDashboardUsersIndexRoute =
   AdminDashboardUsersIndexRouteImport.update({
-    id: '/users/',
-    path: '/users/',
-    getParentRoute: () => AdminDashboardRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AdminDashboardUsersRoute,
   } as any)
 const AdminDashboardProductsIndexRoute =
   AdminDashboardProductsIndexRouteImport.update({
@@ -171,9 +183,9 @@ const AdminDashboardCategoryIndexRoute =
   } as any)
 const AdminDashboardUsersUserIdRoute =
   AdminDashboardUsersUserIdRouteImport.update({
-    id: '/users/$userId',
-    path: '/users/$userId',
-    getParentRoute: () => AdminDashboardRouteRoute,
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => AdminDashboardUsersRoute,
   } as any)
 const AdminDashboardProductsNewRoute =
   AdminDashboardProductsNewRouteImport.update({
@@ -215,6 +227,8 @@ export interface FileRoutesByFullPath {
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
+  '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
+  '/admin/dashboard/users': typeof AdminDashboardUsersRouteWithChildren
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
@@ -243,6 +257,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileIndexRoute
   '/store': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
+  '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/profile/orders': typeof ProfileOrdersIndexRoute
@@ -276,6 +291,8 @@ export interface FileRoutesById {
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
+  '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
+  '/admin/dashboard/users': typeof AdminDashboardUsersRouteWithChildren
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
@@ -310,6 +327,8 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/store/'
     | '/admin/dashboard/orders'
+    | '/admin/dashboard/sections'
+    | '/admin/dashboard/users'
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
@@ -338,6 +357,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/store'
     | '/admin/dashboard/orders'
+    | '/admin/dashboard/sections'
     | '/profile/orders/$orderId'
     | '/admin/dashboard'
     | '/profile/orders'
@@ -370,6 +390,8 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/store/'
     | '/admin/dashboard/orders'
+    | '/admin/dashboard/sections'
+    | '/admin/dashboard/users'
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
@@ -535,6 +557,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileOrdersOrderIdRouteImport
       parentRoute: typeof ProfileRouteRoute
     }
+    '/admin/dashboard/users': {
+      id: '/admin/dashboard/users'
+      path: '/users'
+      fullPath: '/admin/dashboard/users'
+      preLoaderRoute: typeof AdminDashboardUsersRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
+    '/admin/dashboard/sections': {
+      id: '/admin/dashboard/sections'
+      path: '/sections'
+      fullPath: '/admin/dashboard/sections'
+      preLoaderRoute: typeof AdminDashboardSectionsRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
     '/admin/dashboard/orders': {
       id: '/admin/dashboard/orders'
       path: '/orders'
@@ -558,10 +594,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/dashboard/users/': {
       id: '/admin/dashboard/users/'
-      path: '/users'
+      path: '/'
       fullPath: '/admin/dashboard/users/'
       preLoaderRoute: typeof AdminDashboardUsersIndexRouteImport
-      parentRoute: typeof AdminDashboardRouteRoute
+      parentRoute: typeof AdminDashboardUsersRoute
     }
     '/admin/dashboard/products/': {
       id: '/admin/dashboard/products/'
@@ -579,10 +615,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/dashboard/users/$userId': {
       id: '/admin/dashboard/users/$userId'
-      path: '/users/$userId'
+      path: '/$userId'
       fullPath: '/admin/dashboard/users/$userId'
       preLoaderRoute: typeof AdminDashboardUsersUserIdRouteImport
-      parentRoute: typeof AdminDashboardRouteRoute
+      parentRoute: typeof AdminDashboardUsersRoute
     }
     '/admin/dashboard/products/new': {
       id: '/admin/dashboard/products/new'
@@ -615,25 +651,38 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminDashboardUsersRouteChildren {
+  AdminDashboardUsersUserIdRoute: typeof AdminDashboardUsersUserIdRoute
+  AdminDashboardUsersIndexRoute: typeof AdminDashboardUsersIndexRoute
+}
+
+const AdminDashboardUsersRouteChildren: AdminDashboardUsersRouteChildren = {
+  AdminDashboardUsersUserIdRoute: AdminDashboardUsersUserIdRoute,
+  AdminDashboardUsersIndexRoute: AdminDashboardUsersIndexRoute,
+}
+
+const AdminDashboardUsersRouteWithChildren =
+  AdminDashboardUsersRoute._addFileChildren(AdminDashboardUsersRouteChildren)
+
 interface AdminDashboardRouteRouteChildren {
   AdminDashboardOrdersRoute: typeof AdminDashboardOrdersRoute
+  AdminDashboardSectionsRoute: typeof AdminDashboardSectionsRoute
+  AdminDashboardUsersRoute: typeof AdminDashboardUsersRouteWithChildren
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminDashboardProductsNewRoute: typeof AdminDashboardProductsNewRoute
-  AdminDashboardUsersUserIdRoute: typeof AdminDashboardUsersUserIdRoute
   AdminDashboardCategoryIndexRoute: typeof AdminDashboardCategoryIndexRoute
   AdminDashboardProductsIndexRoute: typeof AdminDashboardProductsIndexRoute
-  AdminDashboardUsersIndexRoute: typeof AdminDashboardUsersIndexRoute
   AdminDashboardProductsEditProductIdRoute: typeof AdminDashboardProductsEditProductIdRoute
 }
 
 const AdminDashboardRouteRouteChildren: AdminDashboardRouteRouteChildren = {
   AdminDashboardOrdersRoute: AdminDashboardOrdersRoute,
+  AdminDashboardSectionsRoute: AdminDashboardSectionsRoute,
+  AdminDashboardUsersRoute: AdminDashboardUsersRouteWithChildren,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminDashboardProductsNewRoute: AdminDashboardProductsNewRoute,
-  AdminDashboardUsersUserIdRoute: AdminDashboardUsersUserIdRoute,
   AdminDashboardCategoryIndexRoute: AdminDashboardCategoryIndexRoute,
   AdminDashboardProductsIndexRoute: AdminDashboardProductsIndexRoute,
-  AdminDashboardUsersIndexRoute: AdminDashboardUsersIndexRoute,
   AdminDashboardProductsEditProductIdRoute:
     AdminDashboardProductsEditProductIdRoute,
 }

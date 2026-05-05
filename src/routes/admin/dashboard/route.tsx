@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   Users,
   Tag,
+  Layers,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const dash_routes: { name: string; path: string; icon: LucideIcon }[] = [
   { name: "Products", path: "/admin/dashboard/products", icon: Package },
   { name: "Orders", path: "/admin/dashboard/orders", icon: ShoppingCart },
   { name: "Categories", path: "/admin/dashboard/category", icon: Tag },
+  { name: "Sections", path: "/admin/dashboard/sections", icon: Layers },
   { name: "Users", path: "/admin/dashboard/users", icon: Users },
 ];
 

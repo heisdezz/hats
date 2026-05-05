@@ -14,7 +14,7 @@ export default function PageLoader<TData>(props: PageLoader<TData>) {
       return customLoading;
     }
     return (
-      <div className="min-h-screen grid place-items-center bg-base-200">
+      <div className="min-h-[520px] grid place-items-center bg-base-200">
         <div className="flex flex-col items-center space-y-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +42,7 @@ export default function PageLoader<TData>(props: PageLoader<TData>) {
     const error = extract_message(query.error as any);
     return (
       <>
-        <div className="p-4 min-h-screen grid place-items-center bg-base-300 rounded-md">
+        <div className="p-4 min-h-[520px] grid place-items-center bg-base-300 rounded-md">
           <div className="p-4 space-y-4">
             <div className="text-lg text-center fieldset-label font-bold wrap-anywhere">
               {error}

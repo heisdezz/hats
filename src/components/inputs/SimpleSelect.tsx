@@ -1,6 +1,6 @@
-import { pb } from "@/api/apiClient";
+import { pb } from "#/client/pb";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState, type PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 import type { RecordModel } from "pocketbase";
 import { useFormContext } from "react-hook-form";
 
@@ -10,13 +10,14 @@ interface SimpleSelectProps<T extends RecordModel> extends PropsWithChildren {
   onChange?: (value: string | null) => void;
   label?: string;
   name?: string;
+  placeholder?: string;
   render: (item: T, index: number) => React.ReactNode;
 }
 
 export default function SimpleSelect<T extends RecordModel>(
   props: SimpleSelectProps<T>,
 ) {
-  const { route, value, onChange, label, name, render } = props;
+  const { route, value, onChange, label, name, placeholder = "All", render } = props;
 
   // ✅ SAFE: prevents crash when no FormProvider exists
   let formState: any = null;
@@ -28,26 +29,10 @@ export default function SimpleSelect<T extends RecordModel>(
 
   const error = name && formState ? formState.errors?.[name] : undefined;
 
-  const [internalValue, setInternalValue] = useState<string | null>(
-    value ?? null,
-  );
-
   const query = useQuery<T[]>({
     queryKey: ["select", route],
     queryFn: () => pb.collection(route).getFullList<T>(),
   });
-
-  useEffect(() => {
-    if (value !== undefined && value !== internalValue) {
-      setInternalValue(value);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (internalValue !== value && onChange) {
-      onChange(internalValue);
-    }
-  }, [internalValue, onChange, value]);
 
   if (query.isLoading)
     return (
@@ -103,16 +88,16 @@ export default function SimpleSelect<T extends RecordModel>(
         </div>
       )}
       <select
-        value={internalValue === null ? "null" : internalValue}
+        value={value === null || value === undefined ? "null" : value}
         onChange={(e) => {
           const newValue = e.target.value === "null" ? null : e.target.value;
-          setInternalValue(newValue);
+          onChange?.(newValue);
         }}
         className={`select select-md w-full select-bordered ${error ? "select-error" : ""}`}
         id={`select-${route}`}
         name={name || `select-${route}`}
       >
-        <option value="null">All</option>
+        <option value="null">{placeholder}</option>
         {items.map((item, idx) => render(item, idx))}
       </select>
       {error && (

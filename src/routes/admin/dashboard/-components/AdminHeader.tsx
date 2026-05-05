@@ -7,6 +7,7 @@ const routeLabels: Record<string, string> = {
   "/admin/dashboard/orders": "Orders",
   "/admin/dashboard/users": "Users",
   "/admin/dashboard/category": "Categories",
+  "/admin/dashboard/sections": "Sections",
 };
 
 function getPageTitle(pathname: string) {

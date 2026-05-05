@@ -4,10 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import Modal, { type ModalHandle } from "#/components/modals/DialogModal.tsx";
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import SimpleSelect from "#/components/inputs/SimpleSelect";
+import type { SectionResponse } from "#/../pocketbase-types";
 import { toast } from "sonner";
 import type { CategoryResponse } from "#/../pocketbase-types";
-import { Pencil, Plus, ToggleLeft, ToggleRight } from "lucide-react";
+import { Plus, ToggleLeft, ToggleRight } from "lucide-react";
+import CustomTable, { type columnType } from "#/components/tables/CustomTable";
+import type { Actions } from "#/components/tables/pop-up";
 
 type FormValues = { name: string; parent: string };
 
@@ -27,6 +31,7 @@ function RouteComponent() {
     queryFn: () =>
       pb.collection("category").getList<CategoryResponse>(1, 100, {
         sort: "name",
+        expand: "parent",
       }),
     initialData: loaderData,
   });
@@ -35,6 +40,7 @@ function RouteComponent() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<FormValues>();
 
@@ -56,9 +62,10 @@ function RouteComponent() {
 
   const updateMut = useMutation({
     mutationFn: ({ id, v }: { id: string; v: FormValues }) =>
-      pb
-        .collection("category")
-        .update(id, { name: v.name, parent: v.parent || undefined }),
+      pb.collection("category").update(id, {
+        name: v.name,
+        parent: v.parent || null,
+      }),
     onSuccess: () => {
       invalidate();
       modalRef.current?.close();
@@ -80,7 +87,7 @@ function RouteComponent() {
 
   const openEdit = (cat: CategoryResponse) => {
     setEditing(cat);
-    reset({ name: cat.name ?? "", parent: cat.parent ?? "" });
+    reset({ name: cat.name ?? "", parent: "" });
     modalRef.current?.open();
   };
 
@@ -102,6 +109,59 @@ function RouteComponent() {
 
   const categories = query.data?.items ?? [];
 
+  const columns: columnType<CategoryResponse>[] = [
+    { key: "name", label: "Name" },
+    {
+      key: "parent",
+      label: "Parent",
+      render: (_val, item) => {
+        const parent = (item.expand as any)?.parent as
+          | SectionResponse
+          | undefined;
+        return parent ? (
+          <span className="badge badge-ghost">{parent.name}</span>
+        ) : (
+          <span className="text-base-content/30">—</span>
+        );
+      },
+    },
+    {
+      key: "isAvailable",
+      label: "Available",
+      render: (val, item) => (
+        <button
+          onClick={() =>
+            toast.promise(
+              toggleMut.mutateAsync({ id: item.id, current: val ?? false }),
+              {
+                loading: "Updating...",
+                success: val ? "Disabled." : "Enabled.",
+                error: "Failed to toggle.",
+              },
+            )
+          }
+          disabled={toggleMut.isPending}
+          className="btn btn-ghost"
+          title={val ? "Click to disable" : "Click to enable"}
+        >
+          {val ? (
+            <ToggleRight size={22} className="text-success" />
+          ) : (
+            <ToggleLeft size={22} className="text-base-content/30" />
+          )}
+        </button>
+      ),
+    },
+  ];
+
+  const actions: Actions<CategoryResponse>[] = [
+    {
+      key: "edit",
+      label: "Edit",
+      action: (item) => openEdit(item),
+    },
+  ];
+
   return (
     <section className="page-wrap flex flex-col gap-5">
       <div className="flex items-center justify-between">
@@ -111,8 +171,8 @@ function RouteComponent() {
             Manage product categories and hierarchy
           </p>
         </div>
-        <button onClick={openCreate} className="btn btn-primary btn-sm gap-1.5">
-          <Plus size={15} />
+        <button onClick={openCreate} className="btn btn-primary gap-1.5">
+          <Plus size={16} />
           Add category
         </button>
       </div>
@@ -122,85 +182,16 @@ function RouteComponent() {
           data.items.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-16 text-base-content/40">
               <p className="text-sm">No categories yet.</p>
-              <button onClick={openCreate} className="btn btn-ghost btn-sm">
+              <button onClick={openCreate} className="btn btn-ghost">
                 Create one
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-base-200">
-              <table className="table w-full">
-                <thead>
-                  <tr className="bg-base-200/60 text-xs uppercase tracking-wider text-base-content/50">
-                    <th>Name</th>
-                    <th>Parent</th>
-                    <th className="text-center">Available</th>
-                    <th className="text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((cat) => {
-                    const parent = categories.find((c) => c.id === cat.parent);
-                    const isAvailable = cat.isAvailable ?? false;
-                    return (
-                      <tr
-                        key={cat.id}
-                        className="hover:bg-base-200/40 transition-colors"
-                      >
-                        <td>
-                          <span className="font-medium text-sm">{cat.name}</span>
-                        </td>
-                        <td>
-                          {parent ? (
-                            <span className="badge badge-ghost badge-sm">
-                              {parent.name}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-base-content/30">—</span>
-                          )}
-                        </td>
-                        <td className="text-center">
-                          <button
-                            onClick={() =>
-                              toast.promise(
-                                toggleMut.mutateAsync({
-                                  id: cat.id,
-                                  current: isAvailable,
-                                }),
-                                {
-                                  loading: "Updating...",
-                                  success: isAvailable ? "Disabled." : "Enabled.",
-                                  error: "Failed to toggle.",
-                                },
-                              )
-                            }
-                            disabled={toggleMut.isPending}
-                            className="btn btn-ghost btn-xs"
-                            title={isAvailable ? "Click to disable" : "Click to enable"}
-                          >
-                            {isAvailable ? (
-                              <ToggleRight size={20} className="text-success" />
-                            ) : (
-                              <ToggleLeft size={20} className="text-base-content/30" />
-                            )}
-                          </button>
-                        </td>
-                        <td>
-                          <div className="flex items-center justify-end">
-                            <button
-                              onClick={() => openEdit(cat)}
-                              className="btn btn-ghost btn-xs gap-1.5"
-                            >
-                              <Pencil size={13} />
-                              Edit
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <CustomTable
+              data={data.items}
+              columns={columns}
+              actions={actions}
+            />
           )
         }
       </PageLoader>
@@ -219,25 +210,24 @@ function RouteComponent() {
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium">Parent category</label>
-            <select
-              className="select select-bordered w-full"
-              {...register("parent")}
-            >
-              <option value="">None (top-level)</option>
-              {categories
-                .filter((c) => !editing || c.id !== editing.id)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
+          <Controller
+            name="parent"
+            control={control}
+            render={({ field }) => (
+              <SimpleSelect<SectionResponse>
+                route="section"
+                label="Parent section"
+                placeholder="None (top-level)"
+                value={field.value || null}
+                onChange={(val) => field.onChange(val ?? "")}
+                render={(item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
                   </option>
-                ))}
-            </select>
-            <p className="text-xs text-base-content/40">
-              Leave empty to make this a top-level category.
-            </p>
-          </div>
+                )}
+              />
+            )}
+          />
 
           <div className="flex justify-end gap-2 pt-2">
             <button

@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate, ClientOnly } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  ClientOnly,
+} from "@tanstack/react-router";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -85,6 +89,16 @@ function RouteComponent() {
             className="card bg-base-100 border border-base-200 shadow-sm"
           >
             <div className="card-body gap-5">
+              <div className="space-y-2">
+                <div className="fieldset-label font-semibold">
+                  <span className="text-sm">Images</span>
+                </div>
+                <UpdateImages
+                  images={[]}
+                  setNew={setNewImages}
+                  setPrev={() => {}}
+                />
+              </div>
               <SimpleInput
                 label="Title"
                 placeholder="e.g. Handwoven Straw Hat"
@@ -124,7 +138,9 @@ function RouteComponent() {
                   name="description"
                   control={methods.control}
                   render={({ field }) => (
-                    <ClientOnly fallback={<div className="h-56 skeleton rounded-lg" />}>
+                    <ClientOnly
+                      fallback={<div className="h-56 skeleton rounded-lg" />}
+                    >
                       <MDEditor
                         value={field.value}
                         onChange={field.onChange}
@@ -133,17 +149,6 @@ function RouteComponent() {
                       />
                     </ClientOnly>
                   )}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="fieldset-label font-semibold">
-                  <span className="text-sm">Images</span>
-                </div>
-                <UpdateImages
-                  images={[]}
-                  setNew={setNewImages}
-                  setPrev={() => {}}
                 />
               </div>
 

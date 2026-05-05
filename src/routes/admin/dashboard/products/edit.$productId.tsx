@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate, ClientOnly } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  ClientOnly,
+} from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 import { useForm, FormProvider, Controller } from "react-hook-form";
@@ -42,7 +46,9 @@ function RouteComponent() {
     queryFn: () =>
       pb
         .collection("products")
-        .getOne<ProductsResponse<{ category: CategoryResponse; tags: TagsResponse[] }>>(productId, {
+        .getOne<
+          ProductsResponse<{ category: CategoryResponse; tags: TagsResponse[] }>
+        >(productId, {
           expand: "category,tags",
         }),
   });
@@ -73,7 +79,9 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
 
   const [keptImages, setKeptImages] = useState(initialImages);
   const [newImages, setNewImages] = useState<FileList | []>([]);
-  const expandedTags = (product.expand as any)?.tags as TagsResponse[] | undefined;
+  const expandedTags = (product.expand as any)?.tags as
+    | TagsResponse[]
+    | undefined;
   const [tags, setTags] = useState<Tag[]>(
     expandedTags?.map((t) => ({ tagName: t.name ?? "", tagId: t.id })) ?? [],
   );
@@ -102,7 +110,11 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
     }
   }, [categoriesQuery.data]);
 
-  const { register, handleSubmit, formState: { errors } } = methods;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   const mutation = useMutation({
     mutationFn: (values: FormValues) => {
@@ -132,7 +144,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Edit Product</h1>
         <p className="text-sm text-base-content/50 mt-1">
@@ -147,6 +159,16 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
           className="card bg-base-100 border border-base-200 shadow-sm"
         >
           <div className="card-body gap-5">
+            <div className="space-y-2">
+              <div className="fieldset-label font-semibold">
+                <span className="text-sm">Images</span>
+              </div>
+              <UpdateImages
+                images={initialImages}
+                setNew={setNewImages}
+                setPrev={setKeptImages}
+              />
+            </div>
             <SimpleInput
               label="Title"
               placeholder="e.g. Handwoven Straw Hat"
@@ -186,7 +208,9 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                 name="description"
                 control={methods.control}
                 render={({ field }) => (
-                  <ClientOnly fallback={<div className="h-56 skeleton rounded-lg" />}>
+                  <ClientOnly
+                    fallback={<div className="h-56 skeleton rounded-lg" />}
+                  >
                     <MDEditor
                       value={field.value}
                       onChange={field.onChange}
@@ -195,17 +219,6 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                     />
                   </ClientOnly>
                 )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="fieldset-label font-semibold">
-                <span className="text-sm">Images</span>
-              </div>
-              <UpdateImages
-                images={initialImages}
-                setNew={setNewImages}
-                setPrev={setKeptImages}
               />
             </div>
 
