@@ -2,8 +2,13 @@ import { pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import type { OrdersResponse, ProductsResponse, ProfileResponse } from "pocketbase-types";
+import type {
+  ProductsResponse,
+  ProfileResponse,
+  UserOrdersResponse,
+} from "pocketbase-types";
 import { Mail, Phone, User, ArrowLeft, Package } from "lucide-react";
+import CustomTable, { type columnType } from "#/components/tables/CustomTable";
 
 export const Route = createFileRoute("/admin/dashboard/users/$userId")({
   component: RouteComponent,
@@ -12,13 +17,66 @@ export const Route = createFileRoute("/admin/dashboard/users/$userId")({
 const STATUS_STYLES: Record<string, string> = {
   pending: "badge-warning",
   processing: "badge-info",
-  inTransit: "badge-primary",
+  "in-transit": "badge-primary",
   delivered: "badge-success",
 };
 
-function statusBadge(status: string) {
-  return STATUS_STYLES[status] ?? "badge-neutral";
-}
+const orderColumns: columnType<
+  OrdersResponse<{ product: ProductsResponse }>
+>[] = [
+  {
+    key: "id",
+    label: "Order ID",
+    render: (val) => (
+      <span className="font-mono text-xs text-base-content/40">
+        #{(val as string).slice(0, 10)}
+      </span>
+    ),
+  },
+  {
+    key: "product",
+    label: "Product",
+    render: (_, item) =>
+      item.expand?.product?.title ?? (
+        <span className="text-base-content/30 italic">Unknown</span>
+      ),
+  },
+  {
+    key: "price",
+    label: "Price",
+    render: (val) =>
+      val != null ? `₦${(val as number).toLocaleString()}` : "—",
+  },
+  {
+    key: "deliveryFee",
+    label: "Delivery",
+    render: (val) =>
+      val != null ? `₦${(val as number).toLocaleString()}` : "—",
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (val) =>
+      val ? (
+        <span
+          className={`badge ${STATUS_STYLES[val as string] ?? "badge-neutral"} capitalize`}
+        >
+          {val as string}
+        </span>
+      ) : (
+        "—"
+      ),
+  },
+  {
+    key: "created",
+    label: "Date",
+    render: (val) => (
+      <span className="text-xs text-base-content/50">
+        {new Date(val as string).toLocaleDateString()}
+      </span>
+    ),
+  },
+];
 
 function RouteComponent() {
   const { userId } = Route.useParams();
@@ -31,11 +89,13 @@ function RouteComponent() {
   const ordersQuery = useQuery({
     queryKey: ["user-orders", userId],
     queryFn: () =>
-      pb.collection("orders").getList<OrdersResponse<{ product: ProductsResponse }>>(1, 50, {
-        filter: pb.filter("profile = {:id}", { id: userId }),
-        expand: "product",
-        sort: "-created",
-      }),
+      pb
+        .collection("orders")
+        .getList<UserOrdersResponse<{ product: ProductsResponse }>>(1, 50, {
+          // filter: pb.filter("user = {:id}", { id: userId }),
+          expand: "product",
+          sort: "-created",
+        }),
     enabled: !!userId,
   });
 
@@ -65,50 +125,7 @@ function RouteComponent() {
                 </div>
               </div>
             ) : (
-              <div className="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
-                <table className="table table-zebra">
-                  <thead>
-                    <tr className="text-xs text-base-content/50 uppercase tracking-wider">
-                      <th>Order ID</th>
-                      <th>Product</th>
-                      <th>Price</th>
-                      <th>Delivery</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((order) => (
-                      <tr key={order.id}>
-                        <td className="font-mono text-xs text-base-content/40">
-                          {order.id.slice(0, 8)}…
-                        </td>
-                        <td className="text-sm font-medium">
-                          {order.expand?.product?.title ?? (
-                            <span className="text-base-content/30 italic">Unknown</span>
-                          )}
-                        </td>
-                        <td className="text-sm">
-                          {order.Price != null ? `₦${order.Price.toLocaleString()}` : "—"}
-                        </td>
-                        <td className="text-sm text-base-content/60">
-                          {order.deliveryFee != null ? `₦${order.deliveryFee.toLocaleString()}` : "—"}
-                        </td>
-                        <td>
-                          {order.status ? (
-                            <span className={`badge badge-sm ${statusBadge(order.status)}`}>
-                              {order.status}
-                            </span>
-                          ) : "—"}
-                        </td>
-                        <td className="text-xs text-base-content/50">
-                          {new Date(order.created).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <CustomTable data={items} columns={orderColumns} />
             )
           }
         </PageLoader>
@@ -137,7 +154,9 @@ function ProfileCard({ profile }: { profile: ProfileResponse }) {
 
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold">
-            {fullName ?? <span className="text-base-content/30 italic">No name</span>}
+            {fullName ?? (
+              <span className="text-base-content/30 italic">No name</span>
+            )}
           </h1>
           {profile.username && (
             <p className="text-sm text-base-content/50">@{profile.username}</p>

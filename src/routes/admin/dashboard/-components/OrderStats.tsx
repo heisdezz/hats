@@ -48,8 +48,10 @@ export default function OrderStats() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["order-stats"],
     queryFn: () => pb.collection("orderData").getFullList<OrderDataResponse>(),
+    enabled: false,
   });
 
+  return null;
   const record = data?.[0];
 
   if (isError) {

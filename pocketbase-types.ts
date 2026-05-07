@@ -16,9 +16,7 @@ export const Collections = {
 	Category: "category",
 	CheckoutSessions: "checkout_sessions",
 	DeliverySettings: "deliverySettings",
-	Logisitcs: "logisitcs",
-	OrderData: "orderData",
-	Orders: "orders",
+	OrderItems: "order_items",
 	Products: "products",
 	ProductsData: "productsData",
 	Profile: "profile",
@@ -26,6 +24,7 @@ export const Collections = {
 	Section: "section",
 	ShopLocation: "shop_location",
 	Tags: "tags",
+	UserOrders: "user_orders",
 	Users: "users",
 } as const
 export type Collections = typeof Collections[keyof typeof Collections]
@@ -173,41 +172,14 @@ export type DeliverySettingsRecord = {
 	user?: RecordIdString
 }
 
-export type LogisitcsRecord = {
-	company?: string
-	created: IsoAutoDateString
-	id: string
-	key?: string
-	order?: RecordIdString
-	updated: IsoAutoDateString
-}
-
-export type OrderDataRecord = {
-	delivered?: number
-	id: string
-	inTransit?: number
-	pending?: number
-	processing?: number
-	totalOrders?: number
-}
-
-export type OrdersRecord<TitemDetails = unknown> = {
+export type OrderItemsRecord = {
 	amount?: number
 	created: IsoAutoDateString
-	deliveryFee?: number
-	deliveryLocation?: GeoPoint
-	extraInfo?: string
-	fullAddress?: string
-	headSize?: number
 	id: string
-	itemDetails?: null | TitemDetails
+	originalProduct?: RecordIdString
 	price?: number
-	product?: RecordIdString
-	reference?: string
-	status?: string
+	ref?: string
 	updated: IsoAutoDateString
-	user?: RecordIdString
-	wristSize?: number
 }
 
 export type ProductsRecord = {
@@ -281,6 +253,17 @@ export type TagsRecord = {
 	updated: IsoAutoDateString
 }
 
+export type UserOrdersRecord = {
+	created: IsoAutoDateString
+	id: string
+	orderItems?: RecordIdString
+	ref?: string
+	status?: string
+	totalPrice?: number
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
 export type UsersRecord = {
 	avatar?: FileNameString
 	created: IsoAutoDateString
@@ -305,9 +288,7 @@ export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemF
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
-export type LogisitcsResponse<Texpand = unknown> = Required<LogisitcsRecord> & BaseSystemFields<Texpand>
-export type OrderDataResponse<Texpand = unknown> = Required<OrderDataRecord> & BaseSystemFields<Texpand>
-export type OrdersResponse<TitemDetails = unknown, Texpand = unknown> = Required<OrdersRecord<TitemDetails>> & BaseSystemFields<Texpand>
+export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
 export type ProductsDataResponse<Texpand = unknown> = Required<ProductsDataRecord> & BaseSystemFields<Texpand>
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
@@ -315,6 +296,7 @@ export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> & BaseS
 export type SectionResponse<Texpand = unknown> = Required<SectionRecord> & BaseSystemFields<Texpand>
 export type ShopLocationResponse<Texpand = unknown> = Required<ShopLocationRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
+export type UserOrdersResponse<Texpand = unknown> = Required<UserOrdersRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
@@ -330,9 +312,7 @@ export type CollectionRecords = {
 	category: CategoryRecord
 	checkout_sessions: CheckoutSessionsRecord
 	deliverySettings: DeliverySettingsRecord
-	logisitcs: LogisitcsRecord
-	orderData: OrderDataRecord
-	orders: OrdersRecord
+	order_items: OrderItemsRecord
 	products: ProductsRecord
 	productsData: ProductsDataRecord
 	profile: ProfileRecord
@@ -340,6 +320,7 @@ export type CollectionRecords = {
 	section: SectionRecord
 	shop_location: ShopLocationRecord
 	tags: TagsRecord
+	user_orders: UserOrdersRecord
 	users: UsersRecord
 }
 
@@ -354,9 +335,7 @@ export type CollectionResponses = {
 	category: CategoryResponse
 	checkout_sessions: CheckoutSessionsResponse
 	deliverySettings: DeliverySettingsResponse
-	logisitcs: LogisitcsResponse
-	orderData: OrderDataResponse
-	orders: OrdersResponse
+	order_items: OrderItemsResponse
 	products: ProductsResponse
 	productsData: ProductsDataResponse
 	profile: ProfileResponse
@@ -364,6 +343,7 @@ export type CollectionResponses = {
 	section: SectionResponse
 	shop_location: ShopLocationResponse
 	tags: TagsResponse
+	user_orders: UserOrdersResponse
 	users: UsersResponse
 }
 

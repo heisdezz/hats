@@ -28,7 +28,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
         };
       } = await pb.send("/checkout", {
         method: "POST",
-        body: { deliveryFee: breakdown?.deliveryFee ?? 0 },
+        body: {},
       });
 
       return resp;
@@ -40,10 +40,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
         onSuccess: async (data) => {
           await pb.send("/checkout/validate", {
             method: "POST",
-            body: {
-              reference: data.reference,
-              deliveryFee: breakdown?.deliveryFee ?? 0,
-            },
+            body: { reference: data.reference },
           });
           toast.success("Checkout successful");
           refetch();
@@ -67,14 +64,6 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
               <span className="skeleton h-4 w-16" />
             ) : (
               <span>₦{(breakdown?.subtotal ?? 0).toLocaleString()}</span>
-            )}
-          </div>
-          <div className="flex justify-between text-base-content/70">
-            <span>Delivery</span>
-            {isLoading ? (
-              <span className="skeleton h-4 w-16" />
-            ) : (
-              <span>₦{(breakdown?.deliveryFee ?? 0).toLocaleString()}</span>
             )}
           </div>
           <div className="divider my-0" />

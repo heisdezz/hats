@@ -34,13 +34,14 @@ function RouteComponent() {
         pb.collection("admins").authWithPassword(data.email, data.password),
         {
           loading: "Authenticating...",
-          success: "Logged in successfully",
+          success: () => {
+            nav({ to: "/admin/dashboard" });
+            return "Logged in successfully";
+          },
           error: "Invalid credentials.",
         },
       );
-
       // @ts-ignore
-      nav({ to: "/admin/dashboard" });
     } catch {
       setServerError("Invalid credentials.");
     }

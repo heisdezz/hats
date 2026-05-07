@@ -28,16 +28,17 @@ import { Route as StoreCartIndexRouteImport } from './routes/store/cart/index'
 import { Route as ProfileOrdersIndexRouteImport } from './routes/profile/orders/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as ProfileOrdersOrderIdRouteImport } from './routes/profile/orders/$orderId'
-import { Route as AdminDashboardUsersRouteImport } from './routes/admin/dashboard/users'
+import { Route as AdminDashboardSettingsRouteImport } from './routes/admin/dashboard/settings'
 import { Route as AdminDashboardSectionsRouteImport } from './routes/admin/dashboard/sections'
-import { Route as AdminDashboardOrdersRouteImport } from './routes/admin/dashboard/orders'
 import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
 import { Route as StoreCatalogHatsIndexRouteImport } from './routes/store/catalog/hats/index'
 import { Route as AdminDashboardUsersIndexRouteImport } from './routes/admin/dashboard/users/index'
 import { Route as AdminDashboardProductsIndexRouteImport } from './routes/admin/dashboard/products/index'
+import { Route as AdminDashboardOrdersIndexRouteImport } from './routes/admin/dashboard/orders.index'
 import { Route as AdminDashboardCategoryIndexRouteImport } from './routes/admin/dashboard/category/index'
 import { Route as AdminDashboardUsersUserIdRouteImport } from './routes/admin/dashboard/users/$userId'
 import { Route as AdminDashboardProductsNewRouteImport } from './routes/admin/dashboard/products/new'
+import { Route as AdminDashboardOrdersOrderIdRouteImport } from './routes/admin/dashboard/orders.$orderId'
 import { Route as StoreCatalogProductsJewelryIdRouteImport } from './routes/store/catalog/products/jewelry/$id'
 import { Route as StoreCatalogProductsHatsIdRouteImport } from './routes/store/catalog/products/hats/$id'
 import { Route as AdminDashboardProductsEditProductIdRouteImport } from './routes/admin/dashboard/products/edit.$productId'
@@ -137,19 +138,14 @@ const ProfileOrdersOrderIdRoute = ProfileOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => ProfileRouteRoute,
 } as any)
-const AdminDashboardUsersRoute = AdminDashboardUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
+const AdminDashboardSettingsRoute = AdminDashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminDashboardRouteRoute,
 } as any)
 const AdminDashboardSectionsRoute = AdminDashboardSectionsRouteImport.update({
   id: '/sections',
   path: '/sections',
-  getParentRoute: () => AdminDashboardRouteRoute,
-} as any)
-const AdminDashboardOrdersRoute = AdminDashboardOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
   getParentRoute: () => AdminDashboardRouteRoute,
 } as any)
 const StoreCatalogJewelryIndexRoute =
@@ -165,14 +161,20 @@ const StoreCatalogHatsIndexRoute = StoreCatalogHatsIndexRouteImport.update({
 } as any)
 const AdminDashboardUsersIndexRoute =
   AdminDashboardUsersIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AdminDashboardUsersRoute,
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => AdminDashboardRouteRoute,
   } as any)
 const AdminDashboardProductsIndexRoute =
   AdminDashboardProductsIndexRouteImport.update({
     id: '/products/',
     path: '/products/',
+    getParentRoute: () => AdminDashboardRouteRoute,
+  } as any)
+const AdminDashboardOrdersIndexRoute =
+  AdminDashboardOrdersIndexRouteImport.update({
+    id: '/orders/',
+    path: '/orders/',
     getParentRoute: () => AdminDashboardRouteRoute,
   } as any)
 const AdminDashboardCategoryIndexRoute =
@@ -183,14 +185,20 @@ const AdminDashboardCategoryIndexRoute =
   } as any)
 const AdminDashboardUsersUserIdRoute =
   AdminDashboardUsersUserIdRouteImport.update({
-    id: '/$userId',
-    path: '/$userId',
-    getParentRoute: () => AdminDashboardUsersRoute,
+    id: '/users/$userId',
+    path: '/users/$userId',
+    getParentRoute: () => AdminDashboardRouteRoute,
   } as any)
 const AdminDashboardProductsNewRoute =
   AdminDashboardProductsNewRouteImport.update({
     id: '/products/new',
     path: '/products/new',
+    getParentRoute: () => AdminDashboardRouteRoute,
+  } as any)
+const AdminDashboardOrdersOrderIdRoute =
+  AdminDashboardOrdersOrderIdRouteImport.update({
+    id: '/orders/$orderId',
+    path: '/orders/$orderId',
     getParentRoute: () => AdminDashboardRouteRoute,
   } as any)
 const StoreCatalogProductsJewelryIdRoute =
@@ -226,18 +234,19 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
-  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
-  '/admin/dashboard/users': typeof AdminDashboardUsersRouteWithChildren
+  '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/orders/$orderId': typeof AdminDashboardOrdersOrderIdRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
   '/admin/dashboard/users/$userId': typeof AdminDashboardUsersUserIdRoute
   '/admin/dashboard/category/': typeof AdminDashboardCategoryIndexRoute
+  '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
   '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
@@ -256,17 +265,19 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/store': typeof StoreIndexRoute
-  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
+  '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/profile/orders': typeof ProfileOrdersIndexRoute
   '/store/cart': typeof StoreCartIndexRoute
   '/store/catalog': typeof StoreCatalogIndexRoute
   '/store/jewelry': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/orders/$orderId': typeof AdminDashboardOrdersOrderIdRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
   '/admin/dashboard/users/$userId': typeof AdminDashboardUsersUserIdRoute
   '/admin/dashboard/category': typeof AdminDashboardCategoryIndexRoute
+  '/admin/dashboard/orders': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users': typeof AdminDashboardUsersIndexRoute
   '/store/catalog/hats': typeof StoreCatalogHatsIndexRoute
@@ -290,18 +301,19 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
-  '/admin/dashboard/orders': typeof AdminDashboardOrdersRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
-  '/admin/dashboard/users': typeof AdminDashboardUsersRouteWithChildren
+  '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
+  '/admin/dashboard/orders/$orderId': typeof AdminDashboardOrdersOrderIdRoute
   '/admin/dashboard/products/new': typeof AdminDashboardProductsNewRoute
   '/admin/dashboard/users/$userId': typeof AdminDashboardUsersUserIdRoute
   '/admin/dashboard/category/': typeof AdminDashboardCategoryIndexRoute
+  '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
   '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
@@ -326,18 +338,19 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/profile/'
     | '/store/'
-    | '/admin/dashboard/orders'
     | '/admin/dashboard/sections'
-    | '/admin/dashboard/users'
+    | '/admin/dashboard/settings'
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
     | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
+    | '/admin/dashboard/orders/$orderId'
     | '/admin/dashboard/products/new'
     | '/admin/dashboard/users/$userId'
     | '/admin/dashboard/category/'
+    | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
     | '/admin/dashboard/users/'
     | '/store/catalog/hats/'
@@ -356,17 +369,19 @@ export interface FileRouteTypes {
     | '/admin'
     | '/profile'
     | '/store'
-    | '/admin/dashboard/orders'
     | '/admin/dashboard/sections'
+    | '/admin/dashboard/settings'
     | '/profile/orders/$orderId'
     | '/admin/dashboard'
     | '/profile/orders'
     | '/store/cart'
     | '/store/catalog'
     | '/store/jewelry'
+    | '/admin/dashboard/orders/$orderId'
     | '/admin/dashboard/products/new'
     | '/admin/dashboard/users/$userId'
     | '/admin/dashboard/category'
+    | '/admin/dashboard/orders'
     | '/admin/dashboard/products'
     | '/admin/dashboard/users'
     | '/store/catalog/hats'
@@ -389,18 +404,19 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/profile/'
     | '/store/'
-    | '/admin/dashboard/orders'
     | '/admin/dashboard/sections'
-    | '/admin/dashboard/users'
+    | '/admin/dashboard/settings'
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
     | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
+    | '/admin/dashboard/orders/$orderId'
     | '/admin/dashboard/products/new'
     | '/admin/dashboard/users/$userId'
     | '/admin/dashboard/category/'
+    | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
     | '/admin/dashboard/users/'
     | '/store/catalog/hats/'
@@ -557,11 +573,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileOrdersOrderIdRouteImport
       parentRoute: typeof ProfileRouteRoute
     }
-    '/admin/dashboard/users': {
-      id: '/admin/dashboard/users'
-      path: '/users'
-      fullPath: '/admin/dashboard/users'
-      preLoaderRoute: typeof AdminDashboardUsersRouteImport
+    '/admin/dashboard/settings': {
+      id: '/admin/dashboard/settings'
+      path: '/settings'
+      fullPath: '/admin/dashboard/settings'
+      preLoaderRoute: typeof AdminDashboardSettingsRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
     '/admin/dashboard/sections': {
@@ -569,13 +585,6 @@ declare module '@tanstack/react-router' {
       path: '/sections'
       fullPath: '/admin/dashboard/sections'
       preLoaderRoute: typeof AdminDashboardSectionsRouteImport
-      parentRoute: typeof AdminDashboardRouteRoute
-    }
-    '/admin/dashboard/orders': {
-      id: '/admin/dashboard/orders'
-      path: '/orders'
-      fullPath: '/admin/dashboard/orders'
-      preLoaderRoute: typeof AdminDashboardOrdersRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
     '/store/catalog/jewelry/': {
@@ -594,16 +603,23 @@ declare module '@tanstack/react-router' {
     }
     '/admin/dashboard/users/': {
       id: '/admin/dashboard/users/'
-      path: '/'
+      path: '/users'
       fullPath: '/admin/dashboard/users/'
       preLoaderRoute: typeof AdminDashboardUsersIndexRouteImport
-      parentRoute: typeof AdminDashboardUsersRoute
+      parentRoute: typeof AdminDashboardRouteRoute
     }
     '/admin/dashboard/products/': {
       id: '/admin/dashboard/products/'
       path: '/products'
       fullPath: '/admin/dashboard/products/'
       preLoaderRoute: typeof AdminDashboardProductsIndexRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
+    '/admin/dashboard/orders/': {
+      id: '/admin/dashboard/orders/'
+      path: '/orders'
+      fullPath: '/admin/dashboard/orders/'
+      preLoaderRoute: typeof AdminDashboardOrdersIndexRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
     '/admin/dashboard/category/': {
@@ -615,16 +631,23 @@ declare module '@tanstack/react-router' {
     }
     '/admin/dashboard/users/$userId': {
       id: '/admin/dashboard/users/$userId'
-      path: '/$userId'
+      path: '/users/$userId'
       fullPath: '/admin/dashboard/users/$userId'
       preLoaderRoute: typeof AdminDashboardUsersUserIdRouteImport
-      parentRoute: typeof AdminDashboardUsersRoute
+      parentRoute: typeof AdminDashboardRouteRoute
     }
     '/admin/dashboard/products/new': {
       id: '/admin/dashboard/products/new'
       path: '/products/new'
       fullPath: '/admin/dashboard/products/new'
       preLoaderRoute: typeof AdminDashboardProductsNewRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
+    '/admin/dashboard/orders/$orderId': {
+      id: '/admin/dashboard/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/admin/dashboard/orders/$orderId'
+      preLoaderRoute: typeof AdminDashboardOrdersOrderIdRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
     '/store/catalog/products/jewelry/$id': {
@@ -651,38 +674,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminDashboardUsersRouteChildren {
-  AdminDashboardUsersUserIdRoute: typeof AdminDashboardUsersUserIdRoute
-  AdminDashboardUsersIndexRoute: typeof AdminDashboardUsersIndexRoute
-}
-
-const AdminDashboardUsersRouteChildren: AdminDashboardUsersRouteChildren = {
-  AdminDashboardUsersUserIdRoute: AdminDashboardUsersUserIdRoute,
-  AdminDashboardUsersIndexRoute: AdminDashboardUsersIndexRoute,
-}
-
-const AdminDashboardUsersRouteWithChildren =
-  AdminDashboardUsersRoute._addFileChildren(AdminDashboardUsersRouteChildren)
-
 interface AdminDashboardRouteRouteChildren {
-  AdminDashboardOrdersRoute: typeof AdminDashboardOrdersRoute
   AdminDashboardSectionsRoute: typeof AdminDashboardSectionsRoute
-  AdminDashboardUsersRoute: typeof AdminDashboardUsersRouteWithChildren
+  AdminDashboardSettingsRoute: typeof AdminDashboardSettingsRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  AdminDashboardOrdersOrderIdRoute: typeof AdminDashboardOrdersOrderIdRoute
   AdminDashboardProductsNewRoute: typeof AdminDashboardProductsNewRoute
+  AdminDashboardUsersUserIdRoute: typeof AdminDashboardUsersUserIdRoute
   AdminDashboardCategoryIndexRoute: typeof AdminDashboardCategoryIndexRoute
+  AdminDashboardOrdersIndexRoute: typeof AdminDashboardOrdersIndexRoute
   AdminDashboardProductsIndexRoute: typeof AdminDashboardProductsIndexRoute
+  AdminDashboardUsersIndexRoute: typeof AdminDashboardUsersIndexRoute
   AdminDashboardProductsEditProductIdRoute: typeof AdminDashboardProductsEditProductIdRoute
 }
 
 const AdminDashboardRouteRouteChildren: AdminDashboardRouteRouteChildren = {
-  AdminDashboardOrdersRoute: AdminDashboardOrdersRoute,
   AdminDashboardSectionsRoute: AdminDashboardSectionsRoute,
-  AdminDashboardUsersRoute: AdminDashboardUsersRouteWithChildren,
+  AdminDashboardSettingsRoute: AdminDashboardSettingsRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  AdminDashboardOrdersOrderIdRoute: AdminDashboardOrdersOrderIdRoute,
   AdminDashboardProductsNewRoute: AdminDashboardProductsNewRoute,
+  AdminDashboardUsersUserIdRoute: AdminDashboardUsersUserIdRoute,
   AdminDashboardCategoryIndexRoute: AdminDashboardCategoryIndexRoute,
+  AdminDashboardOrdersIndexRoute: AdminDashboardOrdersIndexRoute,
   AdminDashboardProductsIndexRoute: AdminDashboardProductsIndexRoute,
+  AdminDashboardUsersIndexRoute: AdminDashboardUsersIndexRoute,
   AdminDashboardProductsEditProductIdRoute:
     AdminDashboardProductsEditProductIdRoute,
 }
