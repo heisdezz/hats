@@ -5,7 +5,11 @@ import PageLoader from "#/components/layouts/PageLoader";
 import OrderCard from "#/routes/profile/-components/OrderCard";
 import OrderSearch from "#/routes/profile/-components/OrderSearch";
 import Pagination from "#/components/Pagination";
-import type { OrdersResponse } from "#/../pocketbase-types";
+import type {
+  OrderItemsResponse,
+  ProductsResponse,
+  UserOrdersResponse,
+} from "#/../pocketbase-types";
 import GridContainer from "#/components/GridContainer";
 
 export const Route = createFileRoute("/profile/orders/")({
@@ -17,16 +21,29 @@ export const Route = createFileRoute("/profile/orders/")({
   component: RouteComponent,
 });
 
+type OrderWithExpand = UserOrdersResponse<{
+  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+}>;
+
 function RouteComponent() {
   const { reference, page } = Route.useSearch();
+  const userId = pb.authStore.record?.id;
 
   const query = useQuery({
-    queryKey: ["orders", reference, page],
-    queryFn: () =>
-      pb.collection("orders").getList<OrdersResponse>(page, 10, {
+    queryKey: ["user-orders", reference, page, userId],
+    queryFn: () => {
+      const filters = [
+        userId ? pb.filter("user = {:uid}", { uid: userId }) : "",
+        reference ? pb.filter("ref = {:ref}", { ref: reference }) : "",
+      ].filter(Boolean);
+
+      return pb.collection("user_orders").getList<OrderWithExpand>(page, 10, {
         sort: "-created",
-        filter: reference ? `reference = "${reference}"` : undefined,
-      }),
+        expand: "orderItems,orderItems.originalProduct",
+        filter: filters.length ? filters.join(" && ") : undefined,
+      });
+    },
+    enabled: !!userId,
   });
 
   return (
@@ -74,7 +91,6 @@ function RouteComponent() {
                 ))}
               </GridContainer>
             )}
-
             <Pagination page={page} totalPages={data.totalPages} />
           </div>
         )}

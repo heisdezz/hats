@@ -11,7 +11,6 @@ const logout = createIsomorphicFn().client(() => {
   useProfile.persist.clearStorage();
   toast.success("Logged out successfully");
   return (window.location.href = "/");
-  return redirect({ to: "/" });
 });
 export const Route = createFileRoute("/logout")({
   component: RouteComponent,
@@ -19,5 +18,5 @@ export const Route = createFileRoute("/logout")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/logout"!</div>;
+  return <div className="page-wrap">Hello "/logout"!</div>;
 }
