@@ -25,7 +25,7 @@ const statusGradient: Record<string, string> = {
 };
 
 type OrderWithExpand = UserOrdersResponse<{
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>[];
 }>;
 
 export const Route = createFileRoute("/profile/orders/$orderId")({
@@ -89,9 +89,9 @@ function RouteComponent() {
           const badgeClass = statusColor[status] ?? "badge-neutral";
           const gradient =
             statusGradient[status] ?? "from-base-200 to-base-100";
-          const item = (order.expand as any)?.orderItems as
-            | OrderItemsResponse<{ originalProduct: ProductsResponse }>
-            | undefined;
+          const items = ((order.expand as any)?.orderItems as
+            | OrderItemsResponse<{ originalProduct: ProductsResponse }>[]
+            | undefined) ?? [];
 
           return (
             <div className="flex flex-col gap-4">
@@ -157,7 +157,7 @@ function RouteComponent() {
               </div>
 
               {/* Order item */}
-              {item && <UserOrderItems item={item} />}
+              {items.length > 0 && <UserOrderItems items={items} />}
 
               {/* Related orders */}
               {/*{order.ref && (

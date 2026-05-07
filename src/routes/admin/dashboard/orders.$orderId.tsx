@@ -36,7 +36,7 @@ const statusDot: Record<string, string> = {
 };
 
 type OrderExpand = {
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>[];
   user?: UsersResponse;
 };
 
@@ -83,7 +83,7 @@ function RouteComponent() {
       <PageLoader query={query}>
         {(order) => {
           const expand = order.expand as OrderExpand | undefined;
-          const item = expand?.orderItems;
+          const items = expand?.orderItems ?? [];
           const user = expand?.user;
           const status = order.status ?? "pending";
           const gradient = statusGradient[status] ?? "from-base-200 to-base-200";
@@ -142,7 +142,7 @@ function RouteComponent() {
               </div>
 
               {/* Product */}
-              {item && <AllOrderItems item={item} />}
+              {items.length > 0 && <AllOrderItems items={items} />}
 
               {/* Status stepper */}
               <div className="card bg-base-100 border border-base-200 shadow-sm">

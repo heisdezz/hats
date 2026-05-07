@@ -255,8 +255,9 @@ export type TagsRecord = {
 
 export type UserOrdersRecord = {
 	created: IsoAutoDateString
+	extraInfo?: string
 	id: string
-	orderItems?: RecordIdString
+	orderItems?: RecordIdString[]
 	ref?: string
 	status?: string
 	totalPrice?: number
