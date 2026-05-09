@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/dashboard/orders/")({
   loader: () =>
     ssr_pb().collection("user_orders").getList(1, 20, {
       sort: "-created",
-      expand: "orderItems,orderItems.originalProduct,user",
+      expand: "preview,orderItems,user",
     }),
 });
 
@@ -30,7 +30,7 @@ function RouteComponent() {
     queryFn: () =>
       pb.collection("user_orders").getList<UserOrdersResponse>(page, 20, {
         sort: "-created",
-        expand: "orderItems,orderItems.originalProduct,user",
+        expand: "preview,orderItems,user",
         filter: status ? `status = "${status}"` : undefined,
       }),
     initialData: page === 1 && !status ? loaderData : undefined,

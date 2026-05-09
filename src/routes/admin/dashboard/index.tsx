@@ -11,7 +11,7 @@ function RouteComponent() {
   return (
     <div className="dash-wrap">
       <WelcomeHeader />
-      <div className="flex flex-col gap-2 p-6 pt-0">
+      <div className="flex flex-col gap-2 p-6 pt-0 mt-8">
         <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
           Orders
         </p>

@@ -13,122 +13,159 @@ const statusColor: Record<string, string> = {
   delivered: "badge-success",
 };
 
+const statusGradient: Record<string, string> = {
+  pending: "from-warning/20 to-transparent",
+  processing: "from-info/20 to-transparent",
+  "in-transit": "from-primary/20 to-transparent",
+  delivered: "from-success/20 to-transparent",
+};
+
+type ItemWithProduct = OrderItemsResponse<{
+  originalProduct: ProductsResponse;
+}>;
+
 type OrderWithExpand = UserOrdersResponse<{
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+  orderItems?: ItemWithProduct[];
+  preview?: ProductsResponse;
 }>;
 
 export default function OrderCard({ order }: { order: OrderWithExpand }) {
   const nav = useNavigate();
   const status = order.status ?? "pending";
   const badgeClass = statusColor[status] ?? "badge-neutral";
+  const gradient = statusGradient[status] ?? "from-base-200 to-transparent";
 
-  const item = (order.expand as any)?.orderItems as
-    | OrderItemsResponse<{ originalProduct: ProductsResponse }>
-    | undefined;
-  const product = (item?.expand as any)?.originalProduct as
-    | ProductsResponse
-    | undefined;
+  const items =
+    ((order.expand as any)?.orderItems as ItemWithProduct[] | undefined) ?? [];
+  const first = items[0];
+  const previewProduct = (order.expand as any)?.preview as ProductsResponse | undefined;
+  const firstProduct = (first?.expand as any)?.originalProduct as ProductsResponse | undefined;
 
-  const imgFile = product?.preview || product?.images?.[0];
-  const imgUrl = imgFile && product ? pb.files.getURL(product, imgFile) : null;
+  // use dedicated preview relation for the banner image
+  const bannerProduct = previewProduct ?? firstProduct;
+  const imgFile = bannerProduct?.preview || bannerProduct?.images?.[0];
+  const imgUrl = imgFile && bannerProduct ? pb.files.getURL(bannerProduct, imgFile) : null;
 
   return (
     <Link
       to="/profile/orders/$orderId"
       params={{ orderId: order.id }}
-      className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md active:scale-[0.99] transition-all"
+      className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md active:scale-[0.99] transition-all overflow-hidden"
     >
-      <div className="card-body gap-0 p-5">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex flex-col gap-1">
-            <p className="text-xs font-mono text-base-content/40">
-              #{order.id.slice(0, 10)}
+      {/* Image banner */}
+      <div className="relative h-36 bg-base-200">
+        {imgUrl ? (
+          <img
+            src={imgUrl}
+            alt={bannerProduct?.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-base-content/10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="size-12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
+          </div>
+        )}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/10 to-transparent" />
+
+        {/* Status badge top-right */}
+        <div className="absolute top-3 right-3">
+          <span className={`badge ${badgeClass} capitalize`}>{status}</span>
+        </div>
+
+        {/* Item count bottom-left */}
+        {items.length > 0 && (
+          <div className="absolute bottom-3 left-3">
+            <span className="badge badge-neutral badge-sm">
+              {items.length} item{items.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col gap-3">
+        {/* Product name + colors */}
+        {firstProduct && (
+          <div className="flex items-start gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm truncate leading-tight">
+                {firstProduct.title}
+              </p>
+              {first && (
+                <p className="text-xs text-base-content/40 mt-0.5">
+                  ×{first.amount ?? 1} · ₦{(first.price ?? 0).toLocaleString()}{" "}
+                  each
+                </p>
+              )}
+            </div>
+            {(firstProduct.mainColor || firstProduct.secondaryColor) && (
+              <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                {firstProduct.mainColor && (
+                  <span
+                    className="size-3.5 rounded-full border border-base-content/20"
+                    style={{ backgroundColor: firstProduct.mainColor }}
+                  />
+                )}
+                {firstProduct.secondaryColor && (
+                  <span
+                    className="size-3.5 rounded-full border border-base-content/20"
+                    style={{ backgroundColor: firstProduct.secondaryColor }}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="divider my-0" />
+
+        {/* Footer: date + ref + total */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col gap-0.5">
+            <p className="text-xs font-mono text-base-content/30">
+              #{order.id.slice(0, 8)}
             </p>
             <p className="text-xs text-base-content/40">
               {new Date(order.created).toLocaleDateString(undefined, {
-                year: "numeric",
                 month: "short",
                 day: "numeric",
+                year: "numeric",
               })}
             </p>
           </div>
-          <span className={`badge ${badgeClass} capitalize shrink-0`}>
-            {status}
-          </span>
-        </div>
 
-        {/* Item row */}
-        {product && (
-          <div className="flex items-center gap-4 mb-4">
-            {imgUrl ? (
-              <img
-                src={imgUrl}
-                alt={product.title}
-                className="size-14 rounded-xl object-cover shrink-0 bg-base-200"
-              />
-            ) : (
-              <div className="size-14 rounded-xl bg-base-200 shrink-0 flex items-center justify-center text-base-content/20">
-                <svg xmlns="http://www.w3.org/2000/svg" className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="m21 15-5-5L5 21" />
-                </svg>
-              </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {order.ref && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  nav({
+                    to: "/profile/orders/",
+                    search: { reference: order.ref, page: 1 },
+                  });
+                }}
+                className="font-mono text-xs px-2 py-0.5 rounded-full bg-base-200 hover:bg-primary hover:text-primary-content transition-colors max-w-24 truncate"
+                title={`Search: ${order.ref}`}
+              >
+                {order.ref}
+              </button>
             )}
-            <div className="flex-1 min-w-0 flex flex-col gap-1">
-              <p className="text-sm font-semibold truncate leading-tight">
-                {product.title}
-              </p>
-              {item && (
-                <p className="text-xs text-base-content/40">
-                  ×{item.amount ?? 1} &middot; ₦{(item.price ?? 0).toLocaleString()} each
-                </p>
-              )}
-              {(product.mainColor || product.secondaryColor) && (
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  {product.mainColor && (
-                    <span className="size-3.5 rounded-full border border-base-content/20" style={{ backgroundColor: product.mainColor }} />
-                  )}
-                  {product.secondaryColor && (
-                    <span className="size-3.5 rounded-full border border-base-content/20" style={{ backgroundColor: product.secondaryColor }} />
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div className="divider my-0 mb-4" />
-
-        {/* Reference */}
-        {order.ref && (
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <span className="text-xs text-base-content/40">Reference</span>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                nav({ to: "/profile/orders/", search: { reference: order.ref, page: 1 } });
-              }}
-              className="font-mono text-xs px-2.5 py-1 rounded-full bg-base-200 hover:bg-primary hover:text-primary-content transition-colors truncate max-w-[60%]"
-            >
-              {order.ref}
-            </button>
-          </div>
-        )}
-
-        {/* Total + chevron */}
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-base-content/40 mb-0.5">Total</p>
-            <p className="text-sm font-semibold text-primary">
+            <p className="font-bold text-primary text-sm">
               ₦{(order.totalPrice ?? 0).toLocaleString()}
             </p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="size-4 text-base-content/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
         </div>
       </div>
     </Link>

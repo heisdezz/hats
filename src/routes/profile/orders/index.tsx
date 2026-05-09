@@ -22,7 +22,8 @@ export const Route = createFileRoute("/profile/orders/")({
 });
 
 type OrderWithExpand = UserOrdersResponse<{
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>[];
+  preview?: ProductsResponse;
 }>;
 
 function RouteComponent() {
@@ -39,7 +40,7 @@ function RouteComponent() {
 
       return pb.collection("user_orders").getList<OrderWithExpand>(page, 10, {
         sort: "-created",
-        expand: "orderItems,orderItems.originalProduct",
+        expand: "preview,orderItems",
         filter: filters.length ? filters.join(" && ") : undefined,
       });
     },

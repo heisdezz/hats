@@ -88,7 +88,6 @@ export default function UserOrderItems({
               | ProductsResponse
               | undefined;
             const imgUrl = getProductUrl(product);
-            const subtotal = (item.price ?? 0) * (item.amount ?? 1);
             return (
               <div
                 key={item.id ?? i}
@@ -137,13 +136,12 @@ export default function UserOrderItems({
                       />
                     )}
                     <span className="text-xs text-base-content/40">
-                      ×{item.amount ?? 1} · ₦
-                      {(item.price ?? 0).toLocaleString()} each
+                      ×{item.amount ?? 1} · ₦{Math.round((item.price ?? 0) / (item.amount || 1)).toLocaleString()} each
                     </span>
                   </div>
                 </div>
                 <span className="text-sm font-bold shrink-0 text-primary">
-                  ₦{subtotal.toLocaleString()}
+                  ₦{(item.price ?? 0).toLocaleString()}
                 </span>
               </div>
             );

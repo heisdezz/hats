@@ -1,6 +1,7 @@
 import { pb } from "#/client/pb";
 import Carousel from "#/components/Carousel";
 import DOMPurify from "isomorphic-dompurify";
+import ProductReviews from "#/components/ProductReviews";
 
 import type {
   CategoryResponse,
@@ -53,6 +54,8 @@ export default function MainInfo(props: {
           className="text-base-content/70 text-sm leading-relaxed"
         ></div>
       </div>
+
+      <ProductReviews productId={product.id} />
     </main>
   );
 }

@@ -1,13 +1,17 @@
 import { pb } from "#/client/pb";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingCart, Clock, Truck, CheckCircle } from "lucide-react";
+import { ShoppingCart, Clock, Cog, Truck, CheckCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { OrderDataResponse } from "#/../pocketbase-types";
+import type { OrdersResponse } from "#/../pocketbase-types";
 
 const STATS: {
   key: keyof Pick<
-    OrderDataResponse,
-    "totalOrders" | "pending" | "inTransit" | "delivered"
+    OrdersResponse,
+    | "totalProducts"
+    | "pendingOrders"
+    | "ProcessingOrders"
+    | "inTransitOrders"
+    | "deliveredOrders"
   >;
   label: string;
   icon: LucideIcon;
@@ -15,28 +19,35 @@ const STATS: {
   iconColor: string;
 }[] = [
   {
-    key: "totalOrders",
+    key: "totalProducts",
     label: "Total Orders",
     icon: ShoppingCart,
     bg: "bg-primary/10",
     iconColor: "text-primary",
   },
   {
-    key: "pending",
+    key: "pendingOrders",
     label: "Pending",
     icon: Clock,
     bg: "bg-warning/10",
     iconColor: "text-warning",
   },
   {
-    key: "inTransit",
-    label: "In Transit",
-    icon: Truck,
+    key: "ProcessingOrders",
+    label: "Processing",
+    icon: Cog,
     bg: "bg-info/10",
     iconColor: "text-info",
   },
   {
-    key: "delivered",
+    key: "inTransitOrders",
+    label: "In Transit",
+    icon: Truck,
+    bg: "bg-primary/10",
+    iconColor: "text-primary",
+  },
+  {
+    key: "deliveredOrders",
     label: "Delivered",
     icon: CheckCircle,
     bg: "bg-success/10",
@@ -47,11 +58,9 @@ const STATS: {
 export default function OrderStats() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["order-stats"],
-    queryFn: () => pb.collection("orderData").getFullList<OrderDataResponse>(),
-    enabled: false,
+    queryFn: () => pb.collection("orders").getFullList<OrdersResponse>(),
   });
 
-  return null;
   const record = data?.[0];
 
   if (isError) {
@@ -59,7 +68,7 @@ export default function OrderStats() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
       {STATS.map(({ key, label, icon: Icon, bg, iconColor }) => (
         <div
           key={key}

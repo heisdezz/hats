@@ -17,6 +17,7 @@ export const Collections = {
 	CheckoutSessions: "checkout_sessions",
 	DeliverySettings: "deliverySettings",
 	OrderItems: "order_items",
+	Orders: "orders",
 	Products: "products",
 	ProductsData: "productsData",
 	Profile: "profile",
@@ -175,11 +176,21 @@ export type DeliverySettingsRecord = {
 export type OrderItemsRecord = {
 	amount?: number
 	created: IsoAutoDateString
+	extraInfo?: string
 	id: string
 	originalProduct?: RecordIdString
 	price?: number
 	ref?: string
 	updated: IsoAutoDateString
+}
+
+export type OrdersRecord = {
+	ProcessingOrders?: number
+	deliveredOrders?: number
+	id: string
+	inTransitOrders?: number
+	pendingOrders?: number
+	totalProducts?: number
 }
 
 export type ProductsRecord = {
@@ -223,10 +234,10 @@ export type ReviewsRecord = {
 	created: IsoAutoDateString
 	id: string
 	product?: RecordIdString
-	profile?: RecordIdString
 	review_message?: string
 	review_stars?: number
 	updated: IsoAutoDateString
+	user?: RecordIdString
 }
 
 export type SectionRecord = {
@@ -255,9 +266,9 @@ export type TagsRecord = {
 
 export type UserOrdersRecord = {
 	created: IsoAutoDateString
-	extraInfo?: string
 	id: string
 	orderItems?: RecordIdString[]
+	preview?: RecordIdString
 	ref?: string
 	status?: string
 	totalPrice?: number
@@ -290,6 +301,7 @@ export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & Bas
 export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
 export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> & BaseSystemFields<Texpand>
+export type OrdersResponse<Texpand = unknown> = Required<OrdersRecord> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
 export type ProductsDataResponse<Texpand = unknown> = Required<ProductsDataRecord> & BaseSystemFields<Texpand>
 export type ProfileResponse<Texpand = unknown> = Required<ProfileRecord> & BaseSystemFields<Texpand>
@@ -314,6 +326,7 @@ export type CollectionRecords = {
 	checkout_sessions: CheckoutSessionsRecord
 	deliverySettings: DeliverySettingsRecord
 	order_items: OrderItemsRecord
+	orders: OrdersRecord
 	products: ProductsRecord
 	productsData: ProductsDataRecord
 	profile: ProfileRecord
@@ -337,6 +350,7 @@ export type CollectionResponses = {
 	checkout_sessions: CheckoutSessionsResponse
 	deliverySettings: DeliverySettingsResponse
 	order_items: OrderItemsResponse
+	orders: OrdersResponse
 	products: ProductsResponse
 	productsData: ProductsDataResponse
 	profile: ProfileResponse

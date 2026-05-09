@@ -14,8 +14,11 @@ const statusColor: Record<string, string> = {
   delivered: "badge-success",
 };
 
+type ItemWithProduct = OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+
 type OrderExpand = {
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>;
+  orderItems?: ItemWithProduct[];
+  preview?: ProductsResponse;
   user?: UsersResponse;
 };
 
@@ -23,89 +26,76 @@ export default function OrderCard({ order }: { order: UserOrdersResponse }) {
   const status = order.status ?? "pending";
   const expand = order.expand as OrderExpand | undefined;
 
-  const item = expand?.orderItems;
-  const product = (item?.expand as any)?.originalProduct as
-    | ProductsResponse
-    | undefined;
+  const items = expand?.orderItems ?? [];
+  const first = items[0];
   const user = expand?.user;
 
-  const previewUrl = product?.preview
-    ? pb.files.getURL(product, product.preview)
-    : product?.images?.[0]
-      ? pb.files.getURL(product, product.images[0])
-      : null;
-
-  const displayName =
-    user?.username || user?.email || `#${order.user.slice(0, 8)}`;
+  // use dedicated preview relation; fall back to first orderItem's product
+  const previewProduct = expand?.preview
+    ?? ((first?.expand as any)?.originalProduct as ProductsResponse | undefined);
+  const imgFile = previewProduct?.preview || previewProduct?.images?.[0];
+  const previewUrl = imgFile && previewProduct ? pb.files.getURL(previewProduct, imgFile) : null;
+  // keep product reference for title/price info (still first item's product)
+  const product = (first?.expand as any)?.originalProduct as ProductsResponse | undefined;
+  const displayName = user?.username || user?.email || `#${order.user.slice(0, 8)}`;
 
   return (
     <Link
-      to={`/admin/dashboard/orders/$orderId`}
+      to="/admin/dashboard/orders/$orderId"
       params={{ orderId: order.id }}
-      className="card bg-base-100 border border-base-200 shadow-sm"
+      className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md active:scale-[0.99] transition-all overflow-hidden"
     >
-      <div className="card-body p-5 gap-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="font-mono text-xs text-base-content/40">
-              #{order.id.slice(0, 10)}
-            </p>
-            <p className="text-xs text-base-content/40 mt-0.5">
-              {new Date(order.created).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </p>
+      {/* Image banner */}
+      <div className="relative h-32 bg-base-200">
+        {previewUrl ? (
+          <img
+            src={previewUrl}
+            alt={product?.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-base-content/10">
+            <svg xmlns="http://www.w3.org/2000/svg" className="size-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
           </div>
-          <span
-            className={`badge ${statusColor[status] ?? "badge-neutral"} capitalize shrink-0`}
-          >
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/10 to-transparent" />
+
+        <div className="absolute top-3 right-3">
+          <span className={`badge ${statusColor[status] ?? "badge-neutral"} capitalize`}>
             {status}
           </span>
         </div>
 
-        {/* Item preview */}
-        <div className="flex items-center gap-3">
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt={product?.title}
-              className="size-14 rounded-xl object-cover shrink-0 bg-base-200"
-            />
-          ) : (
-            <div className="size-14 rounded-xl bg-base-200 shrink-0 flex items-center justify-center text-base-content/20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="size-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="m21 15-5-5L5 21" />
-              </svg>
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {product?.title ?? (
-                <span className="text-base-content/30 italic">No product</span>
-              )}
-            </p>
-            <p className="text-xs text-base-content/40">
-              {item
-                ? `x${item.amount ?? 1} · ₦${(item.price ?? 0).toLocaleString()}`
-                : "—"}
-            </p>
+        {items.length > 0 && (
+          <div className="absolute bottom-3 left-3">
+            <span className="badge badge-neutral badge-sm">
+              {items.length} item{items.length !== 1 ? "s" : ""}
+            </span>
           </div>
-        </div>
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col gap-3">
+        {/* Product info */}
+        {product && (
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate leading-tight">
+              {product.title}
+            </p>
+            {first && (
+              <p className="text-xs text-base-content/40 mt-0.5">
+                ×{first.amount ?? 1} · ₦{Math.round((first.price ?? 0) / (first.amount || 1)).toLocaleString()} each
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="divider my-0" />
 
-        {/* User + total */}
+        {/* Customer + total */}
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs text-base-content/40">Customer</p>
@@ -113,17 +103,29 @@ export default function OrderCard({ order }: { order: UserOrdersResponse }) {
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs text-base-content/40">Total</p>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-sm font-bold text-primary">
               ₦{(order.totalPrice ?? 0).toLocaleString()}
             </p>
           </div>
         </div>
 
-        {order.ref && (
-          <p className="font-mono text-xs text-base-content/30 truncate">
-            Ref: {order.ref}
+        {/* Meta row */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-mono text-xs text-base-content/30">
+            #{order.id.slice(0, 8)}
           </p>
-        )}
+          {order.ref && (
+            <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-base-200 text-base-content/50 truncate max-w-28">
+              {order.ref}
+            </span>
+          )}
+          <p className="text-xs text-base-content/30">
+            {new Date(order.created).toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
+        </div>
       </div>
     </Link>
   );
