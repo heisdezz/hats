@@ -39,7 +39,7 @@ const feedbacks = [
     name: "Ngozi Eze",
     rating: 5,
     comment:
-      "The pearl earrings are so delicate and elegant. Perfect for my wedding day!",
+      "The pearl earrings are so delicate and elegants Perfect for my wedding day!",
     date: "5 days ago",
     product: "Pearl Drop Earrings",
     productImage:
