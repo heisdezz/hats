@@ -118,30 +118,64 @@ export default function JewelryPricing(props: { product: PRODUCT_RESULT }) {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Controller
-            name="mainColor"
-            control={control}
-            render={({ field }) => (
-              <ColorPicker
-                label="Main Color"
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            name="secondaryColor"
-            control={control}
-            render={({ field }) => (
-              <ColorPicker
-                label="Secondary Color"
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </div>
+        {product.color_selection !== false ? (
+          <div className="grid grid-cols-2 gap-3">
+            <Controller
+              name="mainColor"
+              control={control}
+              render={({ field }) => (
+                <ColorPicker
+                  label="Main Color"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              name="secondaryColor"
+              control={control}
+              render={({ field }) => (
+                <ColorPicker
+                  label="Secondary Color"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </div>
+        ) : (
+          (product.mainColor || product.secondaryColor) && (
+            <div className="p-3 rounded-xl bg-base-200/60 border border-base-200 space-y-1.5">
+              <span className="text-xs font-semibold text-base-content/60">
+                Standard Designer Colors
+              </span>
+              <div className="flex items-center gap-3">
+                {product.mainColor && (
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span
+                      className="size-4 rounded-full border border-black/20"
+                      style={{ backgroundColor: product.mainColor }}
+                    />
+                    <span className="font-mono text-base-content/70">
+                      {product.mainColor}
+                    </span>
+                  </div>
+                )}
+                {product.secondaryColor && (
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span
+                      className="size-4 rounded-full border border-black/20"
+                      style={{ backgroundColor: product.secondaryColor }}
+                    />
+                    <span className="font-mono text-base-content/70">
+                      {product.secondaryColor}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        )}
 
         <div className="flex flex-col gap-2">
           <label className="font-semibold text-sm">Additional Notes</label>

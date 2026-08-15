@@ -29,6 +29,7 @@ import {
   Palette,
   Layers,
   ArrowLeft,
+  Sliders,
 } from "lucide-react";
 
 export const Route = createFileRoute(
@@ -58,6 +59,7 @@ const schema = z.object({
   category: z.string().optional(),
   mainColor: z.string().default("#111111"),
   secondaryColor: z.string().default("#FFFFFF"),
+  color_selection: z.boolean().default(true),
   published: z.boolean().default(true),
 });
 
@@ -124,6 +126,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
       category: product.category ?? "",
       mainColor: (product as any).mainColor || "#111111",
       secondaryColor: (product as any).secondaryColor || "#FFFFFF",
+      color_selection: (product as any).color_selection ?? true,
       published: product.published ?? true,
     },
   });
@@ -147,6 +150,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
   const watchedPrice = watch("price");
   const watchedMainColor = watch("mainColor");
   const watchedSecondaryColor = watch("secondaryColor");
+  const watchedColorSelection = watch("color_selection");
   const watchedPublished = watch("published");
   const watchedCategory = watch("category");
 
@@ -159,6 +163,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
       if (values.category) fd.append("category", values.category);
       fd.append("mainColor", values.mainColor || "#111111");
       fd.append("secondaryColor", values.secondaryColor || "#FFFFFF");
+      fd.append("color_selection", String(values.color_selection));
       fd.append("published", String(values.published));
       fd.append("tags", JSON.stringify(tags));
 
@@ -267,17 +272,35 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                   <div className="flex items-center justify-between pb-2 border-b border-base-200">
                     <div className="flex items-center gap-2 font-bold text-sm">
                       <Palette className="size-4 text-primary" />
-                      <span>Product Color Palette</span>
+                      <span>Product Color Settings</span>
                     </div>
                     <span className="text-xs text-base-content/50">
-                      Default & accent tones
+                      Default & custom options
                     </span>
                   </div>
 
+                  {/* Customer Custom Color Selection Toggle */}
+                  <label className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors border border-base-200 cursor-pointer">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2 font-bold text-xs">
+                        <Sliders className="size-3.5 text-primary" />
+                        <span>Allow Customer Color Customization</span>
+                      </div>
+                      <p className="text-[11px] text-base-content/60 leading-relaxed">
+                        When enabled, shoppers can pick custom colors during purchase. When disabled, the product will be ordered in its default colors.
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary toggle-sm mt-1 shrink-0"
+                      {...register("color_selection")}
+                    />
+                  </label>
+
                   {/* Preset quick pills */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 pt-1">
                     <span className="text-xs font-semibold text-base-content/60">
-                      Quick Preset Swatches
+                      Default Preset Swatches
                     </span>
                     <div className="flex flex-wrap gap-2">
                       {COLOR_PRESETS.map((preset) => (
@@ -305,7 +328,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                       control={control}
                       render={({ field }) => (
                         <ColorPicker
-                          label="Primary Color (Base)"
+                          label="Default Primary Color (Base)"
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -316,7 +339,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                       control={control}
                       render={({ field }) => (
                         <ColorPicker
-                          label="Secondary Color (Accent)"
+                          label="Default Secondary Color (Accent)"
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -380,7 +403,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                     <div className="text-xs space-y-0.5">
                       <p className="font-bold text-base-content">Publish to Catalog</p>
                       <p className="text-base-content/60">
-                        When enabled, customers can view, customize, and purchase this product.
+                        When enabled, customers can view and order this item in the store.
                       </p>
                     </div>
                   </label>
@@ -435,7 +458,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                       </span>
 
                       {/* Colors indicator */}
-                      <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-base-100/80 backdrop-blur-md px-2 py-1 rounded-full shadow-xs">
+                      <div className="absolute bottom-2 right-2 flex items-center gap-1.5 bg-base-100/90 backdrop-blur-md px-2 py-1 rounded-full shadow-xs">
                         <span
                           className="size-3 rounded-full border border-black/20"
                           style={{ backgroundColor: watchedMainColor }}
@@ -444,6 +467,9 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                           className="size-3 rounded-full border border-black/20"
                           style={{ backgroundColor: watchedSecondaryColor }}
                         />
+                        {watchedColorSelection && (
+                          <span className="text-[9px] uppercase font-bold text-primary">Custom</span>
+                        )}
                       </div>
                     </div>
 
