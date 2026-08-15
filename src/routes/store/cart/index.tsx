@@ -35,6 +35,8 @@ export type CartBreakdown = {
   deliveryFee: number;
   subtotal: number;
   total: number;
+  distanceKm?: number;
+  isFreeShipping?: boolean;
 };
 
 type BreakdownResponse = {
@@ -114,4 +116,3 @@ function RouteComponent() {
     </div>
   );
 }
-

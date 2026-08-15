@@ -77,6 +77,8 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
   });
 
   const subtotal = breakdown?.subtotal ?? 0;
+  const deliveryFee = breakdown?.deliveryFee ?? 0;
+  const total = breakdown?.total ?? (subtotal + deliveryFee);
   const isCartEmpty = subtotal <= 0;
 
   return (
@@ -93,13 +95,37 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
               <span>₦{subtotal.toLocaleString()}</span>
             )}
           </div>
+
+          <div className="flex justify-between text-base-content/70">
+            <span className="flex items-center gap-1.5">
+              Delivery Fee
+              {breakdown?.isFreeShipping ? (
+                <span className="badge badge-success badge-xs font-bold text-[10px]">FREE</span>
+              ) : null}
+            </span>
+            {isLoading ? (
+              <span className="skeleton h-4 w-16" />
+            ) : breakdown?.isFreeShipping ? (
+              <span className="text-success font-semibold">₦0</span>
+            ) : (
+              <span>₦{deliveryFee.toLocaleString()}</span>
+            )}
+          </div>
+
+          {breakdown?.distanceKm && !breakdown?.isFreeShipping ? (
+            <p className="text-[11px] text-base-content/40 -mt-1">
+              Estimated: {breakdown.distanceKm} km (₦185/km, min ₦1,000)
+            </p>
+          ) : null}
+
           <div className="divider my-0" />
+
           <div className="flex justify-between font-bold text-base">
             <span>Total</span>
             {isLoading ? (
               <span className="skeleton h-5 w-20" />
             ) : (
-              <span className="text-primary">₦{subtotal.toLocaleString()}</span>
+              <span className="text-primary">₦{total.toLocaleString()}</span>
             )}
           </div>
         </div>
@@ -111,7 +137,6 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
             checkout_mutation.mutate();
           }}
         >
-
           <ShoppingBag className="size-4" />
           {checkout_mutation.isPending ? "Initializing..." : "Pay with Paystack"}
         </button>
@@ -123,4 +148,3 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
     </div>
   );
 }
-
