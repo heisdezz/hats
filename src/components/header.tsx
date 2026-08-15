@@ -3,15 +3,22 @@ import AuthHeader from "./AuthHeader";
 import SearchBar from "./SearchBar";
 import StoreButtons from "./StoreButtons";
 import { Menu, Sparkles } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { pb } from "#/client/pb.ts";
+import type { SectionRecord } from "pocketbase-types";
 
 const navLinks = [
   { name: "Home", path: "/store" },
   { name: "Catalog", path: "/store/catalog" },
-  { name: "Hats", path: "/store/catalog/hats" },
-  { name: "Jewelry", path: "/store/catalog/jewelry" },
+  // { name: "Hats", path: "/store/catalog/hats" },
+  // { name: "Jewelry", path: "/store/catalog/jewelry" },
 ] as { name: string; path: string }[];
 
 export const Header = () => {
+  const nav_query = useQuery({
+    queryKey: ["nav-links"],
+    queryFn: () => pb.collection("section").getFullList(),
+  });
   return (
     <header className="sticky top-0 z-40 bg-base-100/95 backdrop-blur-md border-b border-base-200/80 shadow-xs">
       {/* Top Announcement Banner */}
@@ -70,6 +77,25 @@ export const Header = () => {
               {item.name}
             </Link>
           ))}
+          {nav_query.isLoading ? (
+            <div className="flex items-center gap-4">
+              <span className="skeleton h-3.5 w-14 rounded" />
+              <span className="skeleton h-3.5 w-16 rounded" />
+            </div>
+          ) : nav_query.isError ? null : (
+            <>
+              {nav_query.data?.map((item: SectionRecord) => (
+                <Link
+                  key={item.name}
+                  to={"/store/catalog/$id"}
+                  params={{ id: item.name as string }}
+                  className="text-xs font-semibold tracking-wide text-base-content/70 hover:text-primary transition-colors [&.active]:text-primary [&.active]:font-bold capitalize"
+                >
+                  {item.display_name || item.name}
+                </Link>
+              ))}
+            </>
+          )}
         </nav>
       </div>
     </header>

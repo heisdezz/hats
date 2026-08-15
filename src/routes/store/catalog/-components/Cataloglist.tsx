@@ -5,6 +5,7 @@ import type { ListResult } from "pocketbase";
 import GridContainer from "#/components/GridContainer";
 import ProductCard from "#/components/ProductCard";
 import Pagination from "#/components/Pagination";
+import NoItemsFound from "#/components/NoItemsFound";
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
@@ -482,25 +483,14 @@ export default function CatalogList({
 
           {/* Product Items or Empty State */}
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-20 px-4 text-center bg-base-100 rounded-2xl border border-base-200">
-              <div className="size-16 rounded-full bg-base-200 flex items-center justify-center text-base-content/30">
-                <Search className="size-8" />
-              </div>
-              <p className="font-bold text-base text-base-content">
-                No matching pieces found
-              </p>
-              <p className="text-xs text-base-content/50 max-w-sm">
-                Try selecting different collection filters, clearing tags, or using broader search terms.
-              </p>
-              {activeFilterCount > 0 && (
-                <button
-                  onClick={clearAllFilters}
-                  className="btn btn-sm btn-primary rounded-xl mt-2"
-                >
-                  Reset All Filters
-                </button>
-              )}
-            </div>
+            <NoItemsFound
+              title="No Matching Pieces Found"
+              description="Try selecting different collection filters, clearing active tags, or using broader search terms."
+              onReset={activeFilterCount > 0 ? clearAllFilters : undefined}
+              resetText="Reset All Filters"
+              actionText="View All Products"
+              actionHref="/store/catalog"
+            />
           ) : (
             <div className="space-y-8">
               <GridContainer>
