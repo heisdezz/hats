@@ -1,34 +1,49 @@
 import type { ClientResponseError } from "pocketbase";
 
-export const extract_message = (data: ClientResponseError | any) => {
+export const extract_message = (data: ClientResponseError | any): string => {
+  if (!data) return "An unknown error occurred.";
+  if (typeof data === "string") return data;
+
+  // PocketBase response direct message
   const direct_message = data?.response?.message;
-  if (direct_message) {
+  if (direct_message && typeof direct_message === "string") {
     return direct_message;
   }
+
+  // PocketBase response nested data message
   const api_error = data?.response?.data?.message;
-  if (api_error) {
+  if (api_error && typeof api_error === "string") {
     return api_error;
   }
-  const data_keys = Object.keys(data.data);
-  if (data_keys.length < 1) {
-    //@ts-ignore
-    return data.cause["message"];
-  }
-  const error_object = data.data.data;
-  if (!data.data) {
+
+  // Standard Error instance message
+  if (data?.message && typeof data.message === "string" && data.message.trim() !== "") {
     return data.message;
   }
-  const keys = Object.keys(error_object);
-  let messages = "";
-  for (const key of keys) {
-    const value = error_object[key].message;
-    messages += `${key}: ${value}\n`;
+
+  // Cause message fallback
+  if (data?.cause?.message && typeof data.cause.message === "string") {
+    return data.cause.message;
   }
-  if (keys.length > 0) {
-    return messages;
+
+  // Nested PocketBase validation errors (e.g., { data: { fieldName: { message: "..." } } })
+  if (data?.data && typeof data.data === "object") {
+    const error_object = data.data.data || data.data;
+    if (error_object && typeof error_object === "object") {
+      const keys = Object.keys(error_object);
+      let messages = "";
+      for (const key of keys) {
+        const val = error_object[key];
+        const msg = typeof val === "string" ? val : val?.message;
+        if (msg) {
+          messages += `${key}: ${msg}\n`;
+        }
+      }
+      if (messages.trim() !== "") {
+        return messages.trim();
+      }
+    }
   }
-  if (!api_error) {
-    return data.message;
-  }
-  return api_error;
+
+  return "An unexpected error occurred.";
 };

@@ -6,7 +6,12 @@ import { extract_message } from "#/helpers/api";
 export default function GlobalErrorComponent({ error, reset }: ErrorComponentProps) {
   const [showDetails, setShowDetails] = useState(false);
 
-  const errorMessage = extract_message(error) || error?.message || "An unexpected application error occurred.";
+  let errorMessage = "An unexpected application error occurred.";
+  try {
+    errorMessage = extract_message(error) || error?.message || String(error);
+  } catch (_) {
+    errorMessage = error?.message || String(error);
+  }
   const stackTrace = error?.stack;
 
   const handleReset = () => {
