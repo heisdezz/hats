@@ -1,4 +1,8 @@
-import type { CategoryResponse, SectionResponse, TagsResponse } from "pocketbase-types";
+import type {
+  CategoryResponse,
+  SectionResponse,
+  TagsResponse,
+} from "pocketbase-types";
 import { get_products, type PRODUCT_RESULT } from "./products";
 import { useQuery } from "@tanstack/react-query";
 import type { ListResult } from "pocketbase";
@@ -6,17 +10,14 @@ import GridContainer from "#/components/GridContainer";
 import ProductCard from "#/components/ProductCard";
 import Pagination from "#/components/Pagination";
 import NoItemsFound from "#/components/NoItemsFound";
+import CatalogFilterSidebar, { type FilterState } from "./CatalogFilterSidebar";
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
   Search,
   X,
   SlidersHorizontal,
-  ArrowUpDown,
   Filter,
-  Tag as TagIcon,
-  Layers,
-  Sparkles,
 } from "lucide-react";
 import { normalizeTagItem } from "#/routes/admin/dashboard/products/-components/TagsInput";
 
@@ -45,9 +46,8 @@ export default function CatalogList({
 }: CatalogListProps) {
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState(
-    searchParams.search || searchParams.query || ""
+    searchParams.search || searchParams.query || "",
   );
-  const [tagFilterInput, setTagFilterInput] = useState("");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function CatalogList({
     staleTime: 10_000,
   });
 
-  const updateFilters = (newParams: Partial<typeof searchParams>) => {
+  const updateFilters = (newParams: Partial<FilterState>) => {
     const updated = {
       ...searchParams,
       ...newParams,
@@ -103,7 +103,6 @@ export default function CatalogList({
 
   const clearAllFilters = () => {
     setSearchInput("");
-    setTagFilterInput("");
     navigate({
       to: "/store/catalog",
       search: {},
@@ -122,7 +121,7 @@ export default function CatalogList({
   const totalItems = query.data?.totalItems ?? items.length;
   const currentPage = searchParams.page || 1;
 
-  // Normalized clean tags list
+  // Normalized clean tags list for active filter labels
   const cleanTagsList = useMemo(() => {
     const map = new Map<string, { id: string; name: string }>();
     tags.forEach((t) => {
@@ -136,40 +135,22 @@ export default function CatalogList({
         }
       });
     });
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(map.values());
   }, [tags]);
-
-  // Filtered tags based on search input in sidebar
-  const visibleTags = useMemo(() => {
-    if (!tagFilterInput.trim()) return cleanTagsList;
-    return cleanTagsList.filter((t) =>
-      t.name.toLowerCase().includes(tagFilterInput.toLowerCase().trim())
-    );
-  }, [cleanTagsList, tagFilterInput]);
-
-  // Filter categories by section if a section is selected
-  const filteredCategories = searchParams.section
-    ? categories.filter(
-        (c) =>
-          c.parent === searchParams.section ||
-          (c.expand?.parent && c.expand.parent.name === searchParams.section) ||
-          (c.expand?.parent && c.expand.parent.id === searchParams.section)
-      )
-    : categories;
 
   // Resolved human-readable labels for active filter chips
   const activeSectionName = useMemo(() => {
     if (!searchParams.section) return null;
     const sec = sections.find(
-      (s) => s.id === searchParams.section || s.name === searchParams.section
+      (s) => s.id === searchParams.section || s.name === searchParams.section,
     );
-    return sec ? sec.name : searchParams.section;
+    return sec ? (sec.display_name || sec.name) : searchParams.section;
   }, [searchParams.section, sections]);
 
   const activeCategoryName = useMemo(() => {
     if (!searchParams.category) return null;
     const cat = categories.find(
-      (c) => c.id === searchParams.category || c.name === searchParams.category
+      (c) => c.id === searchParams.category || c.name === searchParams.category,
     );
     return cat ? cat.name : searchParams.category;
   }, [searchParams.category, categories]);
@@ -177,7 +158,9 @@ export default function CatalogList({
   const activeTagName = useMemo(() => {
     if (!searchParams.tag) return null;
     const found = cleanTagsList.find(
-      (t) => t.id === searchParams.tag || t.name.toLowerCase() === searchParams.tag.toLowerCase()
+      (t) =>
+        t.id === searchParams.tag ||
+        t.name.toLowerCase() === searchParams.tag.toLowerCase(),
     );
     return found ? found.name : searchParams.tag;
   }, [searchParams.tag, cleanTagsList]);
@@ -187,9 +170,12 @@ export default function CatalogList({
       {/* Top Header & Search Bar */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-base-100 p-6 rounded-2xl border border-base-200 shadow-xs">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Catalog</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            Catalog
+          </h1>
           <p className="text-xs text-base-content/60 mt-1">
-            Explore bespoke couture hats, ceremonial fascinators, and handcrafted fine jewelry.
+            Explore bespoke couture hats, ceremonial fascinators, and
+            handcrafted fine jewelry.
           </p>
         </div>
 
@@ -225,7 +211,9 @@ export default function CatalogList({
             <SlidersHorizontal className="size-3.5 text-primary" />
             <span className="text-xs">Filters</span>
             {activeFilterCount > 0 && (
-              <span className="badge badge-primary badge-xs">{activeFilterCount}</span>
+              <span className="badge badge-primary badge-xs">
+                {activeFilterCount}
+              </span>
             )}
           </button>
         </div>
@@ -233,191 +221,18 @@ export default function CatalogList({
 
       {/* Main Content: Filter Sidebar + Products Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        {/* Sidebar */}
-        <aside
-          className={`lg:col-span-1 space-y-6 bg-base-100 p-5 rounded-2xl border border-base-200 shadow-xs transition-all ${
-            mobileFilterOpen ? "block" : "hidden lg:block"
-          }`}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-base-200 pb-3">
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <SlidersHorizontal className="size-4 text-primary" />
-              <span>Filters</span>
-            </div>
-            {activeFilterCount > 0 && (
-              <button
-                onClick={clearAllFilters}
-                className="text-xs text-primary font-semibold hover:underline"
-              >
-                Reset All ({activeFilterCount})
-              </button>
-            )}
-          </div>
-
-          {/* Department / Collections Filter */}
-          <div className="space-y-2.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
-              <Layers className="size-3.5 text-primary" />
-              <span>Department / Collection</span>
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => updateFilters({ section: undefined, category: undefined })}
-                className={`btn btn-xs rounded-lg transition-all ${
-                  !searchParams.section
-                    ? "btn-primary shadow-xs font-bold"
-                    : "btn-ghost border border-base-200 hover:border-base-300"
-                }`}
-              >
-                All Pieces
-              </button>
-              {sections.map((sec) => {
-                const isActive =
-                  searchParams.section === sec.name || searchParams.section === sec.id;
-                return (
-                  <button
-                    key={sec.id}
-                    onClick={() =>
-                      updateFilters({
-                        section: isActive ? undefined : sec.name,
-                        category: undefined,
-                      })
-                    }
-                    className={`btn btn-xs rounded-lg capitalize transition-all ${
-                      isActive
-                        ? "btn-primary shadow-xs font-bold"
-                        : "btn-ghost border border-base-200 hover:border-base-300"
-                    }`}
-                  >
-                    {sec.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Categories Filter */}
-          {filteredCategories.length > 0 && (
-            <div className="space-y-2.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-primary" />
-                <span>Categories</span>
-              </label>
-              <ul className="menu menu-xs bg-base-200/40 rounded-xl p-1.5 gap-1 max-h-48 overflow-y-auto">
-                <li key="all-cat">
-                  <button
-                    onClick={() => updateFilters({ category: undefined })}
-                    className={!searchParams.category ? "active font-bold" : ""}
-                  >
-                    All Categories
-                  </button>
-                </li>
-                {filteredCategories.map((cat) => {
-                  const isActive =
-                    searchParams.category === cat.id || searchParams.category === cat.name;
-                  return (
-                    <li key={cat.id}>
-                      <button
-                        onClick={() =>
-                          updateFilters({ category: isActive ? undefined : cat.id })
-                        }
-                        className={isActive ? "active font-bold" : ""}
-                      >
-                        <span>{cat.name}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-
-          {/* Tags & Styles Filter */}
-          {cleanTagsList.length > 0 && (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
-                  <TagIcon className="size-3.5 text-primary" />
-                  <span>Tags & Styles</span>
-                </label>
-                {searchParams.tag && (
-                  <button
-                    onClick={() => updateFilters({ tag: undefined })}
-                    className="text-[11px] text-error hover:underline"
-                  >
-                    Clear Tag
-                  </button>
-                )}
-              </div>
-
-              {/* Tag search if many tags exist */}
-              {cleanTagsList.length > 8 && (
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-base-content/40" />
-                  <input
-                    type="text"
-                    placeholder="Filter tags..."
-                    value={tagFilterInput}
-                    onChange={(e) => setTagFilterInput(e.target.value)}
-                    className="input input-xs input-bordered w-full pl-7 pr-6 rounded-lg text-[11px]"
-                  />
-                  {tagFilterInput && (
-                    <button
-                      type="button"
-                      onClick={() => setTagFilterInput("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
-                    >
-                      <X className="size-2.5" />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto pt-1">
-                {visibleTags.map((t) => {
-                  const isActive =
-                    searchParams.tag === t.id ||
-                    searchParams.tag?.toLowerCase() === t.name.toLowerCase();
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() =>
-                        updateFilters({ tag: isActive ? undefined : t.id })
-                      }
-                      className={`badge badge-sm cursor-pointer transition-all py-2.5 px-2 text-xs rounded-lg ${
-                        isActive
-                          ? "badge-primary font-bold shadow-xs scale-105"
-                          : "badge-ghost hover:bg-base-200 border border-base-300/50"
-                      }`}
-                    >
-                      {t.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Sort Selector */}
-          <div className="space-y-2 border-t border-base-200 pt-4">
-            <label className="text-xs font-bold uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
-              <ArrowUpDown className="size-3.5 text-primary" />
-              <span>Sort Order</span>
-            </label>
-            <select
-              value={searchParams.sort || "-created"}
-              onChange={(e) => updateFilters({ sort: e.target.value })}
-              className="select select-sm select-bordered w-full rounded-xl text-xs"
-            >
-              <option value="-created">Newest Arrivals</option>
-              <option value="created">Oldest First</option>
-              <option value="price">Price: Low to High</option>
-              <option value="-price">Price: High to Low</option>
-              <option value="title">Alphabetical (A-Z)</option>
-            </select>
-          </div>
-        </aside>
+        {/* Reusable Filter Sidebar */}
+        <CatalogFilterSidebar
+          className="lg:col-span-1"
+          sections={sections}
+          categories={categories}
+          tags={tags}
+          filters={searchParams}
+          onFilterChange={updateFilters}
+          onClearFilters={clearAllFilters}
+          mobileOpen={mobileFilterOpen}
+          onCloseMobile={() => setMobileFilterOpen(false)}
+        />
 
         {/* Product Grid Area */}
         <main className="lg:col-span-3 space-y-5">
@@ -446,7 +261,7 @@ export default function CatalogList({
                 </span>
               )}
               {activeTagName && (
-                <span className="badge badge-sm badge-primary text-primary-content gap-1.5 font-medium py-2.5">
+                <span className="badge badge-sm badge-neutral gap-1.5 font-medium py-2.5">
                   Tag: {activeTagName}
                   <X
                     className="size-3 cursor-pointer hover:text-error transition-colors"
@@ -459,15 +274,25 @@ export default function CatalogList({
                   Search: "{searchParams.search || searchParams.query}"
                   <X
                     className="size-3 cursor-pointer hover:text-error transition-colors"
-                    onClick={() =>
-                      updateFilters({ search: undefined, query: undefined })
-                    }
+                    onClick={() => {
+                      setSearchInput("");
+                      updateFilters({ search: undefined, query: undefined });
+                    }}
+                  />
+                </span>
+              )}
+              {searchParams.sort && searchParams.sort !== "-created" && (
+                <span className="badge badge-sm badge-neutral gap-1.5 font-medium py-2.5">
+                  Sort: {searchParams.sort}
+                  <X
+                    className="size-3 cursor-pointer hover:text-error transition-colors"
+                    onClick={() => updateFilters({ sort: undefined })}
                   />
                 </span>
               )}
               <button
                 onClick={clearAllFilters}
-                className="text-xs text-error font-semibold hover:underline ml-auto"
+                className="btn btn-ghost btn-xs text-primary font-bold ml-auto"
               >
                 Clear All
               </button>
