@@ -16,7 +16,7 @@ import LocalSelect from "#/components/inputs/LocalSelect";
 import MDEditor from "@uiw/react-md-editor";
 import UpdateImages from "#/components/inputs/UpdateImages";
 import ColorPicker from "#/components/inputs/ColorPicker";
-import TagsInput, { type Tag } from "./-components/TagsInput";
+import TagsInput, { type Tag, parseProductTags } from "./-components/TagsInput";
 import type {
   CategoryResponse,
   ProductsResponse,
@@ -105,12 +105,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
 
   const [keptImages, setKeptImages] = useState(initialImages);
   const [newImages, setNewImages] = useState<FileList | []>([]);
-  const expandedTags = (product.expand as any)?.tags as
-    | TagsResponse[]
-    | undefined;
-  const [tags, setTags] = useState<Tag[]>(
-    expandedTags?.map((t) => ({ tagName: t.name ?? "", tagId: t.id })) ?? [],
-  );
+  const [tags, setTags] = useState<Tag[]>(() => parseProductTags(product));
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],

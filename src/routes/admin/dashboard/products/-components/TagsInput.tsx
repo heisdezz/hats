@@ -1,10 +1,110 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
-import { X } from "lucide-react";
+import { X, Tag as TagIcon, Plus } from "lucide-react";
 import type { TagsResponse } from "pocketbase-types";
 
 export type Tag = { tagName: string; tagId: string | null };
+
+/**
+ * Robustly normalizes tags from any format:
+ * - JSON string: '[{"tagname":"black hat","tagid":null}]'
+ * - Objects with tagname / tagName / name / label
+ * - Comma-delimited strings: 'hat, straw, wide'
+ * - Nested arrays
+ */
+export function normalizeTagItem(item: any): Tag[] {
+  if (!item) return [];
+
+  // String handling
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    if (!trimmed) return [];
+
+    // Check if it's a JSON array or object
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith("{") && trimmed.endsWith("}"))
+    ) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return normalizeTagItem(parsed);
+      } catch (_) {
+        // Not valid JSON, continue with raw string
+      }
+    }
+
+    // Comma-separated tags
+    if (trimmed.includes(",")) {
+      return trimmed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((s) => ({ tagName: s, tagId: null }));
+    }
+
+    return [{ tagName: trimmed, tagId: null }];
+  }
+
+  // Array handling
+  if (Array.isArray(item)) {
+    return item.flatMap((sub) => normalizeTagItem(sub));
+  }
+
+  // Object handling
+  if (typeof item === "object") {
+    const rawName =
+      item.tagName ||
+      item.tagname ||
+      item.name ||
+      item.label ||
+      item.title ||
+      "";
+    const rawId = item.tagId || item.tagid || item.id || null;
+
+    if (typeof rawName === "string") {
+      const trimmed = rawName.trim();
+      if (
+        (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+        (trimmed.startsWith("{") && trimmed.endsWith("}"))
+      ) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return normalizeTagItem(parsed);
+        } catch (_) {}
+      }
+
+      if (trimmed) {
+        return [{ tagName: trimmed, tagId: rawId || null }];
+      }
+    }
+  }
+
+  return [];
+}
+
+export function parseProductTags(product: any): Tag[] {
+  if (!product) return [];
+
+  // 1. Check expanded tags first
+  const expanded = product.expand?.tags;
+  if (Array.isArray(expanded) && expanded.length > 0) {
+    const parsed = expanded
+      .map((t: any) => ({
+        tagName: t.name || t.tagName || t.tagname || "",
+        tagId: t.id || null,
+      }))
+      .filter((t) => Boolean(t.tagName));
+    if (parsed.length > 0) return parsed;
+  }
+
+  // 2. Fallback to product.tags field
+  if (product.tags) {
+    return normalizeTagItem(product.tags);
+  }
+
+  return [];
+}
 
 interface TagsInputProps {
   value: Tag[];
@@ -13,7 +113,7 @@ interface TagsInputProps {
 }
 
 export default function TagsInput({
-  value,
+  value = [],
   onChange,
   label = "Tags",
 }: TagsInputProps) {
@@ -23,8 +123,15 @@ export default function TagsInput({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Normalize incoming value to ensure no raw JSON strings are ever rendered as tag badges
+  const cleanTags = useMemo(() => {
+    return normalizeTagItem(value).filter((t, idx, arr) => 
+      arr.findIndex((other) => other.tagName.toLowerCase() === t.tagName.toLowerCase()) === idx
+    );
+  }, [value]);
+
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedInput(input.trim()), 300);
+    const t = setTimeout(() => setDebouncedInput(input.trim()), 250);
     return () => clearTimeout(t);
   }, [input]);
 
@@ -46,42 +153,50 @@ export default function TagsInput({
   }, []);
 
   const isDupe = (name: string) =>
-    value.some((t) => t.tagName.toLowerCase() === name.toLowerCase());
+    cleanTags.some((t) => t.tagName.toLowerCase() === name.toLowerCase());
 
   const addTag = (tag: Tag) => {
-    if (isDupe(tag.tagName)) return;
-    onChange([...value, tag]);
+    const normalized = normalizeTagItem(tag);
+    if (!normalized.length) return;
+
+    const toAdd = normalized.filter((t) => !isDupe(t.tagName));
+    if (!toAdd.length) return;
+
+    onChange([...cleanTags, ...toAdd]);
     setInput("");
     setDebouncedInput("");
     setOpen(false);
     inputRef.current?.focus();
   };
 
-  const removeTag = (tagName: string) =>
-    onChange(value.filter((t) => t.tagName !== tagName));
+  const removeTag = (tagName: string) => {
+    onChange(cleanTags.filter((t) => t.tagName !== tagName));
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
-      const trimmed = input.trim();
+      const trimmed = input.replace(/,/g, "").trim();
       if (!trimmed) return;
+
       const exact = data?.items.find(
         (s) => s.name?.toLowerCase() === trimmed.toLowerCase(),
       );
+
       addTag(
         exact
           ? { tagName: exact.name!, tagId: exact.id }
           : { tagName: trimmed, tagId: null },
       );
     }
-    if (e.key === "Backspace" && !input && value.length > 0) {
-      removeTag(value[value.length - 1].tagName);
+    if (e.key === "Backspace" && !input && cleanTags.length > 0) {
+      removeTag(cleanTags[cleanTags.length - 1].tagName);
     }
     if (e.key === "Escape") setOpen(false);
   };
 
   const suggestions = data?.items ?? [];
-  const trimmed = input.trim();
+  const trimmed = input.replace(/,/g, "").trim();
   const exactMatch = suggestions.some(
     (s) => s.name?.toLowerCase() === trimmed.toLowerCase(),
   );
@@ -90,28 +205,33 @@ export default function TagsInput({
     open && debouncedInput.length > 0 && (suggestions.length > 0 || showAddNew);
 
   return (
-    <div className="space-y-2" ref={containerRef}>
-      <div className="fieldset-label font-semibold">
-        <span className="text-sm">{label}</span>
+    <div className="space-y-2.5" ref={containerRef}>
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-semibold flex items-center gap-1.5">
+          <TagIcon className="size-3.5 text-primary" />
+          <span>{label}</span>
+        </label>
+        <span className="text-xs text-base-content/40">Press Enter or comma to add</span>
       </div>
 
-      {value.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {value.map((tag) => (
+      {cleanTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-base-200/40 border border-base-200 min-h-[42px] items-center">
+          {cleanTags.map((tag) => (
             <span
               key={tag.tagName}
-              className="badge badge-neutral gap-1 py-3 shrink-0"
+              className="badge badge-neutral gap-1.5 py-3 px-2.5 rounded-lg shrink-0 text-xs shadow-2xs group"
             >
-              {tag.tagName}
+              <span className="font-medium">{tag.tagName}</span>
               {tag.tagId === null && (
-                <span className="opacity-50 text-xs">new</span>
+                <span className="text-[10px] opacity-50 uppercase tracking-wider">new</span>
               )}
               <button
                 type="button"
                 onClick={() => removeTag(tag.tagName)}
-                className="hover:text-error transition-colors"
+                className="hover:text-error transition-colors p-0.5 rounded-full"
+                aria-label={`Remove tag ${tag.tagName}`}
               >
-                <X size={11} />
+                <X size={12} />
               </button>
             </span>
           ))}
@@ -128,41 +248,38 @@ export default function TagsInput({
           }}
           onKeyDown={handleKeyDown}
           onFocus={() => trimmed && setOpen(true)}
-          placeholder="Search or add tags..."
-          className="input input-bordered w-full text-sm"
+          placeholder="Type tag name and press Enter (e.g. Fascinator, Wide Brim, Silk)..."
+          className="input input-sm input-bordered w-full rounded-xl text-xs"
         />
 
         {showDropdown && (
-          <ul className="absolute z-50 top-full mt-1 w-full bg-base-100 border border-base-200 rounded-xl shadow-lg overflow-hidden">
+          <ul className="absolute z-50 top-full mt-1.5 w-full bg-base-100 border border-base-200 rounded-2xl shadow-xl overflow-hidden py-1 max-h-56 overflow-y-auto">
             {suggestions
               .filter((s) => !isDupe(s.name ?? ""))
               .map((tag) => (
                 <li key={tag.id}>
                   <button
                     type="button"
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-base-200 transition-colors"
+                    className="w-full text-left px-3.5 py-2 text-xs hover:bg-base-200 flex items-center justify-between transition-colors"
                     onClick={() =>
                       addTag({ tagName: tag.name!, tagId: tag.id })
                     }
                   >
-                    {tag.name}
+                    <span className="font-medium">{tag.name}</span>
+                    <span className="badge badge-ghost badge-xs text-[10px]">existing</span>
                   </button>
                 </li>
               ))}
             {showAddNew && (
-              <li className="border-t border-base-200">
+              <li className="border-t border-base-200 mt-1 pt-1">
                 <button
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-base-200 transition-colors flex items-center gap-2"
+                  className="w-full text-left px-3.5 py-2 text-xs hover:bg-primary/10 text-primary transition-colors flex items-center gap-2"
                   onClick={() => addTag({ tagName: trimmed, tagId: null })}
                 >
-                  <span className="text-base-content/50">Add</span>
-                  <span className="badge badge-sm badge-outline">
-                    {trimmed}
-                  </span>
-                  <span className="text-xs text-base-content/30 ml-auto">
-                    new
-                  </span>
+                  <Plus className="size-3.5" />
+                  <span>Create tag "<strong>{trimmed}</strong>"</span>
+                  <span className="badge badge-primary badge-xs ml-auto">new</span>
                 </button>
               </li>
             )}
