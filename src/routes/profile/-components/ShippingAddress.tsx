@@ -37,7 +37,7 @@ export default function ShippingAddress({
         </div>
       ) : (
         <div className="px-5">
-          <Row label="Address" value={delivery.fullAdress} />
+          <Row label="Address" value={delivery.fullAddress} />
           <Row label="City" value={delivery.city} />
           <Row label="State" value={delivery.state} />
         </div>

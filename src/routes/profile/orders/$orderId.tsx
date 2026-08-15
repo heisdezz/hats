@@ -68,6 +68,7 @@ function RouteComponent() {
     <div className="page-wrap flex flex-col gap-5">
       <Link
         to="/profile/orders"
+        search={{ page: 1, reference: undefined }}
         className="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content w-fit transition-colors"
       >
         <svg
@@ -138,7 +139,7 @@ function RouteComponent() {
                       <button
                         onClick={() =>
                           nav({
-                            to: "/profile/orders/",
+                            to: "/profile/orders",
                             search: { reference: order.ref, page: 1 },
                           })
                         }

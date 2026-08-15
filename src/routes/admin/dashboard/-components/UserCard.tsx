@@ -13,7 +13,8 @@ export default function UserCard({ profile }: { profile: ProfileResponse }) {
 
   return (
     <Link
-      to={`/admin/dashboard/users/${profile.id}`}
+      to="/admin/dashboard/users/$userId"
+      params={{ userId: profile.id }}
       className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow"
     >
       <div className="card-body p-4 gap-3">

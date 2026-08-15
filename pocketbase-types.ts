@@ -12,6 +12,7 @@ export const Collections = {
 	Otps: "_otps",
 	Superusers: "_superusers",
 	Admins: "admins",
+	Carousel: "carousel",
 	Cart: "cart",
 	Category: "category",
 	CheckoutSessions: "checkout_sessions",
@@ -124,6 +125,13 @@ export type AdminsRecord = {
 	verified?: boolean
 }
 
+export type CarouselRecord = {
+	created: IsoAutoDateString
+	id: string
+	product?: RecordIdString
+	updated: IsoAutoDateString
+}
+
 export type CartRecord = {
 	amount?: number
 	created: IsoAutoDateString
@@ -150,6 +158,7 @@ export type CategoryRecord = {
 
 export type CheckoutSessionsRecord<Tcart_items = unknown> = {
 	access_code?: string
+	amount_kobo?: number
 	cart_items?: null | Tcart_items
 	created: IsoAutoDateString
 	deliveryFee?: number
@@ -182,6 +191,7 @@ export type OrderItemsRecord = {
 	price?: number
 	ref?: string
 	updated: IsoAutoDateString
+	user?: RecordIdString
 }
 
 export type OrdersRecord = {
@@ -296,6 +306,7 @@ export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemF
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type AdminsResponse<Texpand = unknown> = Required<AdminsRecord> & AuthSystemFields<Texpand>
+export type CarouselResponse<Texpand = unknown> = Required<CarouselRecord> & BaseSystemFields<Texpand>
 export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemFields<Texpand>
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
@@ -321,6 +332,7 @@ export type CollectionRecords = {
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
 	admins: AdminsRecord
+	carousel: CarouselRecord
 	cart: CartRecord
 	category: CategoryRecord
 	checkout_sessions: CheckoutSessionsRecord
@@ -345,6 +357,7 @@ export type CollectionResponses = {
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
 	admins: AdminsResponse
+	carousel: CarouselResponse
 	cart: CartResponse
 	category: CategoryResponse
 	checkout_sessions: CheckoutSessionsResponse

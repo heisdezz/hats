@@ -12,20 +12,19 @@ export default function OrderSearch({ defaultValue = "" }: Props) {
 
   const submit = ({ reference }: { reference: string }) => {
     nav({
-      to: "/profile/orders/",
-      search: (prev: any) => ({
-        ...prev,
+      to: "/profile/orders",
+      search: {
         reference: reference.trim() || undefined,
         page: 1,
-      }),
+      },
     });
   };
 
   const clear = () => {
     form.reset({ reference: "" });
     nav({
-      to: "/profile/orders/",
-      search: (prev: any) => ({ ...prev, reference: undefined, page: 1 }),
+      to: "/profile/orders",
+      search: { reference: undefined, page: 1 },
     });
   };
 

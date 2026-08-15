@@ -91,9 +91,8 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
     queryFn: () => pb.collection("category").getFullList<CategoryResponse>(),
   });
 
-  //@ts-ignore
   const methods = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       title: product.title ?? "",
       price: product.price ?? 0,

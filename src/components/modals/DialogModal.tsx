@@ -19,7 +19,7 @@ export interface ModalHandle {
 }
 
 const Modal = forwardRef<ModalHandle, ModalProps>(
-  ({ children, actions, actionName, title }, ref) => {
+  ({ children, actions, actionName: _actionName, title }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({

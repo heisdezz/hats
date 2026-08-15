@@ -74,6 +74,7 @@ function RouteComponent() {
     <main className="dash-wrap p-6 flex flex-col gap-6">
       <Link
         to="/admin/dashboard/orders"
+        search={{ page: 1, status: undefined }}
         className="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content w-fit transition-colors"
       >
         <ArrowLeft size={14} />

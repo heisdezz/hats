@@ -2,8 +2,11 @@ import {
   createFileRoute,
   Link,
   Outlet,
+  redirect,
   useLocation,
 } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { pb } from "#/client/pb";
 import AdminHeader from "./-components/AdminHeader";
 import {
   LayoutDashboard,
@@ -14,11 +17,22 @@ import {
   Layers,
   Store,
   LogOut,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 
+const check_user = createIsomorphicFn().client(() => {
+  const user = pb.authStore.record;
+  if (!user || user.collectionName !== "admins") {
+    return redirect({
+      to: "/admin",
+    });
+  }
+});
+
 export const Route = createFileRoute("/admin/dashboard")({
   component: RouteComponent,
+  loader: check_user,
 });
 
 const nav_groups: {
@@ -45,9 +59,10 @@ const nav_groups: {
     ],
   },
   {
-    label: "People",
+    label: "People & System",
     routes: [
       { name: "Users", path: "/admin/dashboard/users", icon: Users },
+      { name: "Settings", path: "/admin/dashboard/settings", icon: Settings },
     ],
   },
 ];

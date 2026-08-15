@@ -11,11 +11,11 @@ export const Route = createFileRoute("/store/")({ component: Home });
 
 function Home() {
   return (
-    <div className="space-y-24">
+    <div className="space-y-16 lg:space-y-24 pb-12">
       <Hero />
       <Features />
-      <JewelryGrid />
       <HatsGrid />
+      <JewelryGrid />
       <CustomMade />
       <Feedbacks />
       <WriteUp />

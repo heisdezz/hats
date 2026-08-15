@@ -12,7 +12,7 @@ import RenderDescription from "#/routes/store/-components/RenderDescription";
 import { useProfile } from "#/store/user";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 
 type FormValues = {
@@ -47,6 +47,7 @@ export default function JewelryPricing(props: { product: PRODUCT_RESULT }) {
       }),
   });
 
+  const queryClient = useQueryClient();
   const add_to_cart = useMutation({
     mutationFn: (payload: any) => {
       const form_data = new FormData();
@@ -57,6 +58,7 @@ export default function JewelryPricing(props: { product: PRODUCT_RESULT }) {
     },
     onSuccess: () => {
       query.refetch();
+      queryClient.invalidateQueries({ queryKey: ["cart-total"] });
     },
   });
 

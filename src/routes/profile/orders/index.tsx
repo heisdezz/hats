@@ -1,5 +1,5 @@
 import { pb } from "#/client/pb";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import PageLoader from "#/components/layouts/PageLoader";
 import OrderCard from "#/routes/profile/-components/OrderCard";
@@ -11,6 +11,7 @@ import type {
   UserOrdersResponse,
 } from "#/../pocketbase-types";
 import GridContainer from "#/components/GridContainer";
+import { Package, LogIn } from "lucide-react";
 
 export const Route = createFileRoute("/profile/orders/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -28,6 +29,7 @@ type OrderWithExpand = UserOrdersResponse<{
 
 function RouteComponent() {
   const { reference, page } = Route.useSearch();
+  const isAuthenticated = pb.authStore.isValid;
   const userId = pb.authStore.record?.id;
 
   const query = useQuery({
@@ -40,17 +42,36 @@ function RouteComponent() {
 
       return pb.collection("user_orders").getList<OrderWithExpand>(page, 10, {
         sort: "-created",
-        expand: "preview,orderItems",
+        expand: "preview,orderItems,orderItems.originalProduct",
         filter: filters.length ? filters.join(" && ") : undefined,
       });
     },
-    enabled: !!userId,
+    enabled: !!userId && isAuthenticated,
   });
 
+  if (!isAuthenticated) {
+    return (
+      <div className="page-wrap py-12 flex flex-col items-center justify-center text-center">
+        <div className="card bg-base-100 border border-base-200 shadow-xs max-w-md p-8 flex flex-col items-center gap-4">
+          <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Package className="size-8" />
+          </div>
+          <h2 className="text-xl font-bold">My Orders</h2>
+          <p className="text-sm text-base-content/60">
+            Please log in to view your order history and track order statuses.
+          </p>
+          <Link to="/login" search={{ redirect: "/profile/orders" }} className="btn btn-primary rounded-xl gap-2 mt-2">
+            <LogIn className="size-4" /> Log In to View Orders
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="page-wrap flex flex-col gap-4">
+    <div className="page-wrap flex flex-col gap-4 py-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">My Orders</h2>
+        <h2 className="text-xl font-bold tracking-tight">My Orders</h2>
       </div>
 
       <OrderSearch defaultValue={reference ?? ""} />
@@ -66,23 +87,17 @@ function RouteComponent() {
         {(data) => (
           <div className="flex flex-col gap-4">
             {data.items.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-12 text-base-content/40">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="size-10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </svg>
-                <p className="text-sm">
+              <div className="flex flex-col items-center gap-2 py-16 text-base-content/40 bg-base-100 rounded-2xl border border-base-200">
+                <Package className="size-12 opacity-40" />
+                <p className="text-sm font-semibold">
                   {reference
                     ? "No orders match that reference."
-                    : "No orders yet."}
+                    : "No orders placed yet."}
+                </p>
+                <p className="text-xs text-base-content/50">
+                  {reference
+                    ? "Try clearing your search reference filter."
+                    : "Your completed orders will appear here."}
                 </p>
               </div>
             ) : (
@@ -92,10 +107,13 @@ function RouteComponent() {
                 ))}
               </GridContainer>
             )}
-            <Pagination page={page} totalPages={data.totalPages} />
+            {data.totalPages > 1 && (
+              <Pagination page={page} totalPages={data.totalPages} />
+            )}
           </div>
         )}
       </PageLoader>
     </div>
   );
 }
+

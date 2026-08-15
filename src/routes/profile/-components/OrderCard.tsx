@@ -103,7 +103,7 @@ export default function OrderCard({ order }: { order: OrderWithExpand }) {
               </p>
               {first && (
                 <p className="text-xs text-base-content/40 mt-0.5">
-                  ×{first.amount ?? 1} · ₦{(first.price ?? 0).toLocaleString()}{" "}
+                  ×{first.amount ?? 1} · ₦{Math.round((first.price ?? 0) / (first.amount || 1)).toLocaleString()}{" "}
                   each
                 </p>
               )}
@@ -152,7 +152,7 @@ export default function OrderCard({ order }: { order: OrderWithExpand }) {
                   e.preventDefault();
                   e.stopPropagation();
                   nav({
-                    to: "/profile/orders/",
+                    to: "/profile/orders",
                     search: { reference: order.ref, page: 1 },
                   });
                 }}

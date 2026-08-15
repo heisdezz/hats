@@ -1,7 +1,7 @@
 import { pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import type {
   ProductsResponse,
   ProfileResponse,
@@ -21,9 +21,7 @@ const STATUS_STYLES: Record<string, string> = {
   delivered: "badge-success",
 };
 
-const orderColumns: columnType<
-  OrdersResponse<{ product: ProductsResponse }>
->[] = [
+const orderColumns: columnType<UserOrdersResponse>[] = [
   {
     key: "id",
     label: "Order ID",
@@ -34,22 +32,13 @@ const orderColumns: columnType<
     ),
   },
   {
-    key: "product",
-    label: "Product",
-    render: (_, item) =>
-      item.expand?.product?.title ?? (
-        <span className="text-base-content/30 italic">Unknown</span>
-      ),
+    key: "ref",
+    label: "Reference",
+    render: (val) => (val ? String(val) : "—"),
   },
   {
-    key: "price",
-    label: "Price",
-    render: (val) =>
-      val != null ? `₦${(val as number).toLocaleString()}` : "—",
-  },
-  {
-    key: "deliveryFee",
-    label: "Delivery",
+    key: "totalPrice",
+    label: "Total Price",
     render: (val) =>
       val != null ? `₦${(val as number).toLocaleString()}` : "—",
   },
@@ -80,6 +69,7 @@ const orderColumns: columnType<
 
 function RouteComponent() {
   const { userId } = Route.useParams();
+  const nav = useNavigate();
 
   const profileQuery = useQuery({
     queryKey: ["user", userId],
@@ -90,14 +80,27 @@ function RouteComponent() {
     queryKey: ["user-orders", userId],
     queryFn: () =>
       pb
-        .collection("orders")
-        .getList<UserOrdersResponse<{ product: ProductsResponse }>>(1, 50, {
-          // filter: pb.filter("user = {:id}", { id: userId }),
-          expand: "product",
+        .collection("user_orders")
+        .getList<UserOrdersResponse>(1, 50, {
+          filter: pb.filter("user = {:id}", { id: userId }),
+          expand: "preview,orderItems",
           sort: "-created",
         }),
     enabled: !!userId,
   });
+
+  const orderActions = [
+    {
+      key: "view",
+      label: "View order",
+      action: (item: UserOrdersResponse) => {
+        nav({
+          to: "/admin/dashboard/orders/$orderId",
+          params: { orderId: item.id },
+        });
+      },
+    },
+  ];
 
   return (
     <main className="dash-wrap p-6 space-y-6">
@@ -125,7 +128,7 @@ function RouteComponent() {
                 </div>
               </div>
             ) : (
-              <CustomTable data={items} columns={orderColumns} />
+              <CustomTable data={items} columns={orderColumns} actions={orderActions} />
             )
           }
         </PageLoader>

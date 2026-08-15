@@ -11,7 +11,7 @@ export default function Pagination({ page, totalPages }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const goto = (p: number) => {
-    nav({ search: (prev: any) => ({ ...prev, page: p }) });
+    nav({ search: ((prev: any) => ({ ...prev, page: p })) as any });
   };
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);

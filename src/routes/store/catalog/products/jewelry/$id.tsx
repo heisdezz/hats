@@ -18,9 +18,11 @@ export const Route = createFileRoute("/store/catalog/products/jewelry/$id")({
 function RouteComponent() {
   const data = Route.useLoaderData();
   return (
-    <Skeleton className="page-wrap">
+    <Skeleton>
+      {/* @ts-ignore */}
       <MainInfo product={data}></MainInfo>
       <Aside>
+        {/* @ts-ignore */}
         <JewelryPricing product={data} />
         <DeliverySettings />
       </Aside>

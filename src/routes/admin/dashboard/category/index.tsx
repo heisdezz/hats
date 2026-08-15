@@ -79,6 +79,11 @@ function RouteComponent() {
     onSuccess: invalidate,
   });
 
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => pb.collection("category").delete(id),
+    onSuccess: invalidate,
+  });
+
   const openCreate = () => {
     setEditing(null);
     reset({ name: "", parent: "" });
@@ -87,7 +92,7 @@ function RouteComponent() {
 
   const openEdit = (cat: CategoryResponse) => {
     setEditing(cat);
-    reset({ name: cat.name ?? "", parent: "" });
+    reset({ name: cat.name ?? "", parent: cat.parent || "" });
     modalRef.current?.open();
   };
 
@@ -160,6 +165,16 @@ function RouteComponent() {
       label: "Edit",
       action: (item) => openEdit(item),
     },
+    {
+      key: "delete",
+      label: "Delete",
+      action: (item) =>
+        toast.promise(deleteMut.mutateAsync(item.id), {
+          loading: "Deleting...",
+          success: "Category deleted.",
+          error: "Failed to delete category.",
+        }),
+    },
   ];
 
   return (
@@ -214,7 +229,7 @@ function RouteComponent() {
             name="parent"
             control={control}
             render={({ field }) => (
-              <SimpleSelect<SectionResponse>
+              <SimpleSelect<any>
                 route="section"
                 label="Parent section"
                 placeholder="None (top-level)"

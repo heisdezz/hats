@@ -5,8 +5,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import PaystackPop from "@paystack/inline-js";
 import { useProfile } from "#/store/user";
-import paystack_key from "#/client/paystack";
 import { extract_message } from "#/helpers/api";
+import { useNavigate } from "@tanstack/react-router";
+
 interface Props {
   breakdown: CartBreakdown | undefined;
   isLoading: boolean;
@@ -17,7 +18,9 @@ const paystackInstance = new PaystackPop();
 
 export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const profile = useProfile((state) => state.profile);
+
   const checkout_mutation = useMutation({
     mutationFn: async () => {
       let resp: {
@@ -25,6 +28,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
           key: string;
           total: number;
           access_code: string;
+          reference: string;
         };
       } = await pb.send("/checkout", {
         method: "POST",
@@ -35,25 +39,48 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
     },
     onSuccess: (resp) => {
       const access_code = resp.data.access_code;
-      if (!access_code) throw new Error("Server Error ccured");
-      paystackInstance.resumeTransaction(resp.data.access_code, {
+      if (!access_code) {
+        toast.error("Failed to initialize Paystack checkout session.");
+        return;
+      }
+
+      paystackInstance.resumeTransaction(access_code, {
         onSuccess: async (data) => {
-          await pb.send("/checkout/validate", {
-            method: "POST",
-            body: { reference: data.reference },
-          });
-          toast.success("Checkout successful");
-          refetch();
-          queryClient.invalidateQueries({ queryKey: ["cart-total"] });
+          try {
+            await pb.send("/checkout/validate", {
+              method: "POST",
+              body: { reference: data.reference },
+            });
+            toast.success("Payment verified! Your order has been placed successfully.");
+            refetch();
+            queryClient.invalidateQueries({ queryKey: ["cart-total"] });
+            queryClient.invalidateQueries({ queryKey: ["user-orders"] });
+            navigate({ to: "/profile/orders" });
+          } catch (err: any) {
+            toast.error(extract_message(err) || "Order validation failed. Please check your order history.");
+          }
+        },
+        onCancel: () => {
+          toast.info("Payment window closed.");
         },
       });
-      // refetch();
-      // queryClient.invalidateQueries({ queryKey: ["cart-total"] });
       return resp;
     },
+    onError: (err: any) => {
+      const msg = extract_message(err);
+      if (msg?.toLowerCase().includes("delivery")) {
+        toast.warning("Please update your delivery address before checking out.");
+      } else {
+        toast.error(msg || "Checkout failed.");
+      }
+    },
   });
+
+  const subtotal = breakdown?.subtotal ?? 0;
+  const isCartEmpty = subtotal <= 0;
+
   return (
-    <div className="card bg-base-100 border border-base-200 shadow-sm sticky top-4">
+    <div className="card bg-base-100 border border-base-200 shadow-xs sticky top-4">
       <div className="card-body gap-4 p-5">
         <h2 className="font-semibold text-base">Order Summary</h2>
 
@@ -63,7 +90,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
             {isLoading ? (
               <span className="skeleton h-4 w-16" />
             ) : (
-              <span>₦{(breakdown?.subtotal ?? 0).toLocaleString()}</span>
+              <span>₦{subtotal.toLocaleString()}</span>
             )}
           </div>
           <div className="divider my-0" />
@@ -72,30 +99,28 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
             {isLoading ? (
               <span className="skeleton h-5 w-20" />
             ) : (
-              <span>₦{(breakdown?.total ?? 0).toLocaleString()}</span>
+              <span className="text-primary">₦{subtotal.toLocaleString()}</span>
             )}
           </div>
         </div>
 
         <button
-          disabled={checkout_mutation.isPending}
-          className="btn btn-primary w-full gap-2"
+          disabled={checkout_mutation.isPending || isCartEmpty || isLoading}
+          className="btn btn-primary w-full gap-2 rounded-xl"
           onClick={() => {
-            toast.promise(checkout_mutation.mutateAsync, {
-              loading: "loading",
-              success: "checkout-info fetched",
-              error: extract_message,
-            });
+            checkout_mutation.mutate();
           }}
         >
+
           <ShoppingBag className="size-4" />
-          Checkout
+          {checkout_mutation.isPending ? "Initializing..." : "Pay with Paystack"}
         </button>
 
         <p className="text-xs text-center text-base-content/40">
-          Taxes and fees calculated at checkout
+          Secure payment powered by Paystack 🔒
         </p>
       </div>
     </div>
   );
 }
+

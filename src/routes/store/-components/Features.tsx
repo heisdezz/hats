@@ -1,51 +1,55 @@
 import {
-  IconPlane,
+  IconTruck,
   IconHeadphones,
-  IconRefresh,
   IconShieldCheck,
-  IconPigMoney,
+  IconSparkles,
+  IconNeedle,
 } from "@tabler/icons-react";
 
 const features = [
   {
-    icon: IconPlane,
-    title: "Free Shipping",
-    description: "Free nationwide shipping on orders from ₦120,000",
+    icon: IconTruck,
+    title: "Fast Lagos Delivery",
+    description: "Free shipping on Lagos orders above ₦150,000",
   },
   {
-    icon: IconHeadphones,
-    title: "Amazing Support",
-    description: "We are proud of our award winning customer service",
-  },
-  {
-    icon: IconRefresh,
-    title: "100% Money Back",
-    description: "We have a favorable, easy & no quibble returns policy",
+    icon: IconNeedle,
+    title: "Artisanal Millinery",
+    description: "Handcrafted with premium materials by expert hat makers",
   },
   {
     icon: IconShieldCheck,
-    title: "Payment Secure",
-    description: "We provide secure & multiple payment options",
+    title: "Instant Paystack Checkout",
+    description: "Secure, encrypted end-to-end payment processing",
   },
   {
-    icon: IconPigMoney,
-    title: "Loyalty",
-    description: "We reward our loyal customers",
+    icon: IconSparkles,
+    title: "Bespoke Custom Orders",
+    description: "Tailored color, sizing & head-measurement customization",
+  },
+  {
+    icon: IconHeadphones,
+    title: "Dedicated VIP Support",
+    description: "Personal styling & order assistance via WhatsApp & phone",
   },
 ];
 
 export default function Features() {
   return (
-    <section className="container mx-auto">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6 py-10">
+    <section className="container mx-auto px-4">
+      <div className="bg-base-200/50 rounded-2xl border border-base-200 p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="flex flex-col items-center text-center gap-3"
+            className="flex flex-col items-center text-center gap-3 p-3 rounded-xl hover:bg-base-100/80 transition-colors group"
           >
-            <feature.icon size={36} strokeWidth={1.5} />
-            <h3 className="font-bold text-sm">{feature.title}</h3>
-            <p className="text-xs text-base-content/60 leading-relaxed">
+            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-content transition-all duration-300">
+              <feature.icon size={22} strokeWidth={1.75} />
+            </div>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-base-content/90">
+              {feature.title}
+            </h3>
+            <p className="text-xs text-base-content/60 leading-relaxed max-w-[200px]">
               {feature.description}
             </p>
           </div>

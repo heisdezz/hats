@@ -40,7 +40,8 @@ export default function AdminProductCard({
         )}
 
         <Link
-          to={`/admin/dashboard/products/edit/${product.id}`}
+          to="/admin/dashboard/products/edit/$productId"
+          params={{ productId: product.id }}
           className="btn  btn-circle absolute top-2 right-2 bg-base-100/80 backdrop-blur-sm border-0 shadow opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <Pencil size={13} />

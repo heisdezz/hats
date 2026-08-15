@@ -37,7 +37,7 @@ const categories = [
 ];
 
 export default function StoreLayout({
-  children,
+  children: _children,
 }: {
   children?: React.ReactNode;
 }) {
@@ -112,6 +112,7 @@ export default function StoreLayout({
               </Link>
               <Link
                 to="/profile/orders"
+                search={{ page: 1, reference: undefined }}
                 className="btn btn-ghost btn-block justify-start"
               >
                 My Orders

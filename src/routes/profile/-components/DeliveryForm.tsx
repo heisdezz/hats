@@ -55,7 +55,7 @@ export default function DeliveryForm({ onSuccess }: Props) {
       loading: "Saving delivery settings…",
       success: () => {
         updateDelivery({
-          fullAdress: data.full_address,
+          fullAddress: data.full_address,
           city: data.city,
           state: data.state,
           location: { lat: data.location.lat, lon: data.location.lon },

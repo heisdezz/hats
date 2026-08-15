@@ -14,7 +14,7 @@ import { useProfile } from "#/store/user";
 import { useCartStore } from "#/store/cart";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 
 type FormValues = {
@@ -50,6 +50,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
         params: { productId: props.product.id },
       }),
   });
+  const queryClient = useQueryClient();
   const add_to_cart = useMutation({
     mutationFn: (payload: any) => {
       const form_data = new FormData();
@@ -60,6 +61,7 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
     },
     onSuccess: () => {
       query.refetch();
+      queryClient.invalidateQueries({ queryKey: ["cart-total"] });
     },
   });
   const onSubmit = (data: FormValues) => {
@@ -154,7 +156,6 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
         </div>
 
         <div className="flex gap-2 pt-1">
-          <AddToCartButton productId={props.product.id} />
           <button
             type="submit"
             className="btn btn-primary btn-xl flex-1 gap-2"
@@ -252,10 +253,4 @@ const ShortInfo = ({ product }: { product: PRODUCT_RESULT }) => {
       <RenderDescription text={description} />
     </div>
   );
-};
-
-const AddToCartButton = (props: { productId: string }) => {
-  const user = useProfile((state) => state.profile);
-
-  return <></>;
 };

@@ -1,7 +1,7 @@
 import { pb } from "#/client/pb";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import type { OrdersResponse } from "#/../pocketbase-types";
+import type { UserOrdersResponse } from "#/../pocketbase-types";
 import CompLoader from "#/components/layouts/ComponentLoader";
 
 const statusColor: Record<string, string> = {
@@ -37,8 +37,8 @@ export default function RelatedOrders({
     queryKey: ["orders-by-ref", reference],
     queryFn: () =>
       pb
-        .collection("orders")
-        .getFullList<OrdersResponse>({ filter: `reference = "${reference}"` }),
+        .collection("user_orders")
+        .getFullList<UserOrdersResponse>({ filter: `ref = "${reference}"` }),
     enabled: !!reference,
   });
 
@@ -90,7 +90,7 @@ export default function RelatedOrders({
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-sm font-semibold">
-                          ₦{(order.price ?? 0).toLocaleString()}
+                          ₦{(order.totalPrice ?? 0).toLocaleString()}
                         </span>
                         <span
                           className={`badge badge-sm ${badgeClass} capitalize`}
