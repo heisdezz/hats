@@ -1,4 +1,4 @@
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Truck, Info } from "lucide-react";
 import type { CartBreakdown } from "../index";
 import { pb } from "#/client/pb";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -79,6 +79,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
   const subtotal = breakdown?.subtotal ?? 0;
   const deliveryFee = breakdown?.deliveryFee ?? 0;
   const total = breakdown?.total ?? (subtotal + deliveryFee);
+  const hatCount = breakdown?.hat_count ?? 0;
   const isCartEmpty = subtotal <= 0;
 
   return (
@@ -86,7 +87,7 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
       <div className="card-body gap-4 p-5">
         <h2 className="font-semibold text-base">Order Summary</h2>
 
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2.5 text-sm">
           <div className="flex justify-between text-base-content/70">
             <span>Subtotal</span>
             {isLoading ? (
@@ -98,23 +99,30 @@ export default function CartTotal({ breakdown, isLoading, refetch }: Props) {
 
           <div className="flex justify-between text-base-content/70">
             <span className="flex items-center gap-1.5">
+              <Truck className="size-3.5 text-primary" />
               Delivery Fee
-              {breakdown?.isFreeShipping ? (
-                <span className="badge badge-success badge-xs font-bold text-[10px]">FREE</span>
-              ) : null}
             </span>
             {isLoading ? (
               <span className="skeleton h-4 w-16" />
-            ) : breakdown?.isFreeShipping ? (
-              <span className="text-success font-semibold">₦0</span>
             ) : (
               <span>₦{deliveryFee.toLocaleString()}</span>
             )}
           </div>
 
-          {breakdown?.distanceKm && !breakdown?.isFreeShipping ? (
+          {hatCount > 1 ? (
+            <div className="p-2 rounded-lg bg-base-200/50 text-[11px] text-base-content/60 space-y-0.5 border border-base-200">
+              <div className="flex justify-between">
+                <span>Base Delivery (1st Hat):</span>
+                <span className="font-mono">₦3,500</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Bulky Fee ({hatCount - 1} extra hat{hatCount - 1 > 1 ? "s" : ""} × ₦800):</span>
+                <span className="font-mono">+₦{((hatCount - 1) * 800).toLocaleString()}</span>
+              </div>
+            </div>
+          ) : hatCount === 1 ? (
             <p className="text-[11px] text-base-content/40 -mt-1">
-              Estimated: {breakdown.distanceKm} km (₦185/km, min ₦1,000)
+              Standard base rate (₦3,500 for first hat)
             </p>
           ) : null}
 

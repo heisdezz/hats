@@ -55,6 +55,7 @@ const schema = z.object({
   title: z.string().min(1, "Title is required"),
   //@ts-ignore
   price: z.coerce.number({ invalid_type_error: "Enter a valid price" }).min(0),
+  cart_space: z.coerce.number().min(1).default(1),
   description: z.string().optional(),
   category: z.string().optional(),
   mainColor: z.string().default("#111111"),
@@ -122,6 +123,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
     defaultValues: {
       title: product.title ?? "",
       price: product.price ?? 0,
+      cart_space: (product as any).cart_space || 1,
       description: product.description ?? "",
       category: product.category ?? "",
       mainColor: (product as any).mainColor || "#111111",
@@ -154,41 +156,52 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
   const watchedPublished = watch("published");
   const watchedCategory = watch("category");
 
-  const mutation = useMutation({
+  const updateProductMut = useMutation({
     mutationFn: async (values: FormValues) => {
       const fd = new FormData();
       fd.append("title", values.title);
       fd.append("price", String(values.price));
-      if (values.description) fd.append("description", values.description);
-      if (values.category) fd.append("category", values.category);
+      fd.append("cart_space", String(values.cart_space || 1));
+      if (values.description !== undefined) fd.append("description", values.description);
+      if (values.category !== undefined) fd.append("category", values.category);
       fd.append("mainColor", values.mainColor || "#111111");
       fd.append("secondaryColor", values.secondaryColor || "#FFFFFF");
       fd.append("color_selection", String(values.color_selection));
       fd.append("published", String(values.published));
-      fd.append("tags", JSON.stringify(tags));
 
-      const removedImages = initialImages.filter(
-        (img) => !keptImages.some((k) => k.path === img.path),
-      );
-      removedImages.forEach((img) => fd.append("images-", img.path));
-      Array.from(newImages).forEach((file) => fd.append("images", file));
+      if (tags.length > 0) {
+        fd.append("tags", JSON.stringify(tags));
+      } else {
+        fd.append("tags", "[]");
+      }
+
+      if (newImages && newImages.length > 0) {
+        for (let i = 0; i < newImages.length; i++) {
+          fd.append("images", newImages[i]);
+        }
+      }
+
+      if (keptImages.length > 0) {
+        for (const img of keptImages) {
+          fd.append("images", img.path);
+        }
+      }
 
       return await pb.collection("products").update(productId, fd);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products-admin-list"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-product-details", productId] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-product-details", productId] });
       nav({ to: "/admin/dashboard/products" });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Failed to update product");
+      toast.error(err?.message || "Failed to update product.");
     },
   });
 
-  const onSubmit = (values: FormValues) => {
-    mutation.mutate(values);
+  const onSubmit = (data: FormValues) => {
+    updateProductMut.mutate(data);
   };
 
   const selectedCategoryObj = categoriesQuery.data?.find(
@@ -197,22 +210,40 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-base-200">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => nav({ to: "/admin/dashboard/products" })}
             className="btn btn-circle btn-ghost btn-sm"
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft className="size-4" />
           </button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Edit Product</h1>
             <p className="text-xs text-base-content/60 mt-0.5">
-              Update product pricing, images, colors, and visibility.
+              Updating details for <span className="font-semibold text-base-content">{product.title}</span>
             </p>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => nav({ to: "/admin/dashboard/products" })}
+            className="btn btn-ghost btn-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            disabled={updateProductMut.isPending}
+            className="btn btn-primary btn-sm px-5"
+          >
+            {updateProductMut.isPending ? "Updating..." : "Save Changes"}
+          </button>
         </div>
       </div>
 
@@ -239,7 +270,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                     <p className="text-xs text-error -mt-2">{errors.title.message}</p>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <SimpleInput
                       label="Price (₦) *"
                       type="number"
@@ -247,6 +278,15 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                       min={0}
                       {...register("price")}
                       name="price"
+                    />
+                    <SimpleInput
+                      label="Cart Space (Units)"
+                      type="number"
+                      placeholder="1"
+                      min={1}
+                      max={20}
+                      {...register("cart_space")}
+                      name="cart_space"
                     />
                     <LocalSelect
                       label="Category"

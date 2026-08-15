@@ -48,6 +48,7 @@ const schema = z.object({
   title: z.string().min(1, "Title is required"),
   //@ts-ignore
   price: z.coerce.number({ invalid_type_error: "Enter a valid price" }).min(0),
+  cart_space: z.coerce.number().min(1).default(1),
   description: z.string().optional(),
   category: z.string().optional(),
   mainColor: z.string().default("#111111"),
@@ -69,6 +70,7 @@ function RouteComponent() {
     defaultValues: {
       title: "",
       price: 0,
+      cart_space: 1,
       description: "",
       category: "",
       mainColor: "#111111",
@@ -108,6 +110,7 @@ function RouteComponent() {
       const fd = new FormData();
       fd.append("title", values.title);
       fd.append("price", String(values.price));
+      fd.append("cart_space", String(values.cart_space || 1));
       if (values.description) fd.append("description", values.description);
       if (values.category) fd.append("category", values.category);
       fd.append("mainColor", values.mainColor || "#111111");
@@ -184,7 +187,7 @@ function RouteComponent() {
                     <p className="text-xs text-error -mt-2">{errors.title.message}</p>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <SimpleInput
                       label="Price (₦) *"
                       type="number"
@@ -192,6 +195,15 @@ function RouteComponent() {
                       min={0}
                       {...register("price")}
                       name="price"
+                    />
+                    <SimpleInput
+                      label="Cart Space (Units)"
+                      type="number"
+                      placeholder="1"
+                      min={1}
+                      max={20}
+                      {...register("cart_space")}
+                      name="cart_space"
                     />
                     <LocalSelect
                       label="Category"
