@@ -97,11 +97,13 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
       {/* Pricing Header */}
       <div className="space-y-1 pb-4 border-b border-base-200">
         <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
-          Bespoke Commission
+          Price
         </span>
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex items-baseline gap-1">
-            <span className="text-sm font-semibold text-base-content/50">₦</span>
+            <span className="text-sm font-semibold text-base-content/50">
+              ₦
+            </span>
             <span className="text-3xl font-extrabold text-base-content tracking-tight">
               {totalPrice.toLocaleString()}
             </span>
@@ -122,7 +124,9 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
               <span>Head Circumference (cm)</span>
               <span className="text-error">*</span>
             </label>
-            <span className="text-[11px] text-base-content/50">Standard: 54–60 cm</span>
+            <span className="text-[11px] text-base-content/50">
+              Standard: 54–60 cm
+            </span>
           </div>
 
           <input
@@ -212,7 +216,9 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
                   <div className="flex items-center gap-1.5">
                     <span
                       className="size-3.5 rounded-full border border-black/20"
-                      style={{ backgroundColor: (product as any).secondaryColor }}
+                      style={{
+                        backgroundColor: (product as any).secondaryColor,
+                      }}
                     />
                     <span className="font-mono text-[11px] text-base-content/70">
                       {(product as any).secondaryColor}
@@ -285,7 +291,10 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
               <p className="text-xs text-base-content/70">
                 Please sign in to configure and purchase this piece.
               </p>
-              <Link to="/login" className="btn btn-sm btn-primary rounded-xl w-full">
+              <Link
+                to="/login"
+                className="btn btn-sm btn-primary rounded-xl w-full"
+              >
                 Sign In to Order
               </Link>
             </div>
@@ -298,7 +307,8 @@ export default function Pricing(props: { product: PRODUCT_RESULT }) {
         <details className="group bg-base-200/30 rounded-xl overflow-hidden text-xs">
           <summary className="flex justify-between items-center cursor-pointer p-3 font-bold list-none hover:bg-base-200/60 transition-colors">
             <span className="flex items-center gap-1.5">
-              <Truck className="size-3.5 text-primary" /> Delivery & Handcraft Timeline
+              <Truck className="size-3.5 text-primary" /> Delivery & Handcraft
+              Timeline
             </span>
             <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />
           </summary>

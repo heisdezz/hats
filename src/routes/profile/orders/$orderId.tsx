@@ -64,7 +64,8 @@ export const Route = createFileRoute("/profile/orders/$orderId")({
     return await ssr_pb()
       .collection("user_orders")
       .getOne<OrderWithExpand>(params.orderId, {
-        expand: "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
+        expand:
+          "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
       });
   },
 });
@@ -79,7 +80,8 @@ function RouteComponent() {
     queryKey: ["order", orderId],
     queryFn: () =>
       pb.collection("user_orders").getOne<OrderWithExpand>(orderId, {
-        expand: "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
+        expand:
+          "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
       }),
     initialData: loaderData,
   });
@@ -92,7 +94,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="page-wrap py-6 space-y-6 max-w-5xl">
+    <div className="page-wrap py-6 space-y-6 ">
       {/* Back Button */}
       <Link
         to="/profile/orders"
@@ -107,11 +109,16 @@ function RouteComponent() {
         {(order) => {
           const status = order.status ?? "pending";
           const badgeClass = statusColor[status] ?? "badge-neutral";
-          const gradient = statusGradient[status] ?? "from-base-200 to-base-100";
+          const gradient =
+            statusGradient[status] ?? "from-base-200 to-base-100";
           const items =
-            ((order.expand as any)?.orderItems as ItemWithProduct[] | undefined) ?? [];
+            ((order.expand as any)?.orderItems as
+              | ItemWithProduct[]
+              | undefined) ?? [];
 
-          const currentStepIndex = ORDER_STEPS.findIndex((s) => s.id === status);
+          const currentStepIndex = ORDER_STEPS.findIndex(
+            (s) => s.id === status,
+          );
 
           return (
             <div className="space-y-6">
@@ -127,7 +134,9 @@ function RouteComponent() {
                         <span className="text-xs font-extrabold uppercase tracking-widest text-base-content/50">
                           Order Confirmation
                         </span>
-                        <span className={`badge badge-sm font-bold uppercase tracking-wider ${badgeClass}`}>
+                        <span
+                          className={`badge badge-sm font-bold uppercase tracking-wider ${badgeClass}`}
+                        >
                           {status}
                         </span>
                       </div>
@@ -153,19 +162,24 @@ function RouteComponent() {
                       <span>
                         Placed on{" "}
                         <strong>
-                          {new Date(order.created).toLocaleDateString(undefined, {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
+                          {new Date(order.created).toLocaleDateString(
+                            undefined,
+                            {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            },
+                          )}
                         </strong>
                       </span>
                     </div>
 
                     {order.ref && (
                       <div className="flex items-center gap-2">
-                        <span className="text-base-content/40">Paystack Ref:</span>
+                        <span className="text-base-content/40">
+                          Paystack Ref:
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleCopyRef(order.ref!)}
@@ -197,8 +211,8 @@ function RouteComponent() {
                               isCurrent
                                 ? "bg-base-100 border-primary shadow-xs font-bold"
                                 : isDone
-                                ? "bg-base-100/80 border-success/30 text-success"
-                                : "bg-base-100/30 border-base-200 opacity-40"
+                                  ? "bg-base-100/80 border-success/30 text-success"
+                                  : "bg-base-100/30 border-base-200 opacity-40"
                             }`}
                           >
                             <div
@@ -206,8 +220,8 @@ function RouteComponent() {
                                 isCurrent
                                   ? "bg-primary text-primary-content"
                                   : isDone
-                                  ? "bg-success/15 text-success"
-                                  : "bg-base-200 text-base-content/30"
+                                    ? "bg-success/15 text-success"
+                                    : "bg-base-200 text-base-content/30"
                               }`}
                             >
                               <Icon className="size-4" />
@@ -217,7 +231,11 @@ function RouteComponent() {
                                 {step.label}
                               </p>
                               <p className="text-[10px] text-base-content/50">
-                                {isDone ? (isCurrent ? "In Progress" : "Completed") : "Upcoming"}
+                                {isDone
+                                  ? isCurrent
+                                    ? "In Progress"
+                                    : "Completed"
+                                  : "Upcoming"}
                               </p>
                             </div>
                           </div>
@@ -244,9 +262,12 @@ function RouteComponent() {
                     <div className="flex items-start gap-2">
                       <MapPin className="size-4 text-base-content/40 shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-bold text-base-content">Studio Pickup or Courier</p>
+                        <p className="font-bold text-base-content">
+                          Studio Pickup or Courier
+                        </p>
                         <p className="text-base-content/50 mt-0.5">
-                          Orders are prepared and dispatched from our Lagos studio within 2–4 business days.
+                          Orders are prepared and dispatched from our Lagos
+                          studio within 2–4 business days.
                         </p>
                       </div>
                     </div>
@@ -254,9 +275,12 @@ function RouteComponent() {
                     <div className="flex items-start gap-2 pt-2 border-t border-base-200">
                       <CreditCard className="size-4 text-base-content/40 shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-bold text-base-content">Payment Verified</p>
+                        <p className="font-bold text-base-content">
+                          Payment Verified
+                        </p>
                         <p className="text-base-content/50 mt-0.5">
-                          Secured via Paystack Inline checkout with automated fulfillment verification.
+                          Secured via Paystack Inline checkout with automated
+                          fulfillment verification.
                         </p>
                       </div>
                     </div>
@@ -271,7 +295,9 @@ function RouteComponent() {
                   </div>
 
                   <p className="text-xs text-base-content/60 leading-relaxed">
-                    Have questions regarding custom sizing, bespoke modifications, or delivery timelines? Our artisan studio team is available to help.
+                    Have questions regarding custom sizing, bespoke
+                    modifications, or delivery timelines? Our artisan studio
+                    team is available to help.
                   </p>
 
                   <div className="flex items-center gap-3 pt-1">
