@@ -30,19 +30,38 @@ export async function get_products(options: ProductFilterOptions = {}) {
   const filters: string[] = ["published = true"];
 
   if (options.section) {
-    filters.push(pb.filter("category.parent.name = {:section} || category.parent.id = {:section}", { section: options.section }));
+    filters.push(
+      pb.filter(
+        "category.parent.name = {:section} || category.parent.id = {:section} || category.parent ~ {:section}",
+        { section: options.section }
+      )
+    );
   }
 
   if (options.category) {
-    filters.push(pb.filter("category.id = {:category} || category.name = {:category}", { category: options.category }));
+    filters.push(
+      pb.filter(
+        "category.id = {:category} || category.name = {:category} || category ~ {:category}",
+        { category: options.category }
+      )
+    );
   }
 
   if (options.tag) {
-    filters.push(pb.filter("tags ~ {:tag}", { tag: options.tag }));
+    filters.push(
+      pb.filter(
+        "tags.id = {:tag} || tags.name ~ {:tag} || tags ~ {:tag}",
+        { tag: options.tag }
+      )
+    );
   }
 
   if (options.search) {
-    filters.push(pb.filter("title ~ {:search} || description ~ {:search}", { search: options.search }));
+    filters.push(
+      pb.filter("title ~ {:search} || description ~ {:search}", {
+        search: options.search,
+      })
+    );
   }
 
   const sort = options.sort || "-created";
@@ -83,4 +102,3 @@ export const get_hats = async () => {
 export const get_jewelry = async () => {
   return await get_products({ section: "jewelry" });
 };
-
