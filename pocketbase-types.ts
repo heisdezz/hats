@@ -205,6 +205,7 @@ export type OrdersRecord = {
 
 export type ProductsRecord = {
 	category?: RecordIdString
+	color_selection?: boolean
 	created: IsoAutoDateString
 	description?: HTMLString
 	id: string

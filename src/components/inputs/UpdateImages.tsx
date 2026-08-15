@@ -1,6 +1,7 @@
 import { XCircle } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 interface UpdateImagesProps {
   images: { url: string; path: string }[];
@@ -17,56 +18,46 @@ export default function UpdateImages({
   const [prevImages, setPrevImages] = useState<{ url: string; path: string }[]>(
     images || [],
   );
+
   useEffect(() => {
     setPrevImages(images);
   }, [images]);
-  const [newImages, setNewImages] = useState<FileList | []>([]);
+
+  const [newImages, setNewImages] = useState<File[]>([]);
+
   useEffect(() => {
     if (newImages.length > 0) {
       setNew(newImages);
     } else {
-      setNew([]); // Ensure setNew is called with an empty array if newImages becomes empty
+      setNew([]);
     }
   }, [newImages, setNew]);
-  // useEffect(() => {
-  //   setPrev(prevImages); // Always call setPrev with the current prevImages
-  // }, [prevImages, setPrev]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setNewImages((prev) => [...prev, ...acceptedFiles]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    multiple: true,
+  });
 
   const removeNewImage = (indexToRemove: number) => {
-    if (newImages) {
-      // Convert FileList to array, filter out the file at indexToRemove
-      const filesArray = Array.from(newImages);
-      const filteredFiles = filesArray.filter(
-        (_, index) => index !== indexToRemove,
-      );
-
-      // Create a new FileList using DataTransfer
-      const dataTransfer = new DataTransfer();
-      filteredFiles.forEach((file) => dataTransfer.items.add(file));
-      setNewImages(dataTransfer.files); // Update state with new FileList
-    }
+    setNewImages((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
-        <div className="h-40 flex flex-col justify-center items-center border-2 border-dashed border-base-300 rounded-lg p-4 hover:border-primary transition-colors duration-200">
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            name=""
-            id={id}
-            onChange={(e) => {
-              const files = e.target.files;
-              //@ts-ignore
-              setNewImages((prev) => (prev ? [...prev, ...files] : [...files]));
-            }}
-            multiple // Allow multiple file selection
-          />
-          <label
-            htmlFor={id}
-            className="flex flex-col items-center justify-center text-center cursor-pointer h-full w-full"
-          >
+        <div
+          {...getRootProps()}
+          className={`h-40 flex flex-col justify-center items-center border-2 border-dashed rounded-lg p-4 transition-colors duration-200 ${
+            isDragActive ? "border-primary bg-base-100" : "border-base-300"
+          }`}
+        >
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center justify-center text-center cursor-pointer h-full w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-12 w-12 text-base-content opacity-60"
@@ -87,8 +78,9 @@ export default function UpdateImages({
             <span className="text-sm text-base-content opacity-60">
               Drag and drop or click to upload
             </span>
-          </label>
+          </div>
         </div>
+
         {prevImages?.length > 0 &&
           prevImages?.map((image, index) => (
             <div key={image.path} className="relative h-40 w-full group">
@@ -106,7 +98,7 @@ export default function UpdateImages({
                   );
                   setPrev((prev: any[]) =>
                     prev.filter((img) => img.path !== image.path),
-                  ); // Update setPrev as well
+                  );
                 }}
                 aria-label="Remove existing image"
               >
@@ -116,11 +108,8 @@ export default function UpdateImages({
           ))}
 
         {newImages &&
-          Array.from(newImages).map((image, index) => (
-            <div
-              key={image.name + index}
-              className="relative h-40 w-full group"
-            >
+          newImages.map((image, index) => (
+            <div key={image.name + index} className="relative h-40 w-full group">
               <img
                 className="size-full object-cover rounded-lg shadow-md"
                 src={URL.createObjectURL(image)}

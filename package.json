@@ -40,6 +40,7 @@
     "react": "^19.2.5",
     "react-colorful": "^5.6.1",
     "react-dom": "^19.2.5",
+    "react-dropzone": "^20.1.0",
     "react-google-autocomplete": "^2.7.5",
     "react-hook-form": "^7.75.0",
     "react-paystack": "^6.0.0",
