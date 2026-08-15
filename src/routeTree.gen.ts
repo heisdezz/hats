@@ -25,6 +25,7 @@ import { Route as AdminDashboardRouteRouteImport } from './routes/admin/dashboar
 import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
 import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
 import { Route as StoreCartIndexRouteImport } from './routes/store/cart/index'
+import { Route as StoreAboutIndexRouteImport } from './routes/store/about.index'
 import { Route as ProfileOrdersIndexRouteImport } from './routes/profile/orders/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as ProfileOrdersOrderIdRouteImport } from './routes/profile/orders/$orderId'
@@ -121,6 +122,11 @@ const StoreCatalogIndexRoute = StoreCatalogIndexRouteImport.update({
 const StoreCartIndexRoute = StoreCartIndexRouteImport.update({
   id: '/cart/',
   path: '/cart/',
+  getParentRoute: () => StoreRouteRoute,
+} as any)
+const StoreAboutIndexRoute = StoreAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => StoreRouteRoute,
 } as any)
 const ProfileOrdersIndexRoute = ProfileOrdersIndexRouteImport.update({
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
+  '/store/about/': typeof StoreAboutIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/profile/orders': typeof ProfileOrdersIndexRoute
+  '/store/about': typeof StoreAboutIndexRoute
   '/store/cart': typeof StoreCartIndexRoute
   '/store/catalog': typeof StoreCatalogIndexRoute
   '/store/jewelry': typeof StoreJewelryIndexRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
+  '/store/about/': typeof StoreAboutIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
   '/store/jewelry/': typeof StoreJewelryIndexRoute
@@ -343,6 +352,7 @@ export interface FileRouteTypes {
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
+    | '/store/about/'
     | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/profile/orders/$orderId'
     | '/admin/dashboard'
     | '/profile/orders'
+    | '/store/about'
     | '/store/cart'
     | '/store/catalog'
     | '/store/jewelry'
@@ -409,6 +420,7 @@ export interface FileRouteTypes {
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
+    | '/store/about/'
     | '/store/cart/'
     | '/store/catalog/'
     | '/store/jewelry/'
@@ -550,6 +562,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/store/cart/'
       preLoaderRoute: typeof StoreCartIndexRouteImport
+      parentRoute: typeof StoreRouteRoute
+    }
+    '/store/about/': {
+      id: '/store/about/'
+      path: '/about'
+      fullPath: '/store/about/'
+      preLoaderRoute: typeof StoreAboutIndexRouteImport
       parentRoute: typeof StoreRouteRoute
     }
     '/profile/orders/': {
@@ -738,6 +757,7 @@ const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
 
 interface StoreRouteRouteChildren {
   StoreIndexRoute: typeof StoreIndexRoute
+  StoreAboutIndexRoute: typeof StoreAboutIndexRoute
   StoreCartIndexRoute: typeof StoreCartIndexRoute
   StoreCatalogIndexRoute: typeof StoreCatalogIndexRoute
   StoreJewelryIndexRoute: typeof StoreJewelryIndexRoute
@@ -749,6 +769,7 @@ interface StoreRouteRouteChildren {
 
 const StoreRouteRouteChildren: StoreRouteRouteChildren = {
   StoreIndexRoute: StoreIndexRoute,
+  StoreAboutIndexRoute: StoreAboutIndexRoute,
   StoreCartIndexRoute: StoreCartIndexRoute,
   StoreCatalogIndexRoute: StoreCatalogIndexRoute,
   StoreJewelryIndexRoute: StoreJewelryIndexRoute,
