@@ -28,7 +28,9 @@ export default function MainInfo(props: {
   const section = product.expand?.category?.expand?.parent?.name;
   const sectionId = product.expand?.category?.expand?.parent?.id;
 
-  const tags = normalizeTagItem(product.tags || (product.expand as any)?.tags || []);
+  const tags = normalizeTagItem(
+    product.tags || (product.expand as any)?.tags || [],
+  );
   const mainColor = (product as any).mainColor;
   const secondaryColor = (product as any).secondaryColor;
   const colorSelection = (product as any).color_selection !== false;
@@ -36,7 +38,7 @@ export default function MainInfo(props: {
   return (
     <main className="flex-1 flex flex-col gap-8">
       {/* Product Image Gallery Carousel */}
-      <div className="w-full rounded-2xl overflow-hidden bg-base-200/50 border border-base-200 shadow-xs">
+      <div className="w-full rounded-2xl overflow-hidden bg-base-200/20 border border-base-200 shadow-xs">
         {slides.length > 0 ? (
           <Carousel slides={slides} alt={product.title ?? "Product"} />
         ) : (
@@ -54,7 +56,10 @@ export default function MainInfo(props: {
             Store
           </Link>
           <span>/</span>
-          <Link to="/store/catalog" className="hover:text-primary transition-colors">
+          <Link
+            to="/store/catalog"
+            className="hover:text-primary transition-colors"
+          >
             Catalog
           </Link>
           {section && (
@@ -103,7 +108,9 @@ export default function MainInfo(props: {
                   : "badge-ghost text-base-content/50"
               }`}
             >
-              {colorSelection ? "Custom Colors Supported" : "Standard Collection"}
+              {colorSelection
+                ? "Custom Colors Supported"
+                : "Standard Collection"}
             </span>
           </div>
 
@@ -132,7 +139,9 @@ export default function MainInfo(props: {
                     className="size-4 rounded-full border border-black/20 shadow-xs"
                     style={{ backgroundColor: mainColor }}
                   />
-                  <span className="font-mono text-base-content/60">{mainColor}</span>
+                  <span className="font-mono text-base-content/60">
+                    {mainColor}
+                  </span>
                 </div>
               )}
               {secondaryColor && (
@@ -141,7 +150,9 @@ export default function MainInfo(props: {
                     className="size-4 rounded-full border border-black/20 shadow-xs"
                     style={{ backgroundColor: secondaryColor }}
                   />
-                  <span className="font-mono text-base-content/60">{secondaryColor}</span>
+                  <span className="font-mono text-base-content/60">
+                    {secondaryColor}
+                  </span>
                 </div>
               )}
             </div>
@@ -155,7 +166,10 @@ export default function MainInfo(props: {
           </h2>
           <div className="prose prose-sm max-w-none text-base-content/80 leading-relaxed">
             <RenderDescription
-              text={product.description ?? "Handcrafted with bespoke millinery techniques."}
+              text={
+                product.description ??
+                "Handcrafted with bespoke millinery techniques."
+              }
             />
           </div>
         </div>
@@ -185,16 +199,21 @@ export default function MainInfo(props: {
           <div className="p-3.5 rounded-xl bg-base-200/40 border border-base-200 flex items-start gap-3">
             <Sparkles className="size-5 text-primary shrink-0 mt-0.5" />
             <div className="text-xs space-y-0.5">
-              <p className="font-bold text-base-content">Handmade Bespoke Artistry</p>
+              <p className="font-bold text-base-content">
+                Handmade Bespoke Artistry
+              </p>
               <p className="text-base-content/60">
-                Each piece is custom crafted with meticulous attention to detail.
+                Each piece is custom crafted with meticulous attention to
+                detail.
               </p>
             </div>
           </div>
           <div className="p-3.5 rounded-xl bg-base-200/40 border border-base-200 flex items-start gap-3">
             <ShieldCheck className="size-5 text-success shrink-0 mt-0.5" />
             <div className="text-xs space-y-0.5">
-              <p className="font-bold text-base-content">Authenticity Guaranteed</p>
+              <p className="font-bold text-base-content">
+                Authenticity Guaranteed
+              </p>
               <p className="text-base-content/60">
                 Carefully inspected and securely packaged prior to dispatch.
               </p>

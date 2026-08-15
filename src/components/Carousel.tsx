@@ -36,7 +36,7 @@ export default function Carousel({ slides, alt = "Image" }: CarouselProps) {
   }
 
   return (
-    <div className="flex  ring fade rounded-xl bg-base-200 flex-col gap-3 flex-1 p-4 h-full">
+    <div className="flex  ring fade rounded-xl  flex-col gap-3 flex-1 p-4 h-full max-h-[520px]">
       <div
         className="relative overflow-hidden rounded-box flex-1 min-h-0"
         ref={emblaRef}
@@ -45,7 +45,7 @@ export default function Carousel({ slides, alt = "Image" }: CarouselProps) {
           {slides.map((src, i) => (
             <div
               key={i}
-              className="flex-[0_0_100%] min-w-0 h-full bg-base-200   flex p-4"
+              className="flex-[0_0_100%] min-w-0 h-full bg-base-200/50   flex p-4"
             >
               <img
                 src={src}
