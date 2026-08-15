@@ -15,24 +15,24 @@ import { toast } from "sonner";
 const STATUSES = ["pending", "processing", "in-transit", "delivered"];
 
 const statusGradient: Record<string, string> = {
-  pending:    "from-warning/20 via-warning/5 to-base-200",
+  pending: "from-warning/20 via-warning/5 to-base-200",
   processing: "from-info/20 via-info/5 to-base-200",
   "in-transit": "from-primary/20 via-primary/5 to-base-200",
-  delivered:  "from-success/20 via-success/5 to-base-200",
+  delivered: "from-success/20 via-success/5 to-base-200",
 };
 
 const statusBadge: Record<string, string> = {
-  pending:    "badge-warning",
+  pending: "badge-warning",
   processing: "badge-info",
   "in-transit": "badge-primary",
-  delivered:  "badge-success",
+  delivered: "badge-success",
 };
 
 const statusDot: Record<string, string> = {
-  pending:    "bg-warning border-warning",
+  pending: "bg-warning border-warning",
   processing: "bg-info border-info",
   "in-transit": "bg-primary border-primary",
-  delivered:  "bg-success border-success",
+  delivered: "bg-success border-success",
 };
 
 type OrderExpand = {
@@ -47,6 +47,10 @@ export const Route = createFileRoute("/admin/dashboard/orders/$orderId")({
       .collection("user_orders")
       .getOne(params.orderId, {
         expand: "orderItems,orderItems.originalProduct,user",
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(err);
       }),
 });
 
@@ -87,23 +91,27 @@ function RouteComponent() {
           const items = expand?.orderItems ?? [];
           const user = expand?.user;
           const status = order.status ?? "pending";
-          const gradient = statusGradient[status] ?? "from-base-200 to-base-200";
+          const gradient =
+            statusGradient[status] ?? "from-base-200 to-base-200";
           const displayName =
             user?.username || user?.email || `#${order.user.slice(0, 8)}`;
           const currentStatusIdx = STATUSES.indexOf(status);
 
           return (
             <div className="flex flex-col gap-5">
-
               {/* Hero header */}
-              <div className={`rounded-3xl bg-gradient-to-br ${gradient} p-7 relative overflow-hidden`}>
+              <div
+                className={`rounded-3xl bg-gradient-to-br ${gradient} p-7 relative overflow-hidden`}
+              >
                 {/* Decorative circle */}
                 <div className="absolute -right-12 -top-12 size-48 rounded-full bg-current opacity-5" />
                 <div className="absolute -right-4 -bottom-8 size-32 rounded-full bg-current opacity-5" />
 
                 <div className="relative flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-3">
-                    <span className={`badge badge-lg ${statusBadge[status] ?? "badge-neutral"} capitalize w-fit`}>
+                    <span
+                      className={`badge badge-lg ${statusBadge[status] ?? "badge-neutral"} capitalize w-fit`}
+                    >
                       {status}
                     </span>
                     <div>
@@ -157,7 +165,10 @@ function RouteComponent() {
                       const passed = i <= currentStatusIdx;
                       const active = i === currentStatusIdx;
                       return (
-                        <div key={s} className="flex items-center flex-1 last:flex-none">
+                        <div
+                          key={s}
+                          className="flex items-center flex-1 last:flex-none"
+                        >
                           <button
                             className="flex flex-col items-center gap-2 group"
                             disabled={statusMut.isPending}
@@ -180,7 +191,9 @@ function RouteComponent() {
                               {passed ? (
                                 <Check size={14} strokeWidth={3} />
                               ) : (
-                                <span className="text-xs font-bold">{i + 1}</span>
+                                <span className="text-xs font-bold">
+                                  {i + 1}
+                                </span>
                               )}
                             </div>
                             <span
@@ -193,7 +206,9 @@ function RouteComponent() {
                           {i < STATUSES.length - 1 && (
                             <div
                               className={`flex-1 h-0.5 mx-2 mb-5 rounded-full transition-all ${
-                                i < currentStatusIdx ? "bg-success" : "bg-base-300"
+                                i < currentStatusIdx
+                                  ? "bg-success"
+                                  : "bg-base-300"
                               }`}
                             />
                           )}
@@ -203,7 +218,6 @@ function RouteComponent() {
                   </div>
                 </div>
               </div>
-
             </div>
           );
         }}

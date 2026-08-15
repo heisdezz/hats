@@ -13,13 +13,12 @@ import { Toaster } from "sonner";
 import Provider from "#/components/providers/Provider";
 import appCss from "../styles.css?url";
 
+import GlobalErrorComponent from "#/components/GlobalErrorComponent";
+import NotFoundComponent from "#/components/NotFoundComponent";
+
 export const Route = createRootRoute({
-  notFoundComponent: () => (
-    <div className="page-wrap text-center">
-      <h1 className="text-4xl font-bold">404</h1>
-      <p className="mt-2 text-base-content/60">Page not found</p>
-    </div>
-  ),
+  errorComponent: GlobalErrorComponent,
+  notFoundComponent: NotFoundComponent,
   head: () => ({
     meta: [
       {
