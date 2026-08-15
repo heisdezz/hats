@@ -1,17 +1,30 @@
 import { pb } from "#/client/pb";
 import type {
+  CategoryResponse,
   OrderItemsResponse,
   ProductsResponse,
+  SectionResponse,
 } from "#/../pocketbase-types";
+import { Link } from "@tanstack/react-router";
+import { ExternalLink, ShoppingBag, Sparkles, Tag } from "lucide-react";
 
 type ItemWithProduct = OrderItemsResponse<{
-  originalProduct: ProductsResponse;
+  originalProduct?: ProductsResponse<{
+    category?: CategoryResponse<{ parent?: SectionResponse }>;
+  }>;
 }>;
 
-function getProductUrl(product: ProductsResponse | undefined) {
+function getProductUrl(product?: ProductsResponse) {
   if (!product) return null;
   const file = product.preview || product.images?.[0];
   return file ? pb.files.getURL(product, file) : null;
+}
+
+function getStoreLink(product?: ProductsResponse<{ category?: CategoryResponse<{ parent?: SectionResponse }> }>) {
+  if (!product?.id) return "/store/catalog";
+  const sectionName = product.expand?.category?.expand?.parent?.name?.toLowerCase() || "";
+  const isJewelry = sectionName.includes("jewelry");
+  return `/store/catalog/products/${isJewelry ? "jewelry" : "hats"}/${product.id}`;
 }
 
 export default function UserOrderItems({
@@ -21,132 +34,150 @@ export default function UserOrderItems({
 }) {
   if (!items.length) return null;
 
-  const first = items[0];
-  const firstProduct = (first.expand as any)?.originalProduct as
-    | ProductsResponse
-    | undefined;
-  const previewUrl = getProductUrl(firstProduct);
-
   return (
-    <div className="rounded-2xl overflow-hidden border border-base-200">
-      {/* First item image banner */}
-      <div className="relative h-40 bg-base-200">
-        {previewUrl ? (
-          <img
-            src={previewUrl}
-            alt={firstProduct?.title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-base-content/10">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="m21 15-5-5L5 21" />
-            </svg>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/20 to-transparent" />
-        {(firstProduct?.mainColor || firstProduct?.secondaryColor) && (
-          <div className="absolute top-3 right-3 flex gap-1.5">
-            {firstProduct.mainColor && (
-              <span
-                className="size-5 rounded-full border-2 border-white/70 shadow"
-                style={{ backgroundColor: firstProduct.mainColor }}
-              />
-            )}
-            {firstProduct.secondaryColor && (
-              <span
-                className="size-5 rounded-full border-2 border-white/70 shadow"
-                style={{ backgroundColor: firstProduct.secondaryColor }}
-              />
-            )}
-          </div>
-        )}
-        <div className="absolute bottom-3 left-3">
-          <span className="badge badge-neutral badge-sm">
-            {items.length} item{items.length !== 1 ? "s" : ""}
-          </span>
+    <div className="card bg-base-100 border border-base-200 shadow-xs overflow-hidden">
+      {/* Header */}
+      <div className="p-5 border-b border-base-200 flex items-center justify-between bg-base-200/30">
+        <div className="flex items-center gap-2">
+          <ShoppingBag className="size-4 text-primary" />
+          <h3 className="font-bold text-sm text-base-content">
+            Purchased Items ({items.length})
+          </h3>
         </div>
+        <span className="text-xs text-base-content/50">
+          Click item to view in store
+        </span>
       </div>
 
-      {/* Items list */}
-      <div className="bg-base-100 px-4 pb-4 -mt-1 flex flex-col gap-3">
-        <p className="text-xs text-base-content/40 uppercase tracking-widest font-semibold">
-          Items
-        </p>
+      {/* Items List */}
+      <div className="divide-y divide-base-200">
+        {items.map((item, idx) => {
+          const product = (item.expand as any)?.originalProduct;
+          const imgUrl = getProductUrl(product);
+          const storeUrl = getStoreLink(product);
+          const unitPrice = Math.round((item.price ?? 0) / (item.amount || 1));
+          const mainColor = (item as any).mainColor || product?.mainColor;
+          const secondaryColor = (item as any).secondaryColor || product?.secondaryColor;
+          const size = (item as any).headSize || (item as any).wristSize;
+          const sizeType = (item as any).headSize ? "Head Size" : "Wrist Size";
 
-        <div className="flex flex-col divide-y divide-base-200">
-          {items.map((item, i) => {
-            const product = (item.expand as any)?.originalProduct as
-              | ProductsResponse
-              | undefined;
-            const imgUrl = getProductUrl(product);
-            return (
-              <div
-                key={item.id ?? i}
-                className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-              >
-                {imgUrl ? (
-                  <img
-                    src={imgUrl}
-                    alt={product?.title}
-                    className="size-11 rounded-xl object-cover shrink-0 bg-base-200"
-                  />
-                ) : (
-                  <div className="size-11 rounded-xl bg-base-200 shrink-0 flex items-center justify-center text-base-content/20">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="size-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <rect x="3" y="3" width="18" height="18" rx="2" />
-                      <path d="m21 15-5-5L5 21" />
-                    </svg>
+          return (
+            <div
+              key={item.id ?? idx}
+              className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-base-200/30 transition-colors"
+            >
+              <div className="flex items-start gap-4 flex-1 min-w-0">
+                {/* Product Thumbnail with Store Link */}
+                <Link
+                  to={storeUrl}
+                  className="relative size-20 md:size-24 rounded-2xl overflow-hidden bg-base-200 shrink-0 border border-base-200 group"
+                  title="View piece in store"
+                >
+                  {imgUrl ? (
+                    <img
+                      src={imgUrl}
+                      alt={product?.title ?? "Product"}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-base-content/20">
+                      <ShoppingBag className="size-8 stroke-1" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <ExternalLink className="size-5" />
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate">
-                    {product?.title ?? (
-                      <span className="italic text-base-content/30">
-                        Unknown
+                </Link>
+
+                {/* Product Info */}
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {product?.expand?.category?.name && (
+                      <span className="badge badge-xs badge-neutral text-[10px] uppercase font-bold">
+                        {product.expand.category.name}
                       </span>
                     )}
-                  </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {product?.mainColor && (
-                      <span
-                        className="size-3 rounded-full border border-base-content/20"
-                        style={{ backgroundColor: product.mainColor }}
-                      />
+                    {size && (
+                      <span className="badge badge-xs badge-ghost text-[10px]">
+                        {sizeType}: {size} cm
+                      </span>
                     )}
-                    {product?.secondaryColor && (
-                      <span
-                        className="size-3 rounded-full border border-base-content/20"
-                        style={{ backgroundColor: product.secondaryColor }}
-                      />
-                    )}
-                    <span className="text-xs text-base-content/40">
-                      ×{item.amount ?? 1} · ₦{Math.round((item.price ?? 0) / (item.amount || 1)).toLocaleString()} each
+                  </div>
+
+                  <h4 className="font-bold text-base text-base-content leading-snug line-clamp-2">
+                    <Link
+                      to={storeUrl}
+                      className="hover:text-primary transition-colors inline-flex items-center gap-1.5"
+                    >
+                      {product?.title ?? "Custom Artisan Piece"}
+                      <ExternalLink className="size-3.5 opacity-40 shrink-0" />
+                    </Link>
+                  </h4>
+
+                  {/* Quantity & Unit Pricing */}
+                  <div className="flex items-center gap-3 text-xs text-base-content/60 flex-wrap">
+                    <span className="font-medium">
+                      Qty: <strong className="text-base-content">{item.amount ?? 1}</strong>
                     </span>
+                    <span>•</span>
+                    <span>₦{unitPrice.toLocaleString()} each</span>
+                  </div>
+
+                  {/* Colors & Customization Info */}
+                  <div className="flex items-center gap-4 text-xs pt-1 flex-wrap">
+                    {(mainColor || secondaryColor) && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-base-content/50">Palette:</span>
+                        <div className="flex items-center gap-1">
+                          {mainColor && (
+                            <span
+                              className="size-3.5 rounded-full border border-black/20"
+                              style={{ backgroundColor: mainColor }}
+                              title={`Primary: ${mainColor}`}
+                            />
+                          )}
+                          {secondaryColor && (
+                            <span
+                              className="size-3.5 rounded-full border border-black/20"
+                              style={{ backgroundColor: secondaryColor }}
+                              title={`Secondary: ${secondaryColor}`}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {item.extraInfo && (
+                      <div className="text-[11px] text-base-content/60 italic line-clamp-1 bg-base-200/60 px-2 py-0.5 rounded-md max-w-xs">
+                        Notes: "{item.extraInfo}"
+                      </div>
+                    )}
                   </div>
                 </div>
-                <span className="text-sm font-bold shrink-0 text-primary">
-                  ₦{(item.price ?? 0).toLocaleString()}
-                </span>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Price & Action Button */}
+              <div className="flex md:flex-col items-center md:items-end justify-between w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-base-200 gap-2">
+                <div className="text-left md:text-right">
+                  <p className="text-[10px] text-base-content/40 uppercase font-bold tracking-wider">
+                    Item Total
+                  </p>
+                  <p className="text-lg font-extrabold text-primary">
+                    ₦{(item.price ?? 0).toLocaleString()}
+                  </p>
+                </div>
+
+                <Link
+                  to={storeUrl}
+                  className="btn btn-sm btn-ghost border border-base-200 hover:btn-primary rounded-xl text-xs gap-1.5"
+                >
+                  <Sparkles className="size-3.5" />
+                  <span>View in Store</span>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

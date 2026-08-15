@@ -1,14 +1,30 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { pb } from "#/client/pb";
+import { pb, ssr_pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
 import UserOrderItems from "#/routes/profile/-components/UserOrderItems";
-import RelatedOrders from "#/routes/profile/-components/RelatedOrders";
 import type {
+  CategoryResponse,
   OrderItemsResponse,
   ProductsResponse,
+  SectionResponse,
   UserOrdersResponse,
 } from "#/../pocketbase-types";
+import {
+  ArrowLeft,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Copy,
+  CreditCard,
+  HelpCircle,
+  MapPin,
+  Package,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   pending: "badge-warning",
@@ -24,146 +40,256 @@ const statusGradient: Record<string, string> = {
   delivered: "from-success/15 via-success/5 to-base-100",
 };
 
+const ORDER_STEPS = [
+  { id: "pending", label: "Order Placed", icon: Clock },
+  { id: "processing", label: "Crafting & Prep", icon: Package },
+  { id: "in-transit", label: "In Transit", icon: Truck },
+  { id: "delivered", label: "Delivered", icon: CheckCircle2 },
+];
+
+type ItemWithProduct = OrderItemsResponse<{
+  originalProduct?: ProductsResponse<{
+    category?: CategoryResponse<{ parent?: SectionResponse }>;
+  }>;
+}>;
+
 type OrderWithExpand = UserOrdersResponse<{
-  orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>[];
+  orderItems?: ItemWithProduct[];
 }>;
 
 export const Route = createFileRoute("/profile/orders/$orderId")({
   component: RouteComponent,
   validateSearch: (search: any): any => search,
+  loader: async ({ params }) => {
+    return await ssr_pb()
+      .collection("user_orders")
+      .getOne<OrderWithExpand>(params.orderId, {
+        expand: "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
+      });
+  },
 });
-
-function Section({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="card bg-base-200 shadow-none">
-      <div className="card-body p-5 gap-3">
-        <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-          {label}
-        </p>
-        {children}
-      </div>
-    </div>
-  );
-}
 
 function RouteComponent() {
   const { orderId } = Route.useParams();
+  const loaderData = Route.useLoaderData();
   const nav = useNavigate();
+  const [copiedRef, setCopiedRef] = useState(false);
 
   const query = useQuery({
     queryKey: ["order", orderId],
     queryFn: () =>
       pb.collection("user_orders").getOne<OrderWithExpand>(orderId, {
-        expand: "orderItems,orderItems.originalProduct",
+        expand: "orderItems,orderItems.originalProduct,orderItems.originalProduct.category.parent",
       }),
+    initialData: loaderData,
   });
 
+  const handleCopyRef = (ref: string) => {
+    navigator.clipboard.writeText(ref);
+    setCopiedRef(true);
+    toast.success("Order reference copied to clipboard!");
+    setTimeout(() => setCopiedRef(false), 2000);
+  };
+
   return (
-    <div className="page-wrap flex flex-col gap-5">
+    <div className="page-wrap py-6 space-y-6 max-w-5xl">
+      {/* Back Button */}
       <Link
         to="/profile/orders"
         search={{ page: 1, reference: undefined }}
-        className="inline-flex items-center gap-1.5 text-sm text-base-content/50 hover:text-base-content w-fit transition-colors"
+        className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-base-content transition-colors font-medium"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="m15 18-6-6 6-6" />
-        </svg>
-        Orders
+        <ArrowLeft className="size-4" />
+        <span>Back to My Orders</span>
       </Link>
 
       <PageLoader query={query}>
         {(order) => {
           const status = order.status ?? "pending";
           const badgeClass = statusColor[status] ?? "badge-neutral";
-          const gradient =
-            statusGradient[status] ?? "from-base-200 to-base-100";
-          const items = ((order.expand as any)?.orderItems as
-            | OrderItemsResponse<{ originalProduct: ProductsResponse }>[]
-            | undefined) ?? [];
+          const gradient = statusGradient[status] ?? "from-base-200 to-base-100";
+          const items =
+            ((order.expand as any)?.orderItems as ItemWithProduct[] | undefined) ?? [];
+
+          const currentStepIndex = ORDER_STEPS.findIndex((s) => s.id === status);
 
           return (
-            <div className="flex flex-col gap-4">
-              {/* Hero header */}
+            <div className="space-y-6">
+              {/* Hero Status Banner */}
               <div
-                className={`rounded-3xl bg-gradient-to-br ${gradient} p-6 relative overflow-hidden`}
+                className={`rounded-3xl bg-gradient-to-br ${gradient} border border-base-200/80 p-6 md:p-8 relative overflow-hidden shadow-xs`}
               >
-                <div className="absolute -right-8 -top-8 size-36 rounded-full bg-current opacity-[0.04]" />
-                <div className="relative flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-3">
+                <div className="relative flex flex-col gap-6">
+                  {/* Top Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <p className="text-xs text-base-content/40 font-semibold uppercase tracking-widest mb-1">
-                        Order
-                      </p>
-                      <h2 className="text-xl font-black font-mono tracking-tight">
-                        #{order.id.slice(0, 12)}
-                      </h2>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-xs font-extrabold uppercase tracking-widest text-base-content/50">
+                          Order Confirmation
+                        </span>
+                        <span className={`badge badge-sm font-bold uppercase tracking-wider ${badgeClass}`}>
+                          {status}
+                        </span>
+                      </div>
+                      <h1 className="text-2xl md:text-3xl font-mono font-black tracking-tight text-base-content mt-1">
+                        #{order.id}
+                      </h1>
                     </div>
-                    <span
-                      className={`badge badge-lg ${badgeClass} capitalize shrink-0`}
-                    >
-                      {status}
-                    </span>
-                  </div>
 
-                  <p className="text-sm text-base-content/50">
-                    {new Date(order.created).toLocaleDateString(undefined, {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-current/10">
-                    <div>
-                      <p className="text-xs text-base-content/40">Total</p>
-                      <p className="text-2xl font-black">
+                    <div className="text-left sm:text-right">
+                      <p className="text-xs text-base-content/50 uppercase font-bold tracking-wider">
+                        Total Amount Paid
+                      </p>
+                      <p className="text-2xl md:text-3xl font-extrabold text-primary">
                         ₦{(order.totalPrice ?? 0).toLocaleString()}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Metadata Row */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-base-content/10 text-xs text-base-content/70">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="size-4 text-base-content/40" />
+                      <span>
+                        Placed on{" "}
+                        <strong>
+                          {new Date(order.created).toLocaleDateString(undefined, {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </strong>
+                      </span>
+                    </div>
 
                     {order.ref && (
-                      <button
-                        onClick={() =>
-                          nav({
-                            to: "/profile/orders",
-                            search: { reference: order.ref, page: 1 },
-                          })
-                        }
-                        className="flex flex-col items-end gap-0.5"
-                      >
-                        <p className="text-xs text-base-content/40">
-                          Reference
-                        </p>
-                        <p className="font-mono text-sm px-2.5 py-1 rounded-full bg-base-200/80 hover:bg-primary hover:text-primary-content transition-colors">
-                          {order.ref}
-                        </p>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base-content/40">Paystack Ref:</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyRef(order.ref!)}
+                          className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-base-100/80 hover:bg-base-100 border border-base-200 shadow-2xs inline-flex items-center gap-1.5 transition-all"
+                          title="Click to copy reference"
+                        >
+                          <span>{order.ref}</span>
+                          <Copy className="size-3 text-base-content/40" />
+                        </button>
+                      </div>
                     )}
+                  </div>
+
+                  {/* Order Progress Stepper */}
+                  <div className="pt-4 border-t border-base-content/10">
+                    <p className="text-xs font-bold uppercase tracking-wider text-base-content/50 mb-3">
+                      Order Fulfillment Status
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {ORDER_STEPS.map((step, idx) => {
+                        const Icon = step.icon;
+                        const isDone = idx <= currentStepIndex;
+                        const isCurrent = idx === currentStepIndex;
+
+                        return (
+                          <div
+                            key={step.id}
+                            className={`p-3 rounded-2xl border transition-all flex items-center gap-3 ${
+                              isCurrent
+                                ? "bg-base-100 border-primary shadow-xs font-bold"
+                                : isDone
+                                ? "bg-base-100/80 border-success/30 text-success"
+                                : "bg-base-100/30 border-base-200 opacity-40"
+                            }`}
+                          >
+                            <div
+                              className={`size-8 rounded-xl flex items-center justify-center shrink-0 ${
+                                isCurrent
+                                  ? "bg-primary text-primary-content"
+                                  : isDone
+                                  ? "bg-success/15 text-success"
+                                  : "bg-base-200 text-base-content/30"
+                              }`}
+                            >
+                              <Icon className="size-4" />
+                            </div>
+                            <div className="text-xs">
+                              <p className="font-semibold leading-tight text-base-content">
+                                {step.label}
+                              </p>
+                              <p className="text-[10px] text-base-content/50">
+                                {isDone ? (isCurrent ? "In Progress" : "Completed") : "Upcoming"}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Order item */}
+              {/* Items List */}
               {items.length > 0 && <UserOrderItems items={items} />}
 
-              {/* Related orders */}
-              {/*{order.ref && (
-                <RelatedOrders reference={order.ref} currentId={order.id} />
-              )}*/}
+              {/* Order Info & Assistance Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Fulfillment / Delivery Info */}
+                <div className="card bg-base-100 border border-base-200 p-6 space-y-4 shadow-xs">
+                  <div className="flex items-center gap-2 font-bold text-sm text-base-content">
+                    <Truck className="size-4 text-primary" />
+                    <span>Shipping & Dispatch</span>
+                  </div>
+
+                  <div className="space-y-2 text-xs text-base-content/70">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="size-4 text-base-content/40 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-bold text-base-content">Studio Pickup or Courier</p>
+                        <p className="text-base-content/50 mt-0.5">
+                          Orders are prepared and dispatched from our Lagos studio within 2–4 business days.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2 pt-2 border-t border-base-200">
+                      <CreditCard className="size-4 text-base-content/40 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-bold text-base-content">Payment Verified</p>
+                        <p className="text-base-content/50 mt-0.5">
+                          Secured via Paystack Inline checkout with automated fulfillment verification.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Customer Support */}
+                <div className="card bg-base-100 border border-base-200 p-6 space-y-4 shadow-xs">
+                  <div className="flex items-center gap-2 font-bold text-sm text-base-content">
+                    <HelpCircle className="size-4 text-primary" />
+                    <span>Need Assistance with this Order?</span>
+                  </div>
+
+                  <p className="text-xs text-base-content/60 leading-relaxed">
+                    Have questions regarding custom sizing, bespoke modifications, or delivery timelines? Our artisan studio team is available to help.
+                  </p>
+
+                  <div className="flex items-center gap-3 pt-1">
+                    <Link
+                      to="/store/catalog"
+                      className="btn btn-sm btn-ghost border border-base-200 rounded-xl text-xs flex-1"
+                    >
+                      Browse More Pieces
+                    </Link>
+                    <a
+                      href={`mailto:support@dezzhats.com?subject=Inquiry for Order #${order.id}`}
+                      className="btn btn-sm btn-primary rounded-xl text-xs flex-1"
+                    >
+                      Contact Studio
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           );
         }}
