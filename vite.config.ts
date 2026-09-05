@@ -16,7 +16,7 @@ const config = defineConfig({
       },
     }),
     // rsc(),
-    // nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     //
     viteReact(),
   ],
