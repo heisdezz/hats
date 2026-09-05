@@ -61,6 +61,36 @@ export const Route = createFileRoute("/store/cart/")({
 });
 
 function RouteComponent() {
+  return (
+    <ClientOnly
+      fallback={
+        <div className="page-wrap py-12 flex flex-col items-center justify-center text-center">
+          <div className="card bg-base-100 border border-base-200 shadow-xs max-w-md p-8 flex flex-col items-center gap-4">
+            <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <ShoppingBag className="size-8" />
+            </div>
+            <h2 className="text-xl font-bold">Your Shopping Cart</h2>
+            <p className="text-sm text-base-content/60">
+              Please log in or create an account to view your saved cart items and
+              proceed to checkout.
+            </p>
+            <Link
+              to="/login"
+              search={{ redirect: "/store/cart" }}
+              className="btn btn-primary rounded-xl gap-2 mt-2"
+            >
+              <LogIn className="size-4" /> Log In to Continue
+            </Link>
+          </div>
+        </div>
+      }
+    >
+      <CartContent />
+    </ClientOnly>
+  );
+}
+
+function CartContent() {
   const isAuthenticated = pb.authStore.isValid;
 
   const query = useQuery<BreakdownResponse>({

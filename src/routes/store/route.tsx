@@ -1,6 +1,6 @@
 import { Footer } from "#/components/footer.tsx";
 import { Header } from "#/components/header.tsx";
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { IconTag, IconDiamond, IconUser, IconPackage, IconX } from "@tabler/icons-react";
 import { pb } from "#/client/pb";
 
@@ -41,9 +41,44 @@ const categories = [
   },
 ];
 
-function RouteComponent() {
+function SidebarAuthFooter() {
   const isAuth = pb.authStore.isValid;
 
+  if (isAuth) {
+    return (
+      <>
+        <Link
+          to="/profile"
+          className="btn btn-outline btn-sm btn-block justify-start gap-2 text-xs font-semibold"
+        >
+          <IconUser size={16} />
+          My Account Profile
+        </Link>
+        <Link
+          to="/profile/orders"
+          search={{ page: 1, reference: undefined }}
+          className="btn btn-primary btn-sm btn-block justify-start gap-2 text-xs font-semibold"
+        >
+          <IconPackage size={16} />
+          My Orders & Receipts
+        </Link>
+      </>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <Link to="/login" className="btn btn-outline btn-sm text-xs">
+        Login
+      </Link>
+      <Link to="/register" className="btn btn-primary btn-sm text-xs">
+        Register
+      </Link>
+    </div>
+  );
+}
+
+function RouteComponent() {
   return (
     <div className="drawer">
       <input id="store-drawer" type="checkbox" className="drawer-toggle" />
@@ -122,34 +157,20 @@ function RouteComponent() {
 
           {/* Sidebar footer */}
           <div className="p-6 border-t border-base-200 flex flex-col gap-2 bg-base-200/50">
-            {isAuth ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="btn btn-outline btn-sm btn-block justify-start gap-2 text-xs font-semibold"
-                >
-                  <IconUser size={16} />
-                  My Account Profile
-                </Link>
-                <Link
-                  to="/profile/orders"
-                  search={{ page: 1, reference: undefined }}
-                  className="btn btn-primary btn-sm btn-block justify-start gap-2 text-xs font-semibold"
-                >
-                  <IconPackage size={16} />
-                  My Orders & Receipts
-                </Link>
-              </>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Link to="/login" className="btn btn-outline btn-sm text-xs">
-                  Login
-                </Link>
-                <Link to="/register" className="btn btn-primary btn-sm text-xs">
-                  Register
-                </Link>
-              </div>
-            )}
+            <ClientOnly
+              fallback={
+                <div className="grid grid-cols-2 gap-2">
+                  <Link to="/login" className="btn btn-outline btn-sm text-xs">
+                    Login
+                  </Link>
+                  <Link to="/register" className="btn btn-primary btn-sm text-xs">
+                    Register
+                  </Link>
+                </div>
+              }
+            >
+              <SidebarAuthFooter />
+            </ClientOnly>
           </div>
         </div>
       </div>
