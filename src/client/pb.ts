@@ -8,7 +8,9 @@ const PB_URL =
     ? window.location.origin
     : "http://127.0.0.1:8090";
 
-export const pb = new PocketBase(PB_URL) as TypedPocketBase;
+export const pb = new PocketBase(
+  import.meta.env.VITE_PB_URL || PB_URL,
+) as TypedPocketBase;
 
 export const ssr_pb = () => {
   const pb = new PocketBase("http://127.0.0.1:8090") as TypedPocketBase;
