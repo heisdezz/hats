@@ -3,7 +3,9 @@ import { ssr_pb, pb } from "#/client/pb";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import PageLoader from "#/components/layouts/PageLoader.tsx";
 import AllOrderItems from "./-components/orders/AllOrderItems";
+import LogisticsManager from "./-components/orders/LogisticsManager";
 import type {
+  LogisticsResponse,
   OrderItemsResponse,
   ProductsResponse,
   UserOrdersResponse,
@@ -38,6 +40,7 @@ const statusDot: Record<string, string> = {
 type OrderExpand = {
   orderItems?: OrderItemsResponse<{ originalProduct: ProductsResponse }>[];
   user?: UsersResponse;
+  logisitics?: LogisticsResponse;
 };
 
 export const Route = createFileRoute("/admin/dashboard/orders/$orderId")({
@@ -46,7 +49,7 @@ export const Route = createFileRoute("/admin/dashboard/orders/$orderId")({
     ssr_pb()
       .collection("user_orders")
       .getOne(params.orderId, {
-        expand: "orderItems,orderItems.originalProduct,user",
+        expand: "orderItems,orderItems.originalProduct,user,logisitics",
       })
       .catch((err) => {
         console.log(err);
@@ -62,16 +65,19 @@ function RouteComponent() {
   const query = useQuery({
     queryKey: ["order", orderId],
     queryFn: () =>
-      pb.collection("user_orders").getOne<UserOrdersResponse>(orderId, {
-        expand: "orderItems,orderItems.originalProduct,user",
+      pb.collection("user_orders").getOne<UserOrdersResponse<OrderExpand>>(orderId, {
+        expand: "orderItems,orderItems.originalProduct,user,logisitics",
       }),
-    initialData: loaderData,
+    initialData: loaderData as any,
   });
 
   const statusMut = useMutation({
     mutationFn: (status: string) =>
       pb.collection("user_orders").update(orderId, { status }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["order", orderId] }),
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to update status.");
+    },
   });
 
   return (
@@ -94,8 +100,32 @@ function RouteComponent() {
           const gradient =
             statusGradient[status] ?? "from-base-200 to-base-200";
           const displayName =
-            user?.username || user?.email || `#${order.user.slice(0, 8)}`;
+            user?.username || user?.email || `#${order.user ? order.user.slice(0, 8) : "---"}`;
           const currentStatusIdx = STATUSES.indexOf(status);
+
+          const handleStepClick = (s: string) => {
+            if (s === "in-transit" && !order.logisitics) {
+              toast.error(
+                "Please assign a logistics courier first before updating to In Transit."
+              );
+              return;
+            }
+            if (s === "delivered") {
+              if (!order.logisitics) {
+                toast.error("Please assign a logistics courier first.");
+                return;
+              }
+              toast.info(
+                "Please use the 'Verify & Complete Delivery' button in the Logistics card below to verify the delivery confirmation code."
+              );
+              return;
+            }
+            toast.promise(statusMut.mutateAsync(s), {
+              loading: "Updating...",
+              success: `Set to ${s}.`,
+              error: (err: any) => err?.message || "Failed.",
+            });
+          };
 
           return (
             <div className="flex flex-col gap-5">
@@ -110,7 +140,7 @@ function RouteComponent() {
                 <div className="relative flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-3">
                     <span
-                      className={`badge badge-lg ${statusBadge[status] ?? "badge-neutral"} capitalize w-fit`}
+                      className={`badge badge-lg ${statusBadge[status] ?? "badge-neutral"} capitalize w-fit font-bold`}
                     >
                       {status}
                     </span>
@@ -147,18 +177,28 @@ function RouteComponent() {
                   {order.ref && (
                     <MetaPill label="Reference" value={order.ref} mono />
                   )}
+                  {expand?.logisitics && (
+                    <MetaPill
+                      label="Courier Provider"
+                      value={`${expand.logisitics.name} (${expand.logisitics.provider?.toUpperCase()})`}
+                    />
+                  )}
                 </div>
               </div>
-
-              {/* Product */}
-              {items.length > 0 && <AllOrderItems items={items} />}
 
               {/* Status stepper */}
               <div className="card bg-base-100 border border-base-200 shadow-sm">
                 <div className="card-body p-6 gap-5">
-                  <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-                    Order progress
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
+                      Order Progress Stepper
+                    </p>
+                    {!order.logisitics && (
+                      <span className="text-xs text-warning font-semibold">
+                        Logistics assignment required for In-Transit
+                      </span>
+                    )}
+                  </div>
 
                   <div className="flex items-start">
                     {STATUSES.map((s, i) => {
@@ -170,15 +210,10 @@ function RouteComponent() {
                           className="flex items-center flex-1 last:flex-none"
                         >
                           <button
-                            className="flex flex-col items-center gap-2 group"
+                            type="button"
+                            className="flex flex-col items-center gap-2 group cursor-pointer"
                             disabled={statusMut.isPending}
-                            onClick={() =>
-                              toast.promise(statusMut.mutateAsync(s), {
-                                loading: "Updating...",
-                                success: `Set to ${s}.`,
-                                error: "Failed.",
-                              })
-                            }
+                            onClick={() => handleStepClick(s)}
                           >
                             <div
                               className={`size-9 rounded-full border-2 flex items-center justify-center transition-all
@@ -197,7 +232,7 @@ function RouteComponent() {
                               )}
                             </div>
                             <span
-                              className={`text-xs capitalize font-medium whitespace-nowrap ${active ? "text-base-content" : "text-base-content/40"}`}
+                              className={`text-xs capitalize font-medium whitespace-nowrap ${active ? "text-base-content font-bold" : "text-base-content/40"}`}
                             >
                               {s}
                             </span>
@@ -218,6 +253,15 @@ function RouteComponent() {
                   </div>
                 </div>
               </div>
+
+              {/* Logistics & Dispatch Manager */}
+              <LogisticsManager
+                order={order as any}
+                onOrderUpdated={() => qc.invalidateQueries({ queryKey: ["order", orderId] })}
+              />
+
+              {/* Products List */}
+              {items.length > 0 && <AllOrderItems items={items as any} />}
             </div>
           );
         }}

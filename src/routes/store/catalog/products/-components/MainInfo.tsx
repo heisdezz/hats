@@ -25,8 +25,8 @@ export default function MainInfo(props: {
 
   const category = product.expand?.category?.name;
   const categoryId = product.expand?.category?.id;
-  const section = product.expand?.category?.expand?.parent?.name;
-  const sectionId = product.expand?.category?.expand?.parent?.id;
+  const section = (product.expand as any)?.category?.expand?.parent?.name;
+  const sectionId = (product.expand as any)?.category?.expand?.parent?.id;
 
   const tags = normalizeTagItem(
     product.tags || (product.expand as any)?.tags || [],

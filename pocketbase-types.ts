@@ -17,6 +17,7 @@ export const Collections = {
 	Category: "category",
 	CheckoutSessions: "checkout_sessions",
 	DeliverySettings: "deliverySettings",
+	Logistics: "logistics",
 	OrderItems: "order_items",
 	Orders: "orders",
 	Products: "products",
@@ -126,6 +127,7 @@ export type AdminsRecord = {
 }
 
 export type CarouselRecord = {
+	badge?: string
 	created: IsoAutoDateString
 	id: string
 	product?: RecordIdString
@@ -148,6 +150,7 @@ export type CartRecord = {
 }
 
 export type CategoryRecord = {
+	additonal_fee?: number
 	created: IsoAutoDateString
 	id: string
 	isAvailable?: boolean
@@ -182,8 +185,18 @@ export type DeliverySettingsRecord = {
 	user?: RecordIdString
 }
 
+export type LogisticsRecord = {
+	code?: number
+	created: IsoAutoDateString
+	id: string
+	name?: string
+	provider?: string
+	updated: IsoAutoDateString
+}
+
 export type OrderItemsRecord = {
 	amount?: number
+	cart_space?: number
 	created: IsoAutoDateString
 	extraInfo?: string
 	id: string
@@ -204,6 +217,7 @@ export type OrdersRecord = {
 }
 
 export type ProductsRecord = {
+	cart_space?: number
 	category?: RecordIdString
 	color_selection?: boolean
 	created: IsoAutoDateString
@@ -253,6 +267,8 @@ export type ReviewsRecord = {
 
 export type SectionRecord = {
 	created: IsoAutoDateString
+	description?: string
+	display_name?: string
 	id: string
 	name?: string
 	updated: IsoAutoDateString
@@ -265,6 +281,7 @@ export type ShopLocationRecord = {
 	id: string
 	location?: GeoPoint
 	state?: string
+	taking_orders?: boolean
 	updated: IsoAutoDateString
 }
 
@@ -276,13 +293,16 @@ export type TagsRecord = {
 }
 
 export type UserOrdersRecord = {
+	code?: number
 	created: IsoAutoDateString
 	id: string
+	logisitics?: RecordIdString
 	orderItems?: RecordIdString[]
 	preview?: RecordIdString
 	ref?: string
 	status?: string
 	totalPrice?: number
+	total_cart_space?: number
 	updated: IsoAutoDateString
 	user?: RecordIdString
 }
@@ -312,6 +332,7 @@ export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemF
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
+export type LogisticsResponse<Texpand = unknown> = Required<LogisticsRecord> & BaseSystemFields<Texpand>
 export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> & BaseSystemFields<Texpand>
 export type OrdersResponse<Texpand = unknown> = Required<OrdersRecord> & BaseSystemFields<Texpand>
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> & BaseSystemFields<Texpand>
@@ -338,6 +359,7 @@ export type CollectionRecords = {
 	category: CategoryRecord
 	checkout_sessions: CheckoutSessionsRecord
 	deliverySettings: DeliverySettingsRecord
+	logistics: LogisticsRecord
 	order_items: OrderItemsRecord
 	orders: OrdersRecord
 	products: ProductsRecord
@@ -363,6 +385,7 @@ export type CollectionResponses = {
 	category: CategoryResponse
 	checkout_sessions: CheckoutSessionsResponse
 	deliverySettings: DeliverySettingsResponse
+	logistics: LogisticsResponse
 	order_items: OrderItemsResponse
 	orders: OrdersResponse
 	products: ProductsResponse

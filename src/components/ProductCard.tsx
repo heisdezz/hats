@@ -18,7 +18,7 @@ export default function ProductCard({
     : null;
 
   const category = product.expand?.category?.name;
-  const section_name = product.expand?.category?.expand?.parent?.name;
+  const section_name = (product.expand as any)?.category?.expand?.parent?.name;
   const id = product.id;
 
   const route = `/store/catalog/products/${section_name}/${id}`;

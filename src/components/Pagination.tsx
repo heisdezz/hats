@@ -3,15 +3,17 @@ import { useNavigate } from "@tanstack/react-router";
 interface PaginationProps {
   page: number;
   totalPages: number;
+  onPageChange?: (p: number) => void;
 }
 
-export default function Pagination({ page, totalPages }: PaginationProps) {
+export default function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   const nav = useNavigate();
 
   if (totalPages <= 1) return null;
 
   const goto = (p: number) => {
     nav({ search: ((prev: any) => ({ ...prev, page: p })) as any });
+    if (onPageChange) onPageChange(p);
   };
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);

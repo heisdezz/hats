@@ -4,7 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 import { Link } from "@tanstack/react-router";
-import { IconChevronLeft, IconChevronRight, IconSparkles } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconSparkles,
+} from "@tabler/icons-react";
 import type {
   CarouselResponse,
   CategoryResponse,
@@ -25,7 +29,8 @@ const FALLBACK_SLIDES = [
     alt: "Handcrafted Luxury Millinery",
     label: "New Arrival",
     title: "Bespoke Royal Millinery & Hats",
-    description: "Turn heads with our signature wide-brim silhouettes and fascinators crafted in Lagos.",
+    description:
+      "Turn heads with our signature wide-brim silhouettes and fascinators crafted in Lagos.",
     price: "₦28,500",
     path: "/store/catalog/hats",
   },
@@ -35,7 +40,8 @@ const FALLBACK_SLIDES = [
     alt: "Fine African Coral & Jewelry",
     label: "Bestseller",
     title: "Exquisite Traditional Coral & Gold",
-    description: "Handcrafted statement necklaces, earrings, and ceremonial coral beads for milestone events.",
+    description:
+      "Handcrafted statement necklaces, earrings, and ceremonial coral beads for milestone events.",
     price: "₦32,000",
     path: "/store/catalog/jewelry",
   },
@@ -45,7 +51,8 @@ const FALLBACK_SLIDES = [
     alt: "Ceremonial Church Fascinator",
     label: "Exclusive",
     title: "Couture Church & Wedding Headwear",
-    description: "Timeless millinery craftsmanship tailored to your individual elegance.",
+    description:
+      "Timeless millinery craftsmanship tailored to your individual elegance.",
     price: "₦35,000",
     path: "/store/catalog/hats",
   },
@@ -68,7 +75,13 @@ export default function Carousel({ slides, alt = "Image" }: CarouselProps) {
 /**
  * 1. Image Gallery mode for Product Detail pages
  */
-function ImageGalleryCarousel({ slides, alt }: { slides: string[]; alt: string }) {
+function ImageGalleryCarousel({
+  slides,
+  alt,
+}: {
+  slides: string[];
+  alt: string;
+}) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -149,7 +162,9 @@ function ImageGalleryCarousel({ slides, alt }: { slides: string[]; alt: string }
               type="button"
               onClick={() => scrollTo(i)}
               className={`h-2 rounded-full transition-all ${
-                i === selectedIndex ? "w-6 bg-primary" : "w-2 bg-base-300 hover:bg-base-content/30"
+                i === selectedIndex
+                  ? "w-6 bg-primary"
+                  : "w-2 bg-base-300 hover:bg-base-content/30"
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />
@@ -185,36 +200,42 @@ function DynamicStoreCarousel() {
   const isLoading = carouselQuery.isLoading;
 
   // Transform dynamic items into unified slide format
-  const activeSlides = carouselRecords.length > 0
-    ? carouselRecords.map((item) => {
-        const prod = item.expand?.product;
-        const parentSec = (prod?.expand?.category as any)?.expand?.parent;
-        const sectionName = parentSec?.name?.toLowerCase() || (prod?.expand?.category as any)?.name?.toLowerCase() || "hats";
-        const normalizedSection = sectionName.includes("jewel") ? "jewelry" : "hats";
+  const activeSlides =
+    carouselRecords.length > 0
+      ? carouselRecords.map((item) => {
+          const prod = item.expand?.product;
+          const parentSec = (prod?.expand?.category as any)?.expand?.parent;
+          const sectionName =
+            parentSec?.name?.toLowerCase() ||
+            (prod?.expand?.category as any)?.name?.toLowerCase() ||
+            "hats";
+          const normalizedSection = sectionName.includes("jewel")
+            ? "jewelry"
+            : "hats";
 
-        const imageSrc =
-          prod?.images && prod.images.length > 0
-            ? pb.files.getURL(prod, prod.images[0])
-            : prod?.preview || FALLBACK_SLIDES[0].src;
+          const imageSrc =
+            prod?.images && prod.images.length > 0
+              ? pb.files.getURL(prod, prod.images[0])
+              : prod?.preview || FALLBACK_SLIDES[0].src;
 
-        const path = prod?.id
-          ? `/store/catalog/products/${normalizedSection}/${prod.id}`
-          : `/store/catalog`;
+          const path = prod?.id
+            ? `/store/catalog/products/${normalizedSection}/${prod.id}`
+            : `/store/catalog`;
 
-        return {
-          id: item.id,
-          src: imageSrc,
-          alt: prod?.title || "Featured Piece",
-          label: item.badge || "Featured",
-          title: prod?.title || "Exclusive Collection",
-          description:
-            prod?.description ||
-            "Discover handcrafted Nigerian luxury headwear and fine jewelry designed for unforgettable occasions.",
-          price: prod?.price ? `₦${prod.price.toLocaleString()}` : "",
-          path,
-        };
-      })
-    : FALLBACK_SLIDES;
+          return {
+            id: item.id,
+            src: imageSrc,
+            alt: prod?.title || "Featured Piece",
+            label: item.badge || "Featured",
+            title: prod?.title || "Exclusive Collection",
+            description:
+              prod?.description ||
+              "Discover handcrafted Nigerian luxury headwear and fine jewelry designed for unforgettable occasions.",
+            price: prod?.price ? `₦${prod.price.toLocaleString()}` : "",
+            path,
+          };
+        })
+      : FALLBACK_SLIDES;
 
   if (isLoading) {
     return (

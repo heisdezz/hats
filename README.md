@@ -1,193 +1,100 @@
-Welcome to your new TanStack Start app! 
+# Dezz Hats & Millinery - E-Commerce Platform
 
-# Getting Started
+A bespoke luxury headwear, fascinators, and traditional African headpiece (Auto Gele) e-commerce web application.
 
-To run this application:
+Built with **React 19**, **TanStack Start**, **TanStack Router**, **Vite**, **Tailwind CSS v4**, **DaisyUI v5**, and powered by a hardened **PocketBase v0.40+** backend with **Backblaze B2 S3 Object Storage**.
+
+---
+
+## 🚀 Key Architecture & Features
+
+### 1. Storefront & Catalog
+- **Artisanal Millinery Showcase**: High-resolution image galleries with Backblaze B2 S3 storage for fascinators, top hats, and hand-embroidered auto geles.
+- **Cart Space Budgeting**: Dynamic packaging capacity calculation ensuring fragile headwear is budgeted accurately for delivery.
+- **Secure Payments**: Paystack Inline checkout integration with automated webhook verification (`POST /paystack/webhook`) and cron reconciliation.
+
+### 2. Logistics & Delivery Verification Subsystem
+- **Logistics Collection**: Dedicated couriers (`bolt`, `glovo`, `gigl`) registered with unique confirmation codes.
+- **In-Transit Enforcement**: Orders cannot be moved to `in-transit` unless an active logistics provider is assigned.
+- **Safe Handover Protocol**: Orders cannot be marked `delivered` without entering a 4-digit confirmation code that matches the assigned courier's code.
+- **Customer Tracking UI**: Customers receive a bold, copyable **Delivery Safety Code** on their order page (`/profile/orders/$orderId`) to share with the rider upon arrival.
+- **Admin Dispatch Control**: Admins manage courier assignments and perform code verification directly from the order detail dashboard (`/admin/dashboard/orders/$orderId`).
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**:
+  - React 19 + TypeScript
+  - TanStack Start (SSR / Streaming) & TanStack Router (File-based routing)
+  - TanStack Query (Server state management)
+  - Tailwind CSS v4 + DaisyUI v5 (Design system & glassmorphic UI)
+  - Lucide React (Icons) & Sonner (Toast notifications)
+- **Backend (`hats_db`)**:
+  - PocketBase `v0.40.2` (Go SQLite backend)
+  - Goja JavaScript runtime hooks (`pb_hooks/`)
+  - Backblaze B2 S3 Storage integration for all media
+  - Automated database migrations (`pb_migrations/`)
+
+---
+
+## 📦 Getting Started
+
+### Prerequisites
+- [Bun](https://bun.sh/) installed.
+- PocketBase running on `http://127.0.0.1:8090` (see `hats_db/run.sh`).
+
+### Installation
 
 ```bash
+# Install frontend dependencies
 bun install
-bun --bun run dev
+
+# Start development server on port 3000
+bun run dev
 ```
 
-# Building For Production
-
-To build this application for production:
+### Production Build
 
 ```bash
-bun --bun run build
+# Build client and server bundles
+bun run build
+
+# Preview production build
+bun run preview
 ```
 
-## Testing
+---
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+## 📂 Project Structure
 
-```bash
-bun --bun run test
+```
+hats/
+├── src/
+│   ├── client/                  # PocketBase client & SSR initialization
+│   ├── components/              # Shared header, navigation & layouts
+│   ├── routes/
+│   │   ├── admin/dashboard/     # Admin orders, products, logistics management
+│   │   │   └── orders.$orderId.tsx # Admin order fulfillment & dispatch control
+│   │   ├── profile/orders/      # Customer order tracking & delivery safety code
+│   │   │   └── $orderId.tsx     # Order status stepper & live dispatch card
+│   │   └── store/               # Storefront, catalog, cart & checkout
+│   └── styles.css               # Tailwind CSS v4 & theme variables
+├── pocketbase-types.ts          # Auto-generated PocketBase TypeScript types
+└── package.json
 ```
 
-## Styling
+---
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## 🔒 Security & Safe Handover Workflow
 
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+1. **Order Creation**: Order is initiated via Paystack checkout with status `pending`.
+2. **Atelier Preparation**: Order is moved to `processing` during millinery crafting.
+3. **Dispatch & Logistics**:
+   - Admin assigns a courier (`bolt`, `glovo`, `gigl`) with a generated 4-digit code.
+   - Status transitions to `in-transit`.
+   - Customer sees the confirmation code on their profile order page.
+4. **Delivery Handover**:
+   - Customer shares the 4-digit code with the courier upon receiving the package.
+   - Admin/rider inputs the code to confirm delivery.
+   - Backend verifies that `code === logistics.code` before updating status to `delivered`.

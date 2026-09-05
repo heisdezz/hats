@@ -22,7 +22,7 @@ function getProductUrl(product?: ProductsResponse) {
 
 function getStoreLink(product?: ProductsResponse<{ category?: CategoryResponse<{ parent?: SectionResponse }> }>) {
   if (!product?.id) return "/store/catalog";
-  const sectionName = product.expand?.category?.expand?.parent?.name?.toLowerCase() || "";
+  const sectionName = ((product.expand as any)?.category?.expand?.parent?.name as string)?.toLowerCase() || "";
   const isJewelry = sectionName.includes("jewelry");
   return `/store/catalog/products/${isJewelry ? "jewelry" : "hats"}/${product.id}`;
 }

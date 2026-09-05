@@ -296,7 +296,7 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                       <option value="">No category selected</option>
                       {categoriesQuery.data?.map((cat) => (
                         <option key={cat.id} value={cat.id}>
-                          {cat.name} {cat.expand?.parent ? `(${cat.expand.parent.name})` : ""}
+                          {cat.name} {(cat.expand as any)?.parent ? `(${(cat.expand as any).parent.name})` : ""}
                         </option>
                       ))}
                     </LocalSelect>
@@ -541,10 +541,10 @@ function UpdateForm({ product }: { product: ExpandedProduct }) {
                 </button>
                 <button
                   type="submit"
-                  disabled={mutation.isPending}
+                  disabled={updateProductMut.isPending}
                   className="btn btn-primary rounded-xl flex-1 gap-2"
                 >
-                  {mutation.isPending ? (
+                  {updateProductMut.isPending ? (
                     <span className="loading loading-spinner loading-sm" />
                   ) : (
                     <>

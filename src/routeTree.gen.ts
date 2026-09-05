@@ -31,8 +31,8 @@ import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboar
 import { Route as ProfileOrdersOrderIdRouteImport } from './routes/profile/orders/$orderId'
 import { Route as AdminDashboardSettingsRouteImport } from './routes/admin/dashboard/settings'
 import { Route as AdminDashboardSectionsRouteImport } from './routes/admin/dashboard/sections'
-import { Route as StoreCatalogJewelryIndexRouteImport } from './routes/store/catalog/jewelry/index'
-import { Route as StoreCatalogHatsIndexRouteImport } from './routes/store/catalog/hats/index'
+import { Route as StoreCatalogIdIndexRouteImport } from './routes/store/catalog/$id/index'
+import { Route as ProfileOrdersOrderIdIndexRouteImport } from './routes/profile/orders/$orderId.index'
 import { Route as AdminDashboardUsersIndexRouteImport } from './routes/admin/dashboard/users/index'
 import { Route as AdminDashboardProductsIndexRouteImport } from './routes/admin/dashboard/products/index'
 import { Route as AdminDashboardOrdersIndexRouteImport } from './routes/admin/dashboard/orders.index'
@@ -154,17 +154,17 @@ const AdminDashboardSectionsRoute = AdminDashboardSectionsRouteImport.update({
   path: '/sections',
   getParentRoute: () => AdminDashboardRouteRoute,
 } as any)
-const StoreCatalogJewelryIndexRoute =
-  StoreCatalogJewelryIndexRouteImport.update({
-    id: '/catalog/jewelry/',
-    path: '/catalog/jewelry/',
-    getParentRoute: () => StoreRouteRoute,
-  } as any)
-const StoreCatalogHatsIndexRoute = StoreCatalogHatsIndexRouteImport.update({
-  id: '/catalog/hats/',
-  path: '/catalog/hats/',
+const StoreCatalogIdIndexRoute = StoreCatalogIdIndexRouteImport.update({
+  id: '/catalog/$id/',
+  path: '/catalog/$id/',
   getParentRoute: () => StoreRouteRoute,
 } as any)
+const ProfileOrdersOrderIdIndexRoute =
+  ProfileOrdersOrderIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProfileOrdersOrderIdRoute,
+  } as any)
 const AdminDashboardUsersIndexRoute =
   AdminDashboardUsersIndexRouteImport.update({
     id: '/users/',
@@ -242,7 +242,7 @@ export interface FileRoutesByFullPath {
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
   '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
-  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
+  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRouteWithChildren
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
   '/store/about/': typeof StoreAboutIndexRoute
@@ -256,8 +256,8 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
-  '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
-  '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
+  '/profile/orders/$orderId/': typeof ProfileOrdersOrderIdIndexRoute
+  '/store/catalog/$id/': typeof StoreCatalogIdIndexRoute
   '/admin/dashboard/products/edit/$productId': typeof AdminDashboardProductsEditProductIdRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
   '/store/catalog/products/jewelry/$id': typeof StoreCatalogProductsJewelryIdRoute
@@ -274,7 +274,6 @@ export interface FileRoutesByTo {
   '/store': typeof StoreIndexRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
   '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
-  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/profile/orders': typeof ProfileOrdersIndexRoute
   '/store/about': typeof StoreAboutIndexRoute
@@ -288,8 +287,8 @@ export interface FileRoutesByTo {
   '/admin/dashboard/orders': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users': typeof AdminDashboardUsersIndexRoute
-  '/store/catalog/hats': typeof StoreCatalogHatsIndexRoute
-  '/store/catalog/jewelry': typeof StoreCatalogJewelryIndexRoute
+  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdIndexRoute
+  '/store/catalog/$id': typeof StoreCatalogIdIndexRoute
   '/admin/dashboard/products/edit/$productId': typeof AdminDashboardProductsEditProductIdRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
   '/store/catalog/products/jewelry/$id': typeof StoreCatalogProductsJewelryIdRoute
@@ -311,7 +310,7 @@ export interface FileRoutesById {
   '/store/': typeof StoreIndexRoute
   '/admin/dashboard/sections': typeof AdminDashboardSectionsRoute
   '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
-  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRoute
+  '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRouteWithChildren
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
   '/store/about/': typeof StoreAboutIndexRoute
@@ -325,8 +324,8 @@ export interface FileRoutesById {
   '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
-  '/store/catalog/hats/': typeof StoreCatalogHatsIndexRoute
-  '/store/catalog/jewelry/': typeof StoreCatalogJewelryIndexRoute
+  '/profile/orders/$orderId/': typeof ProfileOrdersOrderIdIndexRoute
+  '/store/catalog/$id/': typeof StoreCatalogIdIndexRoute
   '/admin/dashboard/products/edit/$productId': typeof AdminDashboardProductsEditProductIdRoute
   '/store/catalog/products/hats/$id': typeof StoreCatalogProductsHatsIdRoute
   '/store/catalog/products/jewelry/$id': typeof StoreCatalogProductsJewelryIdRoute
@@ -363,8 +362,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
     | '/admin/dashboard/users/'
-    | '/store/catalog/hats/'
-    | '/store/catalog/jewelry/'
+    | '/profile/orders/$orderId/'
+    | '/store/catalog/$id/'
     | '/admin/dashboard/products/edit/$productId'
     | '/store/catalog/products/hats/$id'
     | '/store/catalog/products/jewelry/$id'
@@ -381,7 +380,6 @@ export interface FileRouteTypes {
     | '/store'
     | '/admin/dashboard/sections'
     | '/admin/dashboard/settings'
-    | '/profile/orders/$orderId'
     | '/admin/dashboard'
     | '/profile/orders'
     | '/store/about'
@@ -395,8 +393,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/orders'
     | '/admin/dashboard/products'
     | '/admin/dashboard/users'
-    | '/store/catalog/hats'
-    | '/store/catalog/jewelry'
+    | '/profile/orders/$orderId'
+    | '/store/catalog/$id'
     | '/admin/dashboard/products/edit/$productId'
     | '/store/catalog/products/hats/$id'
     | '/store/catalog/products/jewelry/$id'
@@ -431,8 +429,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
     | '/admin/dashboard/users/'
-    | '/store/catalog/hats/'
-    | '/store/catalog/jewelry/'
+    | '/profile/orders/$orderId/'
+    | '/store/catalog/$id/'
     | '/admin/dashboard/products/edit/$productId'
     | '/store/catalog/products/hats/$id'
     | '/store/catalog/products/jewelry/$id'
@@ -606,19 +604,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardSectionsRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
-    '/store/catalog/jewelry/': {
-      id: '/store/catalog/jewelry/'
-      path: '/catalog/jewelry'
-      fullPath: '/store/catalog/jewelry/'
-      preLoaderRoute: typeof StoreCatalogJewelryIndexRouteImport
+    '/store/catalog/$id/': {
+      id: '/store/catalog/$id/'
+      path: '/catalog/$id'
+      fullPath: '/store/catalog/$id/'
+      preLoaderRoute: typeof StoreCatalogIdIndexRouteImport
       parentRoute: typeof StoreRouteRoute
     }
-    '/store/catalog/hats/': {
-      id: '/store/catalog/hats/'
-      path: '/catalog/hats'
-      fullPath: '/store/catalog/hats/'
-      preLoaderRoute: typeof StoreCatalogHatsIndexRouteImport
-      parentRoute: typeof StoreRouteRoute
+    '/profile/orders/$orderId/': {
+      id: '/profile/orders/$orderId/'
+      path: '/'
+      fullPath: '/profile/orders/$orderId/'
+      preLoaderRoute: typeof ProfileOrdersOrderIdIndexRouteImport
+      parentRoute: typeof ProfileOrdersOrderIdRoute
     }
     '/admin/dashboard/users/': {
       id: '/admin/dashboard/users/'
@@ -739,15 +737,26 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
 
+interface ProfileOrdersOrderIdRouteChildren {
+  ProfileOrdersOrderIdIndexRoute: typeof ProfileOrdersOrderIdIndexRoute
+}
+
+const ProfileOrdersOrderIdRouteChildren: ProfileOrdersOrderIdRouteChildren = {
+  ProfileOrdersOrderIdIndexRoute: ProfileOrdersOrderIdIndexRoute,
+}
+
+const ProfileOrdersOrderIdRouteWithChildren =
+  ProfileOrdersOrderIdRoute._addFileChildren(ProfileOrdersOrderIdRouteChildren)
+
 interface ProfileRouteRouteChildren {
   ProfileIndexRoute: typeof ProfileIndexRoute
-  ProfileOrdersOrderIdRoute: typeof ProfileOrdersOrderIdRoute
+  ProfileOrdersOrderIdRoute: typeof ProfileOrdersOrderIdRouteWithChildren
   ProfileOrdersIndexRoute: typeof ProfileOrdersIndexRoute
 }
 
 const ProfileRouteRouteChildren: ProfileRouteRouteChildren = {
   ProfileIndexRoute: ProfileIndexRoute,
-  ProfileOrdersOrderIdRoute: ProfileOrdersOrderIdRoute,
+  ProfileOrdersOrderIdRoute: ProfileOrdersOrderIdRouteWithChildren,
   ProfileOrdersIndexRoute: ProfileOrdersIndexRoute,
 }
 
@@ -761,8 +770,7 @@ interface StoreRouteRouteChildren {
   StoreCartIndexRoute: typeof StoreCartIndexRoute
   StoreCatalogIndexRoute: typeof StoreCatalogIndexRoute
   StoreJewelryIndexRoute: typeof StoreJewelryIndexRoute
-  StoreCatalogHatsIndexRoute: typeof StoreCatalogHatsIndexRoute
-  StoreCatalogJewelryIndexRoute: typeof StoreCatalogJewelryIndexRoute
+  StoreCatalogIdIndexRoute: typeof StoreCatalogIdIndexRoute
   StoreCatalogProductsHatsIdRoute: typeof StoreCatalogProductsHatsIdRoute
   StoreCatalogProductsJewelryIdRoute: typeof StoreCatalogProductsJewelryIdRoute
 }
@@ -773,8 +781,7 @@ const StoreRouteRouteChildren: StoreRouteRouteChildren = {
   StoreCartIndexRoute: StoreCartIndexRoute,
   StoreCatalogIndexRoute: StoreCatalogIndexRoute,
   StoreJewelryIndexRoute: StoreJewelryIndexRoute,
-  StoreCatalogHatsIndexRoute: StoreCatalogHatsIndexRoute,
-  StoreCatalogJewelryIndexRoute: StoreCatalogJewelryIndexRoute,
+  StoreCatalogIdIndexRoute: StoreCatalogIdIndexRoute,
   StoreCatalogProductsHatsIdRoute: StoreCatalogProductsHatsIdRoute,
   StoreCatalogProductsJewelryIdRoute: StoreCatalogProductsJewelryIdRoute,
 }

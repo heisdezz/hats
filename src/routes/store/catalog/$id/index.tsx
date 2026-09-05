@@ -186,13 +186,12 @@ function RouteComponent() {
   }, [searchParams.category, categories]);
 
   const activeTagName = useMemo(() => {
-    if (!searchParams.tag) return null;
+    const tag = searchParams.tag as string | undefined;
+    if (!tag) return null;
     const found = cleanTagsList.find(
-      (t) =>
-        t.id === searchParams.tag ||
-        t.name.toLowerCase() === searchParams.tag.toLowerCase(),
+      (t) => t.id === tag || t.name.toLowerCase() === tag.toLowerCase(),
     );
-    return found ? found.name : searchParams.tag;
+    return found ? found.name : tag;
   }, [searchParams.tag, cleanTagsList]);
 
   return (

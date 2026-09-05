@@ -67,7 +67,7 @@ export default function Categories() {
             const SecIcon = isHats ? IconTag : isJewelry ? IconDiamond : IconSparkles;
 
             const sectionCategories = categories.filter(
-              (cat) => cat.parent === sec.id || cat.expand?.parent?.id === sec.id,
+              (cat) => cat.parent === sec.id || ((cat.expand as any)?.parent?.id === sec.id),
             );
 
             return (

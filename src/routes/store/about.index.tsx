@@ -79,8 +79,8 @@ function RouteComponent() {
             const sectionCategories = categories.filter(
               (c) =>
                 c.parent === sec.id ||
-                c.expand?.parent?.id === sec.id ||
-                c.expand?.parent?.name?.toLowerCase() === sec.name?.toLowerCase()
+                (c.expand as any)?.parent?.id === sec.id ||
+                ((c.expand as any)?.parent?.name as string)?.toLowerCase() === sec.name?.toLowerCase()
             );
             const top5Categories = sectionCategories.slice(0, 5);
 

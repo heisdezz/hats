@@ -27,7 +27,7 @@ export default function AdminProductCard({
       : null;
 
   const category = product.expand?.category?.name;
-  const section = product.expand?.category?.expand?.parent?.name;
+  const section = (product.expand as any)?.category?.expand?.parent?.name;
   const isPublished = product.published ?? true;
   const mainColor = (product as any).mainColor;
   const secondaryColor = (product as any).secondaryColor;

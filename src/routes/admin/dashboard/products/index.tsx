@@ -176,7 +176,7 @@ function RouteComponent() {
               <option value="">All Categories</option>
               {categoriesQuery.data?.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.name} {cat.expand?.parent ? `(${cat.expand.parent.name})` : ""}
+                  {cat.name} {(cat.expand as any)?.parent ? `(${(cat.expand as any).parent.name})` : ""}
                 </option>
               ))}
             </select>
