@@ -11,6 +11,9 @@ import type {
   ProductsResponse,
   SectionResponse,
 } from "pocketbase-types";
+import Aside from "./Aside";
+import Pricing from "./Pricing";
+import DeliverySettings from "#/components/DeliverySettings.tsx";
 
 export default function MainInfo(props: {
   product: ProductsResponse<{
@@ -193,7 +196,10 @@ export default function MainInfo(props: {
             </div>
           </div>
         )}
-
+        <section className="lg:hidden space-y-4">
+          <Pricing product={product} />
+          <DeliverySettings />
+        </section>
         {/* Luxury Quality Guarantee Banner */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
           <div className="p-3.5 rounded-xl bg-base-200/40 border border-base-200 flex items-start gap-3">

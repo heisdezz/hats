@@ -1,6 +1,7 @@
 import type { TypedPocketBase } from "pocketbase-types";
 import PocketBase from "pocketbase";
 
+const local_url = "http://127.0.0.1:8090";
 export const getPbUrl = () => {
   const url =
     import.meta.env?.VITE_PB_URL ||
@@ -10,12 +11,12 @@ export const getPbUrl = () => {
         process.env.VITE_POCKETBASE_URL ||
         process.env.PB_URL
       : undefined) ||
-    "http://127.0.0.1:8090";
+    local_url;
 
   return url.replace(/\/+$/, "");
 };
 
-export const pb = new PocketBase(getPbUrl()) as TypedPocketBase;
+export const pb = new PocketBase(local_url) as TypedPocketBase;
 
 export const ssr_pb = () => {
   const pb = new PocketBase(getPbUrl()) as TypedPocketBase;
