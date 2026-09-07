@@ -16,7 +16,7 @@ export const getPbUrl = () => {
   return url.replace(/\/+$/, "");
 };
 
-export const pb = new PocketBase(local_url) as TypedPocketBase;
+export const pb = new PocketBase(getPbUrl()) as TypedPocketBase;
 
 export const ssr_pb = () => {
   const pb = new PocketBase(getPbUrl()) as TypedPocketBase;
