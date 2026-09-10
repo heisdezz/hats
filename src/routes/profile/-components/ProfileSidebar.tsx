@@ -1,4 +1,5 @@
-import { Mail, MapPin, Phone, Wallet } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Mail, MapPin, Phone, Wallet, Package, Sparkles } from "lucide-react";
 import type { DeliverySettingsRecord, ProfileRecord } from "pocketbase-types";
 
 export default function ProfileSidebar({
@@ -8,7 +9,8 @@ export default function ProfileSidebar({
   profile: ProfileRecord;
   delivery: Partial<DeliverySettingsRecord>;
 }) {
-  const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—";
+  const fullName =
+    [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—";
   const location = [delivery.city, delivery.state].filter(Boolean).join(", ");
 
   return (
@@ -31,6 +33,25 @@ export default function ProfileSidebar({
       <div className="badge badge-primary gap-1.5 py-3 px-4">
         <Wallet className="size-3.5" />
         <span className="text-xs font-semibold">Balance: ₦0</span>
+      </div>
+
+      <div className="flex flex-col gap-2 w-full pt-1">
+        <Link
+          to="/profile/orders"
+          search={{ page: 1, reference: undefined }}
+          className="btn btn-sm btn-outline rounded-xl w-full justify-start gap-2 text-xs font-medium"
+        >
+          <Package className="size-3.5 text-primary" />
+          <span>My Orders</span>
+        </Link>
+        <Link
+          to="/profile/requests"
+          search={{ page: 1 }}
+          className="btn btn-sm btn-outline rounded-xl w-full justify-start gap-2 text-xs font-medium"
+        >
+          <Sparkles className="size-3.5 text-primary" />
+          <span>Custom Requests</span>
+        </Link>
       </div>
 
       <div className="divider my-0" />

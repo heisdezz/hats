@@ -16,6 +16,7 @@ export const Collections = {
 	Cart: "cart",
 	Category: "category",
 	CheckoutSessions: "checkout_sessions",
+	CustomRequests: "custom_requests",
 	DeliverySettings: "deliverySettings",
 	Logistics: "logistics",
 	OrderItems: "order_items",
@@ -169,6 +170,16 @@ export type CheckoutSessionsRecord<Tcart_items = unknown> = {
 	id: string
 	reference?: string
 	status?: string
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
+export type CustomRequestsRecord = {
+	admin_response?: string
+	created: IsoAutoDateString
+	id: string
+	images?: FileNameString[]
+	request_body?: string
 	updated: IsoAutoDateString
 	user?: RecordIdString
 }
@@ -331,6 +342,7 @@ export type CarouselResponse<Texpand = unknown> = Required<CarouselRecord> & Bas
 export type CartResponse<Texpand = unknown> = Required<CartRecord> & BaseSystemFields<Texpand>
 export type CategoryResponse<Texpand = unknown> = Required<CategoryRecord> & BaseSystemFields<Texpand>
 export type CheckoutSessionsResponse<Tcart_items = unknown, Texpand = unknown> = Required<CheckoutSessionsRecord<Tcart_items>> & BaseSystemFields<Texpand>
+export type CustomRequestsResponse<Texpand = unknown> = Required<CustomRequestsRecord> & BaseSystemFields<Texpand>
 export type DeliverySettingsResponse<Texpand = unknown> = Required<DeliverySettingsRecord> & BaseSystemFields<Texpand>
 export type LogisticsResponse<Texpand = unknown> = Required<LogisticsRecord> & BaseSystemFields<Texpand>
 export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> & BaseSystemFields<Texpand>
@@ -358,6 +370,7 @@ export type CollectionRecords = {
 	cart: CartRecord
 	category: CategoryRecord
 	checkout_sessions: CheckoutSessionsRecord
+	custom_requests: CustomRequestsRecord
 	deliverySettings: DeliverySettingsRecord
 	logistics: LogisticsRecord
 	order_items: OrderItemsRecord
@@ -384,6 +397,7 @@ export type CollectionResponses = {
 	cart: CartResponse
 	category: CategoryResponse
 	checkout_sessions: CheckoutSessionsResponse
+	custom_requests: CustomRequestsResponse
 	deliverySettings: DeliverySettingsResponse
 	logistics: LogisticsResponse
 	order_items: OrderItemsResponse

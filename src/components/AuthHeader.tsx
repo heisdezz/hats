@@ -1,6 +1,6 @@
 import { pb } from "#/client/pb";
 import { Link } from "@tanstack/react-router";
-import { User, Package, LogOut, LogIn, UserPlus } from "lucide-react";
+import { User, Package, LogOut, LogIn, UserPlus, Sparkles } from "lucide-react";
 
 export default function AuthHeader() {
   const isAuth = pb.authStore.isValid;
@@ -16,7 +16,10 @@ export default function AuthHeader() {
             Lagos Flagship Store
           </span>
           <span className="text-base-content/30">|</span>
-          <a href="tel:+2348000000000" className="hover:text-primary transition-colors">
+          <a
+            href="tel:+2348000000000"
+            className="hover:text-primary transition-colors"
+          >
             +234 800 000 0000
           </a>
         </div>
@@ -26,7 +29,10 @@ export default function AuthHeader() {
           {isAuth ? (
             <>
               <span className="hidden md:inline font-medium text-base-content/80">
-                Welcome, <span className="text-primary font-semibold">{user?.username || user?.email?.split("@")[0] || "Member"}</span>
+                Welcome,{" "}
+                <span className="text-primary font-semibold">
+                  {user?.username || user?.email?.split("@")[0] || "Member"}
+                </span>
               </span>
               <span className="hidden md:inline text-base-content/30">|</span>
               <Link
@@ -44,6 +50,14 @@ export default function AuthHeader() {
                 <Package size={13} />
                 <span>My Orders</span>
               </Link>
+              <Link
+                to="/profile/requests"
+                search={{ page: 1 }}
+                className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
+              >
+                <Sparkles size={13} />
+                <span>Custom Requests</span>
+              </Link>
               <span className="text-base-content/30">|</span>
               <Link
                 to="/logout"
@@ -56,6 +70,14 @@ export default function AuthHeader() {
             </>
           ) : (
             <>
+              <Link
+                to="/store/custom-request"
+                className="flex items-center gap-1 hover:text-primary transition-colors font-medium"
+              >
+                <Sparkles size={13} />
+                <span>Custom Request</span>
+              </Link>
+              <span className="text-base-content/30">|</span>
               <Link
                 to="/login"
                 className="flex items-center gap-1 hover:text-primary transition-colors font-medium"

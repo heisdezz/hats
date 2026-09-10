@@ -1,9 +1,20 @@
-import { IconScissors, IconPalette, IconRuler, IconMessageCircle } from "@tabler/icons-react";
+import {
+  IconScissors,
+  IconPalette,
+  IconRuler,
+  IconMessageCircle,
+} from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
 const perks = [
-  { icon: IconScissors, label: "Handcrafted to order by Lagos master milliners" },
-  { icon: IconPalette, label: "Custom color matching & premium fabric selection" },
+  {
+    icon: IconScissors,
+    label: "Handcrafted to order by Lagos master milliners",
+  },
+  {
+    icon: IconPalette,
+    label: "Custom color matching & premium fabric selection",
+  },
   { icon: IconRuler, label: "Precision head sizing & custom wrist fit" },
 ];
 
@@ -21,8 +32,12 @@ export default function CustomMade() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-6 left-6 text-white max-w-xs">
-            <span className="badge badge-accent badge-sm font-bold mb-2">Bespoke Studio</span>
-            <h4 className="text-xl font-bold font-logo">Crafted for your Royal Moments</h4>
+            <span className="badge badge-accent badge-sm font-bold mb-2">
+              Bespoke Studio
+            </span>
+            <h4 className="text-xl font-bold font-logo">
+              Crafted for your Royal Moments
+            </h4>
           </div>
         </div>
 
@@ -36,13 +51,18 @@ export default function CustomMade() {
               Need something <br className="hidden lg:block" /> uniquely yours?
             </h2>
             <p className="text-base-content/70 text-xs sm:text-sm leading-relaxed max-w-md">
-              We specialise in bespoke hats, church fascinators, and bridal jewelry sets crafted to your exact taste and event outfit color palette.
+              We specialise in bespoke hats, church fascinators, and bridal
+              jewelry sets crafted to your exact taste and event outfit color
+              palette.
             </p>
           </div>
 
           <ul className="flex flex-col gap-3">
             {perks.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-3 text-xs sm:text-sm font-medium">
+              <li
+                key={label}
+                className="flex items-center gap-3 text-xs sm:text-sm font-medium"
+              >
                 <span className="bg-primary/10 text-primary rounded-full p-2 shrink-0">
                   <Icon size={16} />
                 </span>
@@ -53,7 +73,7 @@ export default function CustomMade() {
 
           <div className="flex items-center gap-3 pt-2">
             <Link
-              to="/store/catalog"
+              to="/store/custom-request"
               className="btn btn-primary rounded-full px-8 text-xs font-bold gap-2 shadow-md"
             >
               <IconMessageCircle size={16} />

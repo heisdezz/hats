@@ -18,6 +18,7 @@ import {
   Store,
   LogOut,
   Settings,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +50,11 @@ const nav_groups: {
     routes: [
       { name: "Products", path: "/admin/dashboard/products", icon: Package },
       { name: "Orders", path: "/admin/dashboard/orders", icon: ShoppingCart },
+      {
+        name: "Custom Requests",
+        path: "/admin/dashboard/requests",
+        icon: Sparkles,
+      },
     ],
   },
   {

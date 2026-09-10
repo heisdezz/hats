@@ -14,7 +14,9 @@ import GridContainer from "#/components/GridContainer";
 import { Package, LogIn } from "lucide-react";
 
 export const Route = createFileRoute("/profile/orders/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { reference?: string; page?: number } => ({
     reference:
       typeof search.reference === "string" ? search.reference : undefined,
     page: Number(search.page) || 1,
@@ -60,7 +62,11 @@ function RouteComponent() {
           <p className="text-sm text-base-content/60">
             Please log in to view your order history and track order statuses.
           </p>
-          <Link to="/login" search={{ redirect: "/profile/orders" }} className="btn btn-primary rounded-xl gap-2 mt-2">
+          <Link
+            to="/login"
+            search={{ redirect: "/profile/orders" }}
+            className="btn btn-primary rounded-xl gap-2 mt-2"
+          >
             <LogIn className="size-4" /> Log In to View Orders
           </Link>
         </div>
@@ -108,7 +114,7 @@ function RouteComponent() {
               </GridContainer>
             )}
             {data.totalPages > 1 && (
-              <Pagination page={page} totalPages={data.totalPages} />
+              <Pagination page={page || 1} totalPages={data.totalPages} />
             )}
           </div>
         )}
@@ -116,4 +122,3 @@ function RouteComponent() {
     </div>
   );
 }
-

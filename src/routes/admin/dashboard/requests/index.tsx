@@ -1,36 +1,42 @@
-import { pb, ssr_pb } from "#/client/pb";
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { pb, ssr_pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
 import Pagination from "#/components/Pagination";
-import GridContainer from "#/components/GridContainer";
-import OrderCard, {
-  type OrderWithExpand,
-} from "./-components/orders/OrderCard";
-import { useState } from "react";
-import { Search, X } from "lucide-react";
+import AdminRequestCard from "../-components/requests/AdminRequestCard";
+import type { CustomRequestsResponse, UsersResponse } from "#/../pocketbase-types";
+import { Search, X, Sparkles, Inbox } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
   page: z.number().catch(1).optional(),
-  status: z.string().optional(),
+  status: z.enum(["pending", "responded"]).optional(),
   search: z.string().optional(),
 });
 
-export const Route = createFileRoute("/admin/dashboard/orders/")({
+type RequestWithUser = CustomRequestsResponse<{
+  user?: UsersResponse;
+}>;
+
+export const Route = createFileRoute("/admin/dashboard/requests/")({
   validateSearch: searchSchema,
-  component: RouteComponent,
+  component: AdminRequestsPage,
   loader: () =>
-    ssr_pb().collection("user_orders").getList<OrderWithExpand>(1, 20, {
-      sort: "-created",
-      expand: "preview,orderItems,orderItems.originalProduct,user",
-    }),
+    ssr_pb()
+      .collection("custom_requests")
+      .getList<RequestWithUser>(1, 20, {
+        sort: "-created",
+        expand: "user",
+      })
+      .catch(() => ({ items: [], totalItems: 0, totalPages: 0, page: 1, perPage: 20 })),
 });
 
-function RouteComponent() {
+function AdminRequestsPage() {
   const loaderData = Route.useLoaderData();
   const searchParams = Route.useSearch();
   const nav = useNavigate();
+  const qc = useQueryClient();
 
   const [searchInput, setSearchInput] = useState(searchParams.search || "");
   const page = searchParams.page || 1;
@@ -38,27 +44,27 @@ function RouteComponent() {
   const search = searchParams.search;
 
   const query = useQuery({
-    queryKey: ["admin-orders", page, status, search],
+    queryKey: ["admin-custom-requests", page, status, search],
     queryFn: () => {
       const filters: string[] = [];
 
-      if (status) {
-        filters.push(pb.filter("status = {:status}", { status }));
+      if (status === "pending") {
+        filters.push('admin_response = "" || admin_response = null');
+      } else if (status === "responded") {
+        filters.push('admin_response != "" && admin_response != null');
       }
 
       if (search) {
-        filters.push(
-          pb.filter("ref ~ {:search} || id ~ {:search}", { search }),
-        );
+        filters.push(pb.filter("request_body ~ {:search} || id ~ {:search}", { search }));
       }
 
-      return pb.collection("user_orders").getList<OrderWithExpand>(page, 20, {
+      return pb.collection("custom_requests").getList<RequestWithUser>(page, 20, {
         sort: "-created",
-        expand: "preview,orderItems,orderItems.originalProduct,user",
+        expand: "user",
         filter: filters.length ? filters.join(" && ") : undefined,
       });
     },
-    initialData: page === 1 && !status && !search ? loaderData : undefined,
+    initialData: page === 1 && !status && !search && loaderData.items.length > 0 ? loaderData : undefined,
   });
 
   const updateFilters = (newParams: Partial<typeof searchParams>) => {
@@ -74,7 +80,7 @@ function RouteComponent() {
     });
 
     nav({
-      to: "/admin/dashboard/orders",
+      to: "/admin/dashboard/requests",
       search: updated as any,
     });
   };
@@ -84,30 +90,28 @@ function RouteComponent() {
     updateFilters({ search: searchInput || undefined });
   };
 
-  const statuses = ["pending", "processing", "in-transit", "delivered"];
-
   return (
     <section className="page-wrap flex flex-col gap-6 py-4">
+      {/* Header & Search */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Orders Management</h1>
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-6 text-primary" />
+            <h1 className="text-2xl font-bold">Custom Requests</h1>
+          </div>
           {query.data && (
             <p className="text-sm text-base-content/50 mt-0.5">
-              {query.data.totalItems} total order
-              {query.data.totalItems !== 1 ? "s" : ""}
+              {query.data.totalItems} total bespoke consultation{query.data.totalItems !== 1 ? "s" : ""}
             </p>
           )}
         </div>
 
-        <form
-          onSubmit={handleSearchSubmit}
-          className="flex items-center gap-2 flex-1 max-w-md"
-        >
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-base-content/40" />
             <input
               type="text"
-              placeholder="Search by order reference or ID..."
+              placeholder="Search by details, name, or ID..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="input input-sm input-bordered w-full pl-9 pr-8 rounded-xl text-xs"
@@ -125,51 +129,55 @@ function RouteComponent() {
               </button>
             )}
           </div>
-          <button
-            type="submit"
-            className="btn btn-sm btn-primary rounded-xl px-3 text-xs"
-          >
+          <button type="submit" className="btn btn-sm btn-primary rounded-xl px-3 text-xs">
             Search
           </button>
         </form>
       </div>
 
+      {/* Tabs */}
       <div className="flex items-center justify-start overflow-x-auto pb-1">
         <div className="join">
           <button
             onClick={() => updateFilters({ status: undefined })}
             className={`join-item btn btn-sm ${!status ? "btn-active" : "btn-ghost"}`}
           >
-            All Orders
+            All Requests
           </button>
-          {statuses.map((s) => (
-            <button
-              key={s}
-              onClick={() => updateFilters({ status: s })}
-              className={`join-item btn btn-sm capitalize ${status === s ? "btn-active" : "btn-ghost"}`}
-            >
-              {s}
-            </button>
-          ))}
+          <button
+            onClick={() => updateFilters({ status: "pending" })}
+            className={`join-item btn btn-sm ${status === "pending" ? "btn-active" : "btn-ghost"}`}
+          >
+            Pending Response
+          </button>
+          <button
+            onClick={() => updateFilters({ status: "responded" })}
+            className={`join-item btn btn-sm ${status === "responded" ? "btn-active" : "btn-ghost"}`}
+          >
+            Responded
+          </button>
         </div>
       </div>
 
+      {/* Content */}
       <PageLoader query={query}>
         {(data) =>
           data.items.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 py-16 text-base-content/40 bg-base-100 rounded-2xl border border-base-200 text-sm">
-              <p className="font-semibold">No orders found.</p>
-              <p className="text-xs">
-                Try adjusting your status filter or search reference.
-              </p>
+            <div className="flex flex-col items-center gap-2 py-16 text-base-content/40 bg-base-100 rounded-2xl border border-base-200 text-sm text-center">
+              <Inbox className="size-12 opacity-40" />
+              <p className="font-semibold">No custom requests found.</p>
+              <p className="text-xs">Try adjusting your status filter or search query.</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
-              <GridContainer>
-                {data.items.map((order) => (
-                  <OrderCard key={order.id} order={order} />
-                ))}
-              </GridContainer>
+            <div className="flex flex-col gap-4">
+              {data.items.map((req) => (
+                <AdminRequestCard
+                  key={req.id}
+                  request={req}
+                  onUpdated={() => qc.invalidateQueries({ queryKey: ["admin-custom-requests"] })}
+                />
+              ))}
+
               {data.totalPages > 1 && (
                 <Pagination
                   page={page}

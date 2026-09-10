@@ -13,6 +13,7 @@ import { Route as TestRouteImport } from './routes/test'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CustomRequestRouteImport } from './routes/custom-request'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as StoreRouteRouteImport } from './routes/store/route'
 import { Route as ProfileRouteRouteImport } from './routes/profile/route'
@@ -21,11 +22,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoreIndexRouteImport } from './routes/store/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as StoreCustomRequestRouteImport } from './routes/store/custom-request'
 import { Route as AdminDashboardRouteRouteImport } from './routes/admin/dashboard/route'
 import { Route as StoreJewelryIndexRouteImport } from './routes/store/jewelry/index'
 import { Route as StoreCatalogIndexRouteImport } from './routes/store/catalog/index'
 import { Route as StoreCartIndexRouteImport } from './routes/store/cart/index'
 import { Route as StoreAboutIndexRouteImport } from './routes/store/about.index'
+import { Route as ProfileRequestsIndexRouteImport } from './routes/profile/requests/index'
 import { Route as ProfileOrdersIndexRouteImport } from './routes/profile/orders/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as ProfileOrdersOrderIdRouteImport } from './routes/profile/orders/$orderId'
@@ -34,6 +37,7 @@ import { Route as AdminDashboardSectionsRouteImport } from './routes/admin/dashb
 import { Route as StoreCatalogIdIndexRouteImport } from './routes/store/catalog/$id/index'
 import { Route as ProfileOrdersOrderIdIndexRouteImport } from './routes/profile/orders/$orderId.index'
 import { Route as AdminDashboardUsersIndexRouteImport } from './routes/admin/dashboard/users/index'
+import { Route as AdminDashboardRequestsIndexRouteImport } from './routes/admin/dashboard/requests/index'
 import { Route as AdminDashboardProductsIndexRouteImport } from './routes/admin/dashboard/products/index'
 import { Route as AdminDashboardOrdersIndexRouteImport } from './routes/admin/dashboard/orders.index'
 import { Route as AdminDashboardCategoryIndexRouteImport } from './routes/admin/dashboard/category/index'
@@ -63,6 +67,11 @@ const LogoutRoute = LogoutRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRequestRoute = CustomRequestRouteImport.update({
+  id: '/custom-request',
+  path: '/custom-request',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -105,6 +114,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const StoreCustomRequestRoute = StoreCustomRequestRouteImport.update({
+  id: '/custom-request',
+  path: '/custom-request',
+  getParentRoute: () => StoreRouteRoute,
+} as any)
 const AdminDashboardRouteRoute = AdminDashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -129,6 +143,11 @@ const StoreAboutIndexRoute = StoreAboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
   getParentRoute: () => StoreRouteRoute,
+} as any)
+const ProfileRequestsIndexRoute = ProfileRequestsIndexRouteImport.update({
+  id: '/requests/',
+  path: '/requests/',
+  getParentRoute: () => ProfileRouteRoute,
 } as any)
 const ProfileOrdersIndexRoute = ProfileOrdersIndexRouteImport.update({
   id: '/orders/',
@@ -170,6 +189,12 @@ const AdminDashboardUsersIndexRoute =
   AdminDashboardUsersIndexRouteImport.update({
     id: '/users/',
     path: '/users/',
+    getParentRoute: () => AdminDashboardRouteRoute,
+  } as any)
+const AdminDashboardRequestsIndexRoute =
+  AdminDashboardRequestsIndexRouteImport.update({
+    id: '/requests/',
+    path: '/requests/',
     getParentRoute: () => AdminDashboardRouteRoute,
   } as any)
 const AdminDashboardProductsIndexRoute =
@@ -239,11 +264,13 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRouteRouteWithChildren
   '/store': typeof StoreRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/custom-request': typeof CustomRequestRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/admin/dashboard': typeof AdminDashboardRouteRouteWithChildren
+  '/store/custom-request': typeof StoreCustomRequestRoute
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
@@ -252,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRouteWithChildren
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
+  '/profile/requests/': typeof ProfileRequestsIndexRoute
   '/store/about/': typeof StoreAboutIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
@@ -262,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/category/': typeof AdminDashboardCategoryIndexRoute
   '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
+  '/admin/dashboard/requests/': typeof AdminDashboardRequestsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
   '/profile/orders/$orderId/': typeof ProfileOrdersOrderIdIndexRoute
   '/store/catalog/$id/': typeof StoreCatalogIdIndexRoute
@@ -273,10 +302,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/custom-request': typeof CustomRequestRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
+  '/store/custom-request': typeof StoreCustomRequestRoute
   '/admin': typeof AdminIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/store': typeof StoreIndexRoute
@@ -284,6 +315,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard/settings': typeof AdminDashboardSettingsRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/profile/orders': typeof ProfileOrdersIndexRoute
+  '/profile/requests': typeof ProfileRequestsIndexRoute
   '/store/about': typeof StoreAboutIndexRoute
   '/store/cart': typeof StoreCartIndexRoute
   '/store/catalog': typeof StoreCatalogIndexRoute
@@ -294,6 +326,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard/category': typeof AdminDashboardCategoryIndexRoute
   '/admin/dashboard/orders': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products': typeof AdminDashboardProductsIndexRoute
+  '/admin/dashboard/requests': typeof AdminDashboardRequestsIndexRoute
   '/admin/dashboard/users': typeof AdminDashboardUsersIndexRoute
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdIndexRoute
   '/store/catalog/$id': typeof StoreCatalogIdIndexRoute
@@ -309,11 +342,13 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRouteRouteWithChildren
   '/store': typeof StoreRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/custom-request': typeof CustomRequestRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/test': typeof TestRoute
   '/admin/dashboard': typeof AdminDashboardRouteRouteWithChildren
+  '/store/custom-request': typeof StoreCustomRequestRoute
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/store/': typeof StoreIndexRoute
@@ -322,6 +357,7 @@ export interface FileRoutesById {
   '/profile/orders/$orderId': typeof ProfileOrdersOrderIdRouteWithChildren
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/profile/orders/': typeof ProfileOrdersIndexRoute
+  '/profile/requests/': typeof ProfileRequestsIndexRoute
   '/store/about/': typeof StoreAboutIndexRoute
   '/store/cart/': typeof StoreCartIndexRoute
   '/store/catalog/': typeof StoreCatalogIndexRoute
@@ -332,6 +368,7 @@ export interface FileRoutesById {
   '/admin/dashboard/category/': typeof AdminDashboardCategoryIndexRoute
   '/admin/dashboard/orders/': typeof AdminDashboardOrdersIndexRoute
   '/admin/dashboard/products/': typeof AdminDashboardProductsIndexRoute
+  '/admin/dashboard/requests/': typeof AdminDashboardRequestsIndexRoute
   '/admin/dashboard/users/': typeof AdminDashboardUsersIndexRoute
   '/profile/orders/$orderId/': typeof ProfileOrdersOrderIdIndexRoute
   '/store/catalog/$id/': typeof StoreCatalogIdIndexRoute
@@ -348,11 +385,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/store'
     | '/about'
+    | '/custom-request'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
     | '/admin/dashboard'
+    | '/store/custom-request'
     | '/admin/'
     | '/profile/'
     | '/store/'
@@ -361,6 +400,7 @@ export interface FileRouteTypes {
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
+    | '/profile/requests/'
     | '/store/about/'
     | '/store/cart/'
     | '/store/catalog/'
@@ -371,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard/category/'
     | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
+    | '/admin/dashboard/requests/'
     | '/admin/dashboard/users/'
     | '/profile/orders/$orderId/'
     | '/store/catalog/$id/'
@@ -382,10 +423,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/custom-request'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
+    | '/store/custom-request'
     | '/admin'
     | '/profile'
     | '/store'
@@ -393,6 +436,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard/settings'
     | '/admin/dashboard'
     | '/profile/orders'
+    | '/profile/requests'
     | '/store/about'
     | '/store/cart'
     | '/store/catalog'
@@ -403,6 +447,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard/category'
     | '/admin/dashboard/orders'
     | '/admin/dashboard/products'
+    | '/admin/dashboard/requests'
     | '/admin/dashboard/users'
     | '/profile/orders/$orderId'
     | '/store/catalog/$id'
@@ -417,11 +462,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/store'
     | '/about'
+    | '/custom-request'
     | '/login'
     | '/logout'
     | '/register'
     | '/test'
     | '/admin/dashboard'
+    | '/store/custom-request'
     | '/admin/'
     | '/profile/'
     | '/store/'
@@ -430,6 +477,7 @@ export interface FileRouteTypes {
     | '/profile/orders/$orderId'
     | '/admin/dashboard/'
     | '/profile/orders/'
+    | '/profile/requests/'
     | '/store/about/'
     | '/store/cart/'
     | '/store/catalog/'
@@ -440,6 +488,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard/category/'
     | '/admin/dashboard/orders/'
     | '/admin/dashboard/products/'
+    | '/admin/dashboard/requests/'
     | '/admin/dashboard/users/'
     | '/profile/orders/$orderId/'
     | '/store/catalog/$id/'
@@ -455,6 +504,7 @@ export interface RootRouteChildren {
   ProfileRouteRoute: typeof ProfileRouteRouteWithChildren
   StoreRouteRoute: typeof StoreRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  CustomRequestRoute: typeof CustomRequestRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
@@ -489,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-request': {
+      id: '/custom-request'
+      path: '/custom-request'
+      fullPath: '/custom-request'
+      preLoaderRoute: typeof CustomRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -547,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/store/custom-request': {
+      id: '/store/custom-request'
+      path: '/custom-request'
+      fullPath: '/store/custom-request'
+      preLoaderRoute: typeof StoreCustomRequestRouteImport
+      parentRoute: typeof StoreRouteRoute
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/dashboard'
@@ -581,6 +645,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/store/about/'
       preLoaderRoute: typeof StoreAboutIndexRouteImport
       parentRoute: typeof StoreRouteRoute
+    }
+    '/profile/requests/': {
+      id: '/profile/requests/'
+      path: '/requests'
+      fullPath: '/profile/requests/'
+      preLoaderRoute: typeof ProfileRequestsIndexRouteImport
+      parentRoute: typeof ProfileRouteRoute
     }
     '/profile/orders/': {
       id: '/profile/orders/'
@@ -636,6 +707,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/dashboard/users/'
       preLoaderRoute: typeof AdminDashboardUsersIndexRouteImport
+      parentRoute: typeof AdminDashboardRouteRoute
+    }
+    '/admin/dashboard/requests/': {
+      id: '/admin/dashboard/requests/'
+      path: '/requests'
+      fullPath: '/admin/dashboard/requests/'
+      preLoaderRoute: typeof AdminDashboardRequestsIndexRouteImport
       parentRoute: typeof AdminDashboardRouteRoute
     }
     '/admin/dashboard/products/': {
@@ -721,6 +799,7 @@ interface AdminDashboardRouteRouteChildren {
   AdminDashboardCategoryIndexRoute: typeof AdminDashboardCategoryIndexRoute
   AdminDashboardOrdersIndexRoute: typeof AdminDashboardOrdersIndexRoute
   AdminDashboardProductsIndexRoute: typeof AdminDashboardProductsIndexRoute
+  AdminDashboardRequestsIndexRoute: typeof AdminDashboardRequestsIndexRoute
   AdminDashboardUsersIndexRoute: typeof AdminDashboardUsersIndexRoute
   AdminDashboardProductsEditProductIdRoute: typeof AdminDashboardProductsEditProductIdRoute
 }
@@ -735,6 +814,7 @@ const AdminDashboardRouteRouteChildren: AdminDashboardRouteRouteChildren = {
   AdminDashboardCategoryIndexRoute: AdminDashboardCategoryIndexRoute,
   AdminDashboardOrdersIndexRoute: AdminDashboardOrdersIndexRoute,
   AdminDashboardProductsIndexRoute: AdminDashboardProductsIndexRoute,
+  AdminDashboardRequestsIndexRoute: AdminDashboardRequestsIndexRoute,
   AdminDashboardUsersIndexRoute: AdminDashboardUsersIndexRoute,
   AdminDashboardProductsEditProductIdRoute:
     AdminDashboardProductsEditProductIdRoute,
@@ -772,12 +852,14 @@ interface ProfileRouteRouteChildren {
   ProfileIndexRoute: typeof ProfileIndexRoute
   ProfileOrdersOrderIdRoute: typeof ProfileOrdersOrderIdRouteWithChildren
   ProfileOrdersIndexRoute: typeof ProfileOrdersIndexRoute
+  ProfileRequestsIndexRoute: typeof ProfileRequestsIndexRoute
 }
 
 const ProfileRouteRouteChildren: ProfileRouteRouteChildren = {
   ProfileIndexRoute: ProfileIndexRoute,
   ProfileOrdersOrderIdRoute: ProfileOrdersOrderIdRouteWithChildren,
   ProfileOrdersIndexRoute: ProfileOrdersIndexRoute,
+  ProfileRequestsIndexRoute: ProfileRequestsIndexRoute,
 }
 
 const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
@@ -785,6 +867,7 @@ const ProfileRouteRouteWithChildren = ProfileRouteRoute._addFileChildren(
 )
 
 interface StoreRouteRouteChildren {
+  StoreCustomRequestRoute: typeof StoreCustomRequestRoute
   StoreIndexRoute: typeof StoreIndexRoute
   StoreAboutIndexRoute: typeof StoreAboutIndexRoute
   StoreCartIndexRoute: typeof StoreCartIndexRoute
@@ -797,6 +880,7 @@ interface StoreRouteRouteChildren {
 }
 
 const StoreRouteRouteChildren: StoreRouteRouteChildren = {
+  StoreCustomRequestRoute: StoreCustomRequestRoute,
   StoreIndexRoute: StoreIndexRoute,
   StoreAboutIndexRoute: StoreAboutIndexRoute,
   StoreCartIndexRoute: StoreCartIndexRoute,
@@ -818,6 +902,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRouteRoute: ProfileRouteRouteWithChildren,
   StoreRouteRoute: StoreRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  CustomRequestRoute: CustomRequestRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,

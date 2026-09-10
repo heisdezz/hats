@@ -5,10 +5,11 @@ import OrderStats from "./-components/OrderStats";
 import { useQuery } from "@tanstack/react-query";
 import { pb } from "#/client/pb";
 import PageLoader from "#/components/layouts/PageLoader";
-import OrderCard from "./-components/orders/OrderCard";
+import OrderCard, {
+  type OrderWithExpand,
+} from "./-components/orders/OrderCard";
 import GridContainer from "#/components/GridContainer";
 import { ArrowRight, ShoppingCart } from "lucide-react";
-import type { UserOrdersResponse } from "#/../pocketbase-types";
 
 export const Route = createFileRoute("/admin/dashboard/")({
   component: RouteComponent,
@@ -18,9 +19,9 @@ function RouteComponent() {
   const recentOrdersQuery = useQuery({
     queryKey: ["recent-admin-orders"],
     queryFn: () =>
-      pb.collection("user_orders").getList<UserOrdersResponse>(1, 6, {
+      pb.collection("user_orders").getList<OrderWithExpand>(1, 6, {
         sort: "-created",
-        expand: "preview,orderItems,user",
+        expand: "preview,orderItems,orderItems.originalProduct,user",
       }),
   });
 
